@@ -1,0 +1,15 @@
+/Users/markl/Dev/JetBrains/RiderProjects/SimpleDoomEngine/ConsoleGameEngine/bin/Debug/net9.0/ConsoleGameEngine
+/Users/markl/Dev/JetBrains/RiderProjects/SimpleDoomEngine/ConsoleGameEngine/bin/Debug/net9.0/ConsoleGameEngine.deps.json
+/Users/markl/Dev/JetBrains/RiderProjects/SimpleDoomEngine/ConsoleGameEngine/bin/Debug/net9.0/ConsoleGameEngine.runtimeconfig.json
+/Users/markl/Dev/JetBrains/RiderProjects/SimpleDoomEngine/ConsoleGameEngine/bin/Debug/net9.0/ConsoleGameEngine.dll
+/Users/markl/Dev/JetBrains/RiderProjects/SimpleDoomEngine/ConsoleGameEngine/bin/Debug/net9.0/ConsoleGameEngine.pdb
+/Users/markl/Dev/JetBrains/RiderProjects/SimpleDoomEngine/ConsoleGameEngine/obj/Debug/net9.0/ConsoleGameEngine.GeneratedMSBuildEditorConfig.editorconfig
+/Users/markl/Dev/JetBrains/RiderProjects/SimpleDoomEngine/ConsoleGameEngine/obj/Debug/net9.0/ConsoleGameEngine.AssemblyInfoInputs.cache
+/Users/markl/Dev/JetBrains/RiderProjects/SimpleDoomEngine/ConsoleGameEngine/obj/Debug/net9.0/ConsoleGameEngine.AssemblyInfo.cs
+/Users/markl/Dev/JetBrains/RiderProjects/SimpleDoomEngine/ConsoleGameEngine/obj/Debug/net9.0/ConsoleGameEngine.csproj.CoreCompileInputs.cache
+/Users/markl/Dev/JetBrains/RiderProjects/SimpleDoomEngine/ConsoleGameEngine/obj/Debug/net9.0/ConsoleGameEngine.sourcelink.json
+/Users/markl/Dev/JetBrains/RiderProjects/SimpleDoomEngine/ConsoleGameEngine/obj/Debug/net9.0/ConsoleGameEngine.dll
+/Users/markl/Dev/JetBrains/RiderProjects/SimpleDoomEngine/ConsoleGameEngine/obj/Debug/net9.0/refint/ConsoleGameEngine.dll
+/Users/markl/Dev/JetBrains/RiderProjects/SimpleDoomEngine/ConsoleGameEngine/obj/Debug/net9.0/ConsoleGameEngine.pdb
+/Users/markl/Dev/JetBrains/RiderProjects/SimpleDoomEngine/ConsoleGameEngine/obj/Debug/net9.0/ConsoleGameEngine.genruntimeconfig.cache
+/Users/markl/Dev/JetBrains/RiderProjects/SimpleDoomEngine/ConsoleGameEngine/obj/Debug/net9.0/ref/ConsoleGameEngine.dll
