@@ -95,6 +95,8 @@ class Tester
         };
         
         var lastTime = DateTime.Now;
+        
+        //
     
         while (_isRunning)
         {
@@ -107,13 +109,14 @@ class Tester
         
             // Render
             _renderer.Clear();
-            //_rootPanel.Render(_renderer);
+            _rootPanel.Render(_renderer);
             //renderManager.RenderAll();
+            _renderer.Render();
         
             // Cap framerate (~60 FPS)
             Thread.Sleep(16);
         }
         
-        renderManager.Dispose();
+        //renderManager.Dispose();
     }
 }

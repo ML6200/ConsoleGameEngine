@@ -42,12 +42,30 @@ public class ConsoleRenderer2D
     private int _width;
     private int _height;
     
+    public int Width
+    {
+        get => _width;
+    }
+
+    public int Height
+    {
+        get => _height;
+    }
+
+    public void setDimension(int width, int height)
+    {
+        _width = width;
+        _height = height;
+        InitRenderer();
+    }
+    
     private Cell[,] _buffer;
     
     public ConsoleRenderer2D(int width, int height)
     {
         _width =  width;
         _height = height;
+        InitRenderer();
     }
     
     public ConsoleRenderer2D(Dimension2D dimension)
@@ -180,9 +198,8 @@ public class ConsoleRenderer2D
         {
             for (int x = 0; x < _width; x++)
             {
-                var cell = _buffer[x, y];
-
-                // Only change colors if they differ from current console state
+                Cell cell = _buffer[x, y];
+                
                 if (Console.ForegroundColor != cell.ForegroundColor)
                     Console.ForegroundColor = cell.ForegroundColor;
                 if (Console.BackgroundColor != cell.BackgroundColor)

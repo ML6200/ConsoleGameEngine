@@ -9,6 +9,8 @@ public class ConsoleRenderManager : IDisposable
     private ConsoleRenderer2D _renderer;
     private bool _isRunning;
 
+    public event EventHandler onWindowResized;
+
     public ConsoleRenderManager(ConsoleRenderer2D renderer)
     {
         _isRunning = true;
@@ -18,7 +20,7 @@ public class ConsoleRenderManager : IDisposable
         graphicsThread = new Thread(RenderLoop);
         graphicsThread.Start();
         
-        //windowEventThread = new Thread();
+        windowEventThread = new Thread(RenderLoop);
     }
 
     public void RenderAll()
@@ -30,7 +32,13 @@ public class ConsoleRenderManager : IDisposable
     {
         while (_isRunning)
         {
-            _renderer.Render();
+            int x = _renderer.Width;
+            int y = _renderer.Height;
+
+            if (Console.WindowWidth != x || Console.WindowHeight != y)
+            {
+                _renderer.setDimension(Console.WindowWidth, Console.WindowHeight);
+            }
         }
     }
     
