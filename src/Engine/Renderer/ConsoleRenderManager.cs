@@ -2,27 +2,41 @@ using System.Threading;
 
 namespace ConsoleGameEngine.Engine.Renderer;
 
-public class ConsoleRenderManager
+public class ConsoleRenderManager : IDisposable
 {
+    private Thread windowEventThread;
     private Thread graphicsThread;
     private ConsoleRenderer2D _renderer;
+    private bool _isRunning;
 
     public ConsoleRenderManager(ConsoleRenderer2D renderer)
     {
         _renderer = renderer;
         _renderer.InitRenderer();
         
-        graphicsThread = new Thread(Run);
+        graphicsThread = new Thread(RenderLoop);
         graphicsThread.Start();
+        
+        windowEventThread = new Thread(RenderLoop);
     }
 
-    public void Start()
+    public void RenderAll()
     {
         _renderer.Render();
     }
 
-    private void Run()
+    private void RenderLoop()
     {
-        _renderer.Render();
+        while (_isRunning)
+        {
+            _renderer.Render();
+        }
+    }
+    
+    public void Dispose()
+    {
+        _isRunning = false;
+        windowEventThread.Interrupt();
+        graphicsThread.Interrupt();
     }
 }

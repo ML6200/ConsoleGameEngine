@@ -107,11 +107,13 @@ class Tester
         
             // Render
             _renderer.Clear();
-            _rootPanel.Render(_renderer);
-            renderManager.Start();
+            //_rootPanel.Render(_renderer);
+            //renderManager.RenderAll();
         
             // Cap framerate (~60 FPS)
             Thread.Sleep(16);
         }
+        
+        renderManager.Dispose();
     }
 }
