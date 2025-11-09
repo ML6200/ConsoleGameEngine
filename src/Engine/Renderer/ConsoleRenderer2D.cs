@@ -199,6 +199,7 @@ public class ConsoleRenderer2D
         Render();
         Clear();
     }
+    
     private string GetAnsiColorCode(ConsoleColor fg, ConsoleColor bg)
     {
         // Convert ConsoleColor to ANSI escape codes

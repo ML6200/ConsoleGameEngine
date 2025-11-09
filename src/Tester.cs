@@ -90,8 +90,7 @@ class Tester
                 label.Visible = !label.Visible;
             } else if (e.Key == ConsoleKey.A)
             {
-                _renderer.Clear();
-                _renderer.DrawText(4, 3, "Hello");
+                title.Visible = !title.Visible;
             }
         };
         
