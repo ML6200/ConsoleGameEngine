@@ -6,8 +6,6 @@ namespace ConsoleGameEngine.Engine.Renderer;
 
 public class ConsolePanel : ConsoleComponent
 {
-    public ConsoleColor BackgroundColor { get; set; } = ConsoleColor.Black;
-    public ConsoleColor BorderColor { get; set; } = ConsoleColor.White;
     public bool HasBorder { get; set; } = true;
 
     public override void Update()

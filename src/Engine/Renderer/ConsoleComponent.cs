@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer;
@@ -27,6 +25,8 @@ public abstract class ConsoleComponent
     
     public ConsoleColor BackgroundColor { get; protected set; }
     public ConsoleColor ForegroundColor { get; protected set; }
+    
+    public ConsoleColor BorderColor { get; protected set; }
     protected List<ConsoleComponent> Children { get; } = new();
     
     public virtual void AddChild(ConsoleComponent child) => Children.Add(child);

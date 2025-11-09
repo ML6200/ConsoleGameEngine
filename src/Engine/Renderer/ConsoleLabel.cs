@@ -5,8 +5,6 @@ namespace ConsoleGameEngine.Engine.Renderer;
 public class ConsoleLabel : ConsoleComponent
 {
     public string Text { get; set; } = "";
-    public ConsoleColor ForegroundColor { get; set; } = ConsoleColor.White;
-    public ConsoleColor BackgroundColor { get; set; } = ConsoleColor.Black;
 
     public ConsoleLabel()
     {

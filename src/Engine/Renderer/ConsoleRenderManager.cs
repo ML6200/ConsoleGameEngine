@@ -11,13 +11,14 @@ public class ConsoleRenderManager : IDisposable
 
     public ConsoleRenderManager(ConsoleRenderer2D renderer)
     {
+        _isRunning = true;
         _renderer = renderer;
         _renderer.InitRenderer();
         
         graphicsThread = new Thread(RenderLoop);
         graphicsThread.Start();
         
-        windowEventThread = new Thread(RenderLoop);
+        //windowEventThread = new Thread();
     }
 
     public void RenderAll()
