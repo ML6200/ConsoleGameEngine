@@ -36,5 +36,14 @@ public class Position2D
     {
         return Math.Sqrt(Math.Pow(position2.X - position1.X, 2) + Math.Pow(position2.Y - position1.Y, 2));
     }
+
+    public void Clamp(int minX, int maxX, int minY, int maxY)
+    {
+         x = Math.Max(minX, x);
+         x = Math.Min(maxX, x);
+
+         y = Math.Max(minY, y);
+         y = Math.Min(maxY, y);
+    }
 }
 
