@@ -21,7 +21,7 @@ public class ConsoleRenderManager : IDisposable
         graphicsThread = new Thread(RenderLoop);
         graphicsThread.Start();
         
-        windowEventThread = new Thread(RenderLoop);
+        windowEventThread = new Thread(WindowEventLoop);
         windowEventThread.Start();
     }
     
@@ -29,14 +29,26 @@ public class ConsoleRenderManager : IDisposable
     {
         while (_isRunning)
         {
-            int x = _renderer.Width;
-            int y = _renderer.Height;
+            _renderer.Update();
+        }
+    }
 
-            if (Console.WindowWidth != x || Console.WindowHeight != y)
+    private void WindowEventLoop()
+    {
+        while (_isRunning)
+        {
+            if (IsWindowResized())
             {
                 _renderer.setDimension(Console.WindowWidth, Console.WindowHeight);
+                onWindowResized?.Invoke(this, EventArgs.Empty);
             }
         }
+    }
+
+    private bool IsWindowResized()
+    {
+        return _renderer.Width != Console.WindowWidth 
+               || _renderer.Height != Console.WindowHeight;
     }
     
     public void Dispose()

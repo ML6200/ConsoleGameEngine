@@ -103,16 +103,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
     public Position2D RelativePosition
     {
         get => _relativePosition ?? new Position2D(0, 0);
-        set
-        {
-            _relativePosition = value;
-            if (_absolutePosition != null)
-            {
-                _absolutePosition += value;
-                _absolutePosition.Clamp(0, WorldSize.Width,
-                    0, WorldSize.Height);
-            }
-        }
+        set => _relativePosition = value;
     }
 
     public ConsoleColor BackgroundColor { get; set; }
@@ -132,7 +123,6 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
     public void RemoveChild(ConsoleGraphicsComponent child) => Children.Remove(child);
 
     
-    
     public virtual bool Visible { get; set; } = true;
 
     public Dimension2D WorldSize
@@ -151,6 +141,16 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
         {
             child.Render(renderer);
         }
+    }
+
+    public Position2D ComputeAbsolutePosition()
+    {
+        if (Parent is ConsoleGraphicsComponent parent)
+        {
+            return parent.ComputeAbsolutePosition() + RelativePosition;
+        }
+
+        return _absolutePosition;
     }
 
     public abstract void Update();

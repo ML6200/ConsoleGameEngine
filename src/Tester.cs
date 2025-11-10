@@ -39,7 +39,7 @@ class Tester
         
         InputManager _inputManager = new InputManager();
         ConsoleRenderer2D _renderer = new ConsoleRenderer2D(Console.WindowWidth, Console.WindowHeight);
-        ConsoleRenderManager renderManager = new ConsoleRenderManager(_renderer);
+        //ConsoleRenderManager renderManager = new ConsoleRenderManager(_renderer);
         
         ConsoleGraphicsPanel rootGraphicsPanel = new ConsoleGraphicsPanel 
         { 
@@ -159,7 +159,7 @@ class Tester
             Thread.Sleep(10);
         }
         
-        renderManager.Dispose();
+        //renderManager.Dispose();
         rootGraphicsPanel.Dispose();
     }
 }

@@ -22,8 +22,11 @@ public class InputManager: IDisposable
     {
         isRunning = true;
         
-        inputThread = new Thread(InputLoop);
-        inputThread.IsBackground = true;
+        inputThread = new Thread(InputLoop)
+        {
+            IsBackground = true
+        };
+        
         inputThread.Start();
     }
 

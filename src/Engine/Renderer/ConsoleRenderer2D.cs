@@ -46,6 +46,7 @@ public class ConsoleRenderer2D
     public int Width
     {
         get => _width;
+        set => _width = value;
     }
 
     public int Height
