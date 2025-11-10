@@ -39,6 +39,7 @@ namespace ConsoleGameEngine.Engine.Renderer;
 
 public class ConsoleRenderer2D
 {
+    private readonly object _bufferLock = new object();
     private int _width;
     private int _height;
     
@@ -54,9 +55,13 @@ public class ConsoleRenderer2D
 
     public void setDimension(int width, int height)
     {
-        _width = width;
-        _height = height;
-        InitRenderer();
+        lock (_bufferLock)
+        {
+            _width = width;
+            _height = height;
+            _buffer = new Cell[_width, _height];
+            Clear();
+        }
     }
     
     private Cell[,] _buffer;
@@ -82,24 +87,38 @@ public class ConsoleRenderer2D
         _buffer = new Cell[_width, _height];
         Clear();
     }
+
+
+    // Kezdesnek megteszi, de később érdemes külön osztályt bevezetni
+    // a koordinátáknak és clampelni
+    public bool IsValidCoordinate(int x, int y)
+    {
+        return x >= 0 && x < _width && y >= 0 && y < _height;
+    }
     
     public void Clear(ConsoleColor bgColor = ConsoleColor.Black, 
         ConsoleColor fgColor = ConsoleColor.White)
     {
-        for (int i = 0; i < _height; i++)
+        lock (_bufferLock)
         {
-            for (int j = 0; j < _width; j++)
+            for (int i = 0; i < _height; i++)
             {
-                _buffer[j, i] = new Cell(' ', bgColor, fgColor);
+                for (int j = 0; j < _width; j++)
+                {
+                    _buffer[j, i] = new Cell(' ', bgColor, fgColor);
+                }
             }
         }
     }
 
     public void SetCell(int x, int y, Cell cell)
     {
-        if (x >= 0 && x < _width && y >= 0 && y < _height)
+        lock (_bufferLock)
         {
-            _buffer[x, y] = cell;
+            if (IsValidCoordinate(x, y))
+            {
+                _buffer[x, y] = cell;
+            }
         }
     }
 
@@ -107,9 +126,12 @@ public class ConsoleRenderer2D
         ConsoleColor bgColor = ConsoleColor.Black, 
         ConsoleColor fgColor = ConsoleColor.White)
     {
-        for (int i = 0; i < text.Length; i++)
+        lock (_bufferLock)
         {
-            SetCell(x + i, y, new Cell(text[i], bgColor, fgColor));
+            for (int i = 0; i < text.Length; i++)
+            {
+                SetCell(x + i, y, new Cell(text[i], bgColor, fgColor));
+            }   
         }
     }
 
@@ -118,55 +140,58 @@ public class ConsoleRenderer2D
         ConsoleColor fg = ConsoleColor.White)
         
     {
-        SetCell(x, y, new Cell('┌', 
-            bg, 
-            fg)
-        ); // top left corner
-        
-        SetCell(x + width - 1, y, new Cell('┐', 
-            bg, 
-            fg)
-        ); // top right corner
-        
-        SetCell(x, y + height - 1, 
-            new Cell('└', 
-                bg, 
+        lock (_bufferLock)
+        {
+            SetCell(x, y, new Cell('┌',
+                bg,
                 fg)
+            ); // top left corner
+
+            SetCell(x + width - 1, y, new Cell('┐',
+                bg,
+                fg)
+            ); // top right corner
+
+            SetCell(x, y + height - 1,
+                new Cell('└',
+                    bg,
+                    fg)
             ); // bottom left corner
-        
-        SetCell(x + width - 1, y + height - 1, 
-            new Cell('┘', 
-                bg, 
-                fg)
+
+            SetCell(x + width - 1, y + height - 1,
+                new Cell('┘',
+                    bg,
+                    fg)
             ); // bottom right corner
 
-        for (int xIndex = 1; xIndex < width - 1 ; xIndex++)
-        {
-            SetCell(x + xIndex, y , 
-                new Cell('─', 
-                    bg, 
-                    fg)
+            for (int xIndex = 1; xIndex < width - 1; xIndex++)
+            {
+                SetCell(x + xIndex, y,
+                    new Cell('─',
+                        bg,
+                        fg)
                 );
-            
-            SetCell(x + xIndex, y + height - 1, 
-                new Cell('─', 
-                    bg, 
-                    fg)
+
+                SetCell(x + xIndex, y + height - 1,
+                    new Cell('─',
+                        bg,
+                        fg)
                 );
-        }
-        
-        for (int yIndex = 1; yIndex < height - 1; yIndex++)
-        {
-            SetCell(x, y + yIndex , 
-                new Cell('│', 
-                    bg, 
-                    fg)
+            }
+
+            for (int yIndex = 1; yIndex < height - 1; yIndex++)
+            {
+                SetCell(x, y + yIndex,
+                    new Cell('│',
+                        bg,
+                        fg)
                 );
-            SetCell(x + width - 1 , y + yIndex, 
-                new Cell('│', 
-                    bg, 
-                    fg)
-                );   
+                SetCell(x + width - 1, y + yIndex,
+                    new Cell('│',
+                        bg,
+                        fg)
+                );
+            }
         }
     }
 
@@ -177,35 +202,44 @@ public class ConsoleRenderer2D
         ConsoleColor bg = ConsoleColor.Black,
         ConsoleColor fg = ConsoleColor.White)
     {
-        for (int dy = 0; dy < height; dy++)
+        lock (_bufferLock)
         {
-            for (int dx = 0; dx < width; dx++)
+            for (int dy = 0; dy < height; dy++)
             {
-                Cell cell = _buffer[x+dx, y+dy];
-                cell.BackgroundColor = bg;
-                cell.ForegroundColor = fg;
-                cell.Character = character;
-                SetCell(x + dx, y + dy, cell);
+                for (int dx = 0; dx < width; dx++)
+                {
+                    if (IsValidCoordinate(x+dx, y+dy))
+                    {
+                        Cell cell = _buffer[x+dx, y+dy];
+                        cell.BackgroundColor = bg;
+                        cell.ForegroundColor = fg;
+                        cell.Character = character;
+                        SetCell(x + dx, y + dy, cell);   
+                    }
+                }
             }
         }
     }
 
     public void Render()
     {
-        Console.SetCursorPosition(0, 0);
-
-        for (int y = 0; y < _height; y++)
+        lock (_bufferLock)
         {
-            for (int x = 0; x < _width; x++)
-            {
-                Cell cell = _buffer[x, y];
-                
-                if (Console.ForegroundColor != cell.ForegroundColor)
-                    Console.ForegroundColor = cell.ForegroundColor;
-                if (Console.BackgroundColor != cell.BackgroundColor)
-                    Console.BackgroundColor = cell.BackgroundColor;
+            Console.SetCursorPosition(0, 0);
 
-                Console.Write(cell.Character);
+            for (int y = 0; y < _height; y++)
+            {
+                for (int x = 0; x < _width; x++)
+                {
+                    Cell cell = _buffer[x, y];
+
+                    if (Console.ForegroundColor != cell.ForegroundColor)
+                        Console.ForegroundColor = cell.ForegroundColor;
+                    if (Console.BackgroundColor != cell.BackgroundColor)
+                        Console.BackgroundColor = cell.BackgroundColor;
+
+                    Console.Write(cell.Character);
+                }
             }
         }
     }

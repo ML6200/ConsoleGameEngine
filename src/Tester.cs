@@ -60,6 +60,22 @@ class Tester
             BackgroundColor = ConsoleColor.DarkBlue,
             BorderColor = ConsoleColor.Cyan
         };
+        var text = new ConsoleLabel
+        {
+            Position = new Position2D(22, 12),
+            Text = "Sprite",
+            ForegroundColor = ConsoleColor.White,
+            BackgroundColor = ConsoleColor.DarkGray,
+            Visible = true
+        };
+        
+        var panel2 = new ConsolePanel
+        {
+            Position = new Position2D(20, 10),
+            Size = new Dimension2D(9, 5),
+            BackgroundColor = ConsoleColor.DarkGray,
+            BorderColor = ConsoleColor.Black
+        };
         
         var info = new ConsoleLabel
         {
@@ -76,6 +92,8 @@ class Tester
             ForegroundColor = ConsoleColor.Green,
             Visible = false
         };
+        panel2.AddChild(text);
+        panel.AddChild(panel2);
         
         _rootPanel.AddChild(title);
         _rootPanel.AddChild(panel);
@@ -90,7 +108,26 @@ class Tester
                 label.Visible = !label.Visible;
             } else if (e.Key == ConsoleKey.A)
             {
-                title.Visible = !title.Visible;
+                panel2.Visible = !panel2.Visible;
+            } else if (e.Key == ConsoleKey.RightArrow)
+            {
+                panel2.Position.X += 1;
+                text.Position.X += 1;
+                
+            } else if (e.Key == ConsoleKey.LeftArrow)
+            {
+                panel2.Position.X -= 1;
+                text.Position.X -= 1;
+            }
+            else if (e.Key == ConsoleKey.UpArrow)
+            {
+                panel2.Position.Y -= 1;
+                text.Position.Y -= 1;
+            }
+            else if (e.Key == ConsoleKey.DownArrow)
+            {
+                panel2.Position.Y += 1;
+                text.Position.Y += 1;
             }
         };
         
@@ -116,6 +153,9 @@ class Tester
             // Cap framerate (~60 FPS)
             Thread.Sleep(16);
         }
+        
+        renderManager.Dispose();
+        _rootPanel.Dispose();
         
         //renderManager.Dispose();
     }
