@@ -1,16 +1,14 @@
-using System;
+namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-namespace ConsoleGameEngine.Engine.Renderer;
-
-public class ConsoleLabel : ConsoleComponent
+public class ConsoleGraphicsLabel : ConsoleGraphicsComponent
 {
     public string Text { get; set; } = "";
 
-    public ConsoleLabel()
+    public ConsoleGraphicsLabel()
     {
     }
 
-    public ConsoleLabel(string text)
+    public ConsoleGraphicsLabel(string text)
     {
         Text = text;
     }
@@ -22,7 +20,7 @@ public class ConsoleLabel : ConsoleComponent
     {
         if (!Visible) return;
         
-        renderer.DrawText(Position.X, Position.Y, Text,
+        renderer.DrawText(AbsolutePosition.X, AbsolutePosition.Y, Text,
             BackgroundColor, ForegroundColor);
     }
 }

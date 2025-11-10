@@ -3,6 +3,7 @@ using System.Threading;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
+using ConsoleGameEngine.Engine.Renderer.Graphics;
 
 namespace ConsoleGameEngine;
 
@@ -40,54 +41,57 @@ class Tester
         ConsoleRenderer2D _renderer = new ConsoleRenderer2D(Console.WindowWidth, Console.WindowHeight);
         ConsoleRenderManager renderManager = new ConsoleRenderManager(_renderer);
         
-        ConsolePanel _rootPanel = new ConsolePanel 
+        ConsoleGraphicsPanel rootGraphicsPanel = new ConsoleGraphicsPanel 
         { 
-            Position = new Position2D(0, 0),
+            AbsolutePosition = new Position2D(0, 0),
             Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight),
             HasBorder = false
         };
-        var title = new ConsoleLabel
+        ConsoleWindowComponent consoleWindowComponent = new ConsoleWindowComponent(rootGraphicsPanel);
+        
+        
+        var title = new ConsoleGraphicsLabel
         {
-            Position = new Position2D(30, 2),
+            AbsolutePosition = new Position2D(30, 2),
             Text = "SIMPLE DOOM ENGINE",
             ForegroundColor = ConsoleColor.Red
         };
         
-        var panel = new ConsolePanel
+        var panel = new ConsoleGraphicsPanel
         {
-            Position = new Position2D(10, 5),
+            AbsolutePosition = new Position2D(10, 5),
             Size = new Dimension2D(60, 15),
             BackgroundColor = ConsoleColor.DarkBlue,
             BorderColor = ConsoleColor.Cyan
         };
-        var text = new ConsoleLabel
+        var text = new ConsoleGraphicsLabel
         {
-            Position = new Position2D(22, 12),
+            AbsolutePosition = new Position2D(22, 12),
             Text = "Sprite",
             ForegroundColor = ConsoleColor.White,
             BackgroundColor = ConsoleColor.DarkGray,
             Visible = true
         };
         
-        var panel2 = new ConsolePanel
+        var panel2 = new ConsoleGraphicsPanel
         {
-            Position = new Position2D(20, 10),
+            AbsolutePosition = new Position2D(20, 10),
             Size = new Dimension2D(9, 5),
             BackgroundColor = ConsoleColor.DarkGray,
             BorderColor = ConsoleColor.Black
         };
         
-        var info = new ConsoleLabel
+        var info = new ConsoleGraphicsLabel
         {
-            Position = new Position2D(12, 6),
+            AbsolutePosition = new Position2D(12, 6),
             Text = "Press Enter to exit",
             ForegroundColor = ConsoleColor.White
         };
         bool _isRunning = true;
 
-        var label = new ConsoleLabel
+        var label = new ConsoleGraphicsLabel
         {
-            Position = new Position2D(0, 0),
+            AbsolutePosition = new Position2D(0, 0),
             Text = "Hello World!",
             ForegroundColor = ConsoleColor.Green,
             Visible = false
@@ -95,8 +99,8 @@ class Tester
         panel2.AddChild(text);
         panel.AddChild(panel2);
         
-        _rootPanel.AddChild(title);
-        _rootPanel.AddChild(panel);
+        rootGraphicsPanel.AddChild(title);
+        rootGraphicsPanel.AddChild(panel);
         panel.AddChild(info);
         panel.AddChild(label);
         
@@ -111,23 +115,23 @@ class Tester
                 panel2.Visible = !panel2.Visible;
             } else if (e.Key == ConsoleKey.RightArrow)
             {
-                panel2.Position.X += 1;
-                text.Position.X += 1;
+                panel2.RelativePosition.X += 1;
+                text.RelativePosition.X += 1;
                 
             } else if (e.Key == ConsoleKey.LeftArrow)
             {
-                panel2.Position.X -= 1;
-                text.Position.X -= 1;
+                panel2.RelativePosition.X -= 1;
+                text.RelativePosition.X -= 1;
             }
             else if (e.Key == ConsoleKey.UpArrow)
             {
-                panel2.Position.Y -= 1;
-                text.Position.Y -= 1;
+                panel2.RelativePosition.Y -= 1;
+                text.RelativePosition.Y -= 1;
             }
             else if (e.Key == ConsoleKey.DownArrow)
             {
-                panel2.Position.Y += 1;
-                text.Position.Y += 1;
+                panel2.RelativePosition.Y += 1;
+                text.RelativePosition.Y += 1;
             }
         };
         
@@ -142,20 +146,22 @@ class Tester
             //lastTime = currentTime;
         
             // Update
-            _rootPanel.Update();
+            rootGraphicsPanel.Update();
         
             // Render
             _renderer.Clear();
-            _rootPanel.Render(_renderer);
-            //renderManager.RenderAll();
+            //rootGraphicsPanel.Render(_renderer);
+            renderManager.RenderAll();
             _renderer.Render();
+            
+            consoleWindowComponent.Render(_renderer);
         
             // Cap framerate (~60 FPS)
             Thread.Sleep(16);
         }
         
         renderManager.Dispose();
-        _rootPanel.Dispose();
+        rootGraphicsPanel.Dispose();
         
         //renderManager.Dispose();
     }

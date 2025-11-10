@@ -1,10 +1,6 @@
-using System;
-using ConsoleGameEngine.Engine.Renderer.Geometry;
+namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-
-namespace ConsoleGameEngine.Engine.Renderer;
-
-public class ConsolePanel : ConsoleComponent
+public class ConsoleGraphicsPanel : ConsoleGraphicsComponent
 {
     public bool HasBorder { get; set; } = true;
 
@@ -20,15 +16,13 @@ public class ConsolePanel : ConsoleComponent
     {
         if (!Visible) return;
 
-        renderer.FillRect(Position.X, Position.Y, Size.Width, Size.Height,
+        renderer.FillRect(AbsolutePosition.X, AbsolutePosition.Y, Size.Width, Size.Height,
             ' ', BackgroundColor, ConsoleColor.White);
         
         if (HasBorder)
         {
-            renderer.DrawBox(Position.X, Position.Y, Size.Width, Size.Height,
+            renderer.DrawBox(AbsolutePosition.X, AbsolutePosition.Y, Size.Width, Size.Height,
                 BackgroundColor, BorderColor);
         }
-        
-        base.Render(renderer);
     }
 }

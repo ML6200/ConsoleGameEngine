@@ -26,6 +26,16 @@ public class Position2D
         this.y = y;
     }
 
+    public static Position2D operator + (Position2D a, Position2D b)
+    {
+        return new Position2D(a.X + b.X, a.Y + b.Y);
+    }
+
+    public static Position2D operator -(Position2D left, Position2D right)
+    {
+        return new Position2D(left.X - right.X, left.Y - right.Y);
+    }
+
     // =============================METHODS==============================
     public Position2D Add(Position2D position)
     {
