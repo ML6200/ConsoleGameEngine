@@ -13,7 +13,7 @@ public class ConsoleRenderManager : IDisposable
     private ConsoleRenderer2D _renderer;
     private ConsoleWindowComponent _rootComponent;
 
-    public event EventHandler onWindowResized;
+    public event EventHandler OnWindowResized;
 
     public ConsoleRenderManager(ConsoleRenderer2D renderer, ConsoleWindowComponent rootComponent)
     {
@@ -91,8 +91,8 @@ public class ConsoleRenderManager : IDisposable
         {
             if (IsWindowResized())
             {
-                _renderer.setDimension(Console.WindowWidth, Console.WindowHeight);
-                onWindowResized?.Invoke(this, EventArgs.Empty);
+                _renderer.SetDimension(Console.WindowWidth, Console.WindowHeight);
+                OnWindowResized?.Invoke(this, EventArgs.Empty);
             }
             
             Thread.Sleep(100);

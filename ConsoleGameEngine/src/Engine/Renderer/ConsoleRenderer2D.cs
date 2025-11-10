@@ -54,7 +54,7 @@ public class ConsoleRenderer2D
         get => _height;
     }
 
-    public void setDimension(int width, int height)
+    public void SetDimension(int width, int height)
     {
         lock (_bufferLock)
         {
