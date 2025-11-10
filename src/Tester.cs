@@ -48,6 +48,7 @@ class Tester
             HasBorder = false
         };
         ConsoleWindowComponent consoleWindowComponent = new ConsoleWindowComponent(rootGraphicsPanel);
+        consoleWindowComponent.Visible = true;
         
         
         var title = new ConsoleGraphicsLabel
@@ -115,23 +116,23 @@ class Tester
                 panel2.Visible = !panel2.Visible;
             } else if (e.Key == ConsoleKey.RightArrow)
             {
-                panel2.RelativePosition.X += 1;
-                text.RelativePosition.X += 1;
+                panel2.AbsolutePosition.X += 1;
+                text.AbsolutePosition.X += 1;
                 
             } else if (e.Key == ConsoleKey.LeftArrow)
             {
-                panel2.RelativePosition.X -= 1;
-                text.RelativePosition.X -= 1;
+                panel2.AbsolutePosition.X -= 1;
+                text.AbsolutePosition.X -= 1;
             }
             else if (e.Key == ConsoleKey.UpArrow)
             {
-                panel2.RelativePosition.Y -= 1;
-                text.RelativePosition.Y -= 1;
+                panel2.AbsolutePosition.Y -= 1;
+                text.AbsolutePosition.Y -= 1;
             }
             else if (e.Key == ConsoleKey.DownArrow)
             {
-                panel2.RelativePosition.Y += 1;
-                text.RelativePosition.Y += 1;
+                panel2.AbsolutePosition.Y += 1;
+                text.AbsolutePosition.Y += 1;
             }
         };
         
@@ -141,28 +142,24 @@ class Tester
     
         while (_isRunning)
         {
-            //var currentTime = DateTime.Now;
-            //var deltaTime = (currentTime - lastTime).TotalSeconds;
-            //lastTime = currentTime;
-        
-            // Update
-            rootGraphicsPanel.Update();
-        
-            // Render
-            _renderer.Clear();
-            //rootGraphicsPanel.Render(_renderer);
-            renderManager.RenderAll();
-            _renderer.Render();
+            // var currentTime = DateTime.Now;
+            // var deltaTime = (currentTime - lastTime).TotalSeconds;
+            // lastTime = currentTime;
             
+            // rootGraphicsPanel.Update();
+            
+            // rootGraphicsPanel.Render(_renderer);
             consoleWindowComponent.Render(_renderer);
+            _renderer.Update();
+            // rootGraphicsPanel.Render(_renderer);
+            // renderManager.RenderAll();
+            // _renderer.Render();
         
             // Cap framerate (~60 FPS)
-            Thread.Sleep(16);
+            Thread.Sleep(10);
         }
         
         renderManager.Dispose();
         rootGraphicsPanel.Dispose();
-        
-        //renderManager.Dispose();
     }
 }

@@ -26,7 +26,7 @@ public class Position2D
         this.y = y;
     }
 
-    public static Position2D operator + (Position2D a, Position2D b)
+    public static Position2D operator +(Position2D a, Position2D b)
     {
         return new Position2D(a.X + b.X, a.Y + b.Y);
     }

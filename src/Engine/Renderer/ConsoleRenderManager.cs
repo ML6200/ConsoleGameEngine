@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 
 namespace ConsoleGameEngine.Engine.Renderer;
@@ -21,13 +22,9 @@ public class ConsoleRenderManager : IDisposable
         graphicsThread.Start();
         
         windowEventThread = new Thread(RenderLoop);
+        windowEventThread.Start();
     }
-
-    public void RenderAll()
-    {
-        _renderer.Render();
-    }
-
+    
     private void RenderLoop()
     {
         while (_isRunning)

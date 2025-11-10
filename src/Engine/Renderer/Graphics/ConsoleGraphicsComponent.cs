@@ -1,7 +1,6 @@
 using ConsoleGameEngine.Engine.Renderer.Geometry;
-using ConsoleGameEngine.Engine.Renderer.Graphics;
 
-namespace ConsoleGameEngine.Engine.Renderer;
+namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
 /*
  * Egyszerű fa nézet:
@@ -95,22 +94,21 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
     
     public Position2D AbsolutePosition
     {
-        get { return _absolutePosition; }
+        get { return _absolutePosition ?? new Position2D(0, 0); }
         init => _absolutePosition = value;
     }
 
     public Position2D RelativePosition
     {
-        get => _relativePosition;
+        get => _relativePosition ?? new Position2D(0, 0);
         set
         {
             _relativePosition = value;
             if (_absolutePosition != null)
             {
                 _absolutePosition += value;
-                _absolutePosition.Clamp(0, 0,
-                    WorldSize.Width,
-                    WorldSize.Height);
+                _absolutePosition.Clamp(0, WorldSize.Width,
+                    0, WorldSize.Height);
             }
         }
     }
@@ -133,10 +131,25 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
 
     
     
-    public virtual bool Visible { get; set; }
-    public Dimension2D WorldSize { get; }
+    public virtual bool Visible { get; set; } = true;
 
-    public abstract void Render(ConsoleRenderer2D renderer);
+    public Dimension2D WorldSize
+    {
+        get
+        {
+            return new Dimension2D(Console.WindowWidth, Console.WindowHeight);
+        }
+    }
+
+    public virtual void Render(ConsoleRenderer2D renderer)
+    {
+        if (!Visible) return;
+
+        foreach (var child in Children)
+        {
+            child.Render(renderer);
+        }
+    }
 
     public abstract void Update();
     
