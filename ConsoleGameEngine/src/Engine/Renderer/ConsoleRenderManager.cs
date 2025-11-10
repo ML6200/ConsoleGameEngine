@@ -1,0 +1,112 @@
+using System;
+using System.Threading;
+using ConsoleGameEngine.Engine.Renderer.Graphics;
+
+namespace ConsoleGameEngine.Engine.Renderer;
+
+public class ConsoleRenderManager : IDisposable
+{
+    private Thread windowEventThread;
+    private Thread graphicsThread;
+    private readonly object graphicsLock = new();
+    private CancellationTokenSource _cts;
+    private ConsoleRenderer2D _renderer;
+    private ConsoleWindowComponent _rootComponent;
+
+    public event EventHandler onWindowResized;
+
+    public ConsoleRenderManager(ConsoleRenderer2D renderer, ConsoleWindowComponent rootComponent)
+    {
+        _renderer = renderer;
+        _renderer.InitRenderer();
+        
+        _rootComponent = rootComponent;
+    }
+
+    public void Start()
+    {
+        if (graphicsThread != null && graphicsThread.IsAlive)
+        {
+            return;
+        }
+        
+        _cts = new CancellationTokenSource();
+        graphicsThread = new Thread(() => RenderLoop(_cts.Token))
+        {
+            Name = nameof(ConsoleRenderManager),
+            IsBackground = true,
+        };
+        
+        graphicsThread.Start();
+
+        windowEventThread = new Thread(() => WindowEventLoop(_cts.Token))
+        {
+            Name = nameof(WindowEventLoop),
+            IsBackground = true,
+        };
+        windowEventThread.Start();
+    }
+
+    private void Stop()
+    {
+        if (_cts != null)
+        {
+            _cts.Cancel();
+            graphicsThread.Join();
+            windowEventThread.Join();
+            _cts.Dispose();
+        }
+    }
+
+    public void SetRootComponent(ConsoleWindowComponent rootComponent)
+    {
+        lock (graphicsLock)
+        {
+            _rootComponent = rootComponent;
+        }
+    }
+    
+    private void RenderLoop(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested)
+        {
+            ConsoleWindowComponent root;
+            lock (graphicsLock)
+            {
+                root = _rootComponent;
+            }
+            
+            _renderer.Clear();
+            root?.Update();
+            root?.Render(_renderer);
+            _renderer.Render();
+            
+            Thread.Sleep(10);
+        }
+    }
+
+    private void WindowEventLoop(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested)
+        {
+            if (IsWindowResized())
+            {
+                _renderer.setDimension(Console.WindowWidth, Console.WindowHeight);
+                onWindowResized?.Invoke(this, EventArgs.Empty);
+            }
+            
+            Thread.Sleep(100);
+        }
+    }
+
+    private bool IsWindowResized()
+    {
+        return _renderer.Width != Console.WindowWidth 
+               || _renderer.Height != Console.WindowHeight;
+    }
+    
+    public void Dispose()
+    {
+        Stop();
+    }
+}
