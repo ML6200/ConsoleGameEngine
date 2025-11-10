@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using ConsoleGameEngine.Engine.Renderer.Graphics;
 
 namespace ConsoleGameEngine.Engine.Renderer;
 
@@ -7,35 +8,83 @@ public class ConsoleRenderManager : IDisposable
 {
     private Thread windowEventThread;
     private Thread graphicsThread;
+    private readonly object graphicsLock = new();
+    private CancellationTokenSource _cts;
     private ConsoleRenderer2D _renderer;
-    private bool _isRunning;
+    private ConsoleWindowComponent _rootComponent;
 
     public event EventHandler onWindowResized;
 
     public ConsoleRenderManager(ConsoleRenderer2D renderer)
     {
-        _isRunning = true;
         _renderer = renderer;
         _renderer.InitRenderer();
+    }
+
+    public void Start()
+    {
+        if (graphicsThread != null && graphicsThread.IsAlive)
+        {
+            return;
+        }
         
-        graphicsThread = new Thread(RenderLoop);
+        _cts = new CancellationTokenSource();
+        graphicsThread = new Thread(() => RenderLoop(_cts.Token))
+        {
+            Name = nameof(ConsoleRenderManager),
+            IsBackground = true,
+        };
+        
         graphicsThread.Start();
-        
-        windowEventThread = new Thread(WindowEventLoop);
+
+        windowEventThread = new Thread(() => WindowEventLoop(_cts.Token))
+        {
+            Name = nameof(WindowEventLoop),
+            IsBackground = true,
+        };
         windowEventThread.Start();
     }
-    
-    private void RenderLoop()
+
+    private void Stop()
     {
-        while (_isRunning)
+        if (_cts != null)
         {
-            _renderer.Update();
+            _cts.Cancel();
+            graphicsThread.Join();
+            windowEventThread.Join();
+            _cts.Dispose();
         }
     }
 
-    private void WindowEventLoop()
+    public void SetRootComponent(ConsoleWindowComponent rootComponent)
     {
-        while (_isRunning)
+        lock (graphicsLock)
+        {
+            _rootComponent = rootComponent;
+        }
+    }
+    
+    private void RenderLoop(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested)
+        {
+            ConsoleWindowComponent root;
+            lock (graphicsLock)
+            {
+                root = _rootComponent;
+            }
+            
+            root?.Update();
+            root?.Render(_renderer);
+            _renderer.Render();
+            
+            Thread.Sleep(10);
+        }
+    }
+
+    private void WindowEventLoop(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested)
         {
             if (IsWindowResized())
             {
@@ -53,8 +102,6 @@ public class ConsoleRenderManager : IDisposable
     
     public void Dispose()
     {
-        _isRunning = false;
-        windowEventThread.Interrupt();
-        graphicsThread.Interrupt();
+        Stop();
     }
 }

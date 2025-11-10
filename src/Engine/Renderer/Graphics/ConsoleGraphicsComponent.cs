@@ -96,14 +96,29 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
     
     public Position2D AbsolutePosition
     {
-        get { return _absolutePosition ?? new Position2D(0, 0); }
-        init => _absolutePosition = value;
+        get => _absolutePosition ?? new Position2D(0, 0);
+        //init => _absolutePosition = value;
+        set
+        {
+            _absolutePosition = value;
+            _absolutePosition.Clamp(0, Console.WindowWidth, 0, Console.WindowHeight);
+
+            if (Parent is ConsoleGraphicsComponent parent)
+            {
+                _relativePosition = value - parent.AbsolutePosition;
+            }
+        }
     }
 
     public Position2D RelativePosition
     {
         get => _relativePosition ?? new Position2D(0, 0);
-        set => _relativePosition = value;
+        set
+        {
+            _relativePosition = value;
+            //_absolutePosition = ComputeAbsolutePosition();
+            // _absolutePosition?.Clamp(0, Console.WindowWidth, 0, Console.WindowHeight);
+        }
     }
 
     public ConsoleColor BackgroundColor { get; set; }
@@ -143,14 +158,13 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
         }
     }
 
-    public Position2D ComputeAbsolutePosition()
+    public void UpdateChildrendPosition()
     {
-        if (Parent is ConsoleGraphicsComponent parent)
+        foreach (var child in Children)
         {
-            return parent.ComputeAbsolutePosition() + RelativePosition;
+            child._absolutePosition = _absolutePosition + child.RelativePosition;
+            child.UpdateChildrendPosition();
         }
-
-        return _absolutePosition;
     }
 
     public abstract void Update();
