@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
