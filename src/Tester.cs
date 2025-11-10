@@ -137,10 +137,6 @@ class Tester
         };
         
         renderManager.Start();
-        
-        var lastTime = DateTime.Now;
-        
-        //
     
         
         while (_isRunning)
