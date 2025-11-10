@@ -39,7 +39,6 @@ class Tester
         
         InputManager _inputManager = new InputManager();
         ConsoleRenderer2D _renderer = new ConsoleRenderer2D(Console.WindowWidth, Console.WindowHeight);
-        ConsoleRenderManager renderManager = new ConsoleRenderManager(_renderer);
         
         ConsoleGraphicsPanel rootGraphicsPanel = new ConsoleGraphicsPanel 
         { 
@@ -50,6 +49,7 @@ class Tester
         ConsoleWindowComponent consoleWindowComponent = new ConsoleWindowComponent(rootGraphicsPanel);
         consoleWindowComponent.Visible = true;
         
+        ConsoleRenderManager renderManager = new ConsoleRenderManager(_renderer, consoleWindowComponent);
         
         var title = new ConsoleGraphicsLabel
         {
@@ -136,10 +136,13 @@ class Tester
             }
         };
         
+        renderManager.Start();
+        
         var lastTime = DateTime.Now;
         
         //
     
+        
         while (_isRunning)
         {
             // var currentTime = DateTime.Now;
@@ -149,8 +152,8 @@ class Tester
             // rootGraphicsPanel.Update();
             
             // rootGraphicsPanel.Render(_renderer);
-            consoleWindowComponent.Render(_renderer);
-            _renderer.Update();
+            //consoleWindowComponent.Render(_renderer);
+            //_renderer.Update();
             // rootGraphicsPanel.Render(_renderer);
             // renderManager.RenderAll();
             // _renderer.Render();

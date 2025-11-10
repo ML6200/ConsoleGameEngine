@@ -15,10 +15,12 @@ public class ConsoleRenderManager : IDisposable
 
     public event EventHandler onWindowResized;
 
-    public ConsoleRenderManager(ConsoleRenderer2D renderer)
+    public ConsoleRenderManager(ConsoleRenderer2D renderer, ConsoleWindowComponent rootComponent)
     {
         _renderer = renderer;
         _renderer.InitRenderer();
+        
+        _rootComponent = rootComponent;
     }
 
     public void Start()
@@ -74,6 +76,7 @@ public class ConsoleRenderManager : IDisposable
                 root = _rootComponent;
             }
             
+            _renderer.Clear();
             root?.Update();
             root?.Render(_renderer);
             _renderer.Render();
@@ -91,6 +94,8 @@ public class ConsoleRenderManager : IDisposable
                 _renderer.setDimension(Console.WindowWidth, Console.WindowHeight);
                 onWindowResized?.Invoke(this, EventArgs.Empty);
             }
+            
+            Thread.Sleep(100);
         }
     }
 

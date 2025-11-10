@@ -34,6 +34,9 @@ public class ConsoleWindowComponent : IConsoleComponent
 
     public void Update()
     {
-        throw new NotImplementedException();
+        if (!Visible) return;
+        
+        foreach (var child in _consoleGraphicsComponent.Children)
+            child.Update();
     }
 }
