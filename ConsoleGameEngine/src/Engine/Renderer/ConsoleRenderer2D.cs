@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 /*
@@ -6,10 +7,10 @@ using ConsoleGameEngine.Engine.Renderer.Geometry;
  * Console:
  * +----------------------------+
  * | P                          | buffer[x, 0]
- * |      +----+                | buffer[x, 1]     
+ * |      +----+                | buffer[x, 1]
  * |      |TEXT|                |      .
  * |      +----+                |      .
- * |                            |      . 
+ * |                            |      .
  * |                            | buffer[x, 5]
  * +----------------------------+
  *  bb                         b
@@ -31,9 +32,9 @@ using ConsoleGameEngine.Engine.Renderer.Geometry;
  *        |TEXT|
  *        +----+    (x+width-1, y + height-1)
  * (x, y+height-1)
- * 
- * 
- * 
+ *
+ *
+ *
  */
 namespace ConsoleGameEngine.Engine.Renderer;
 
@@ -42,7 +43,7 @@ public class ConsoleRenderer2D
     private readonly object _bufferLock = new object();
     private int _width;
     private int _height;
-    
+
     public int Width
     {
         get => _width;
@@ -64,19 +65,20 @@ public class ConsoleRenderer2D
             Clear();
         }
     }
-    
+
     private Cell[,] _buffer;
-    
+    private bool[,] _dirtyMarks;
+
     public ConsoleRenderer2D(int width, int height)
     {
-        _width =  width;
+        _width = width;
         _height = height;
         InitRenderer();
     }
-    
+
     public ConsoleRenderer2D(Dimension2D dimension)
     {
-        _width =  dimension.Width;
+        _width = dimension.Width;
         _height = dimension.Height;
     }
 
@@ -84,8 +86,10 @@ public class ConsoleRenderer2D
     {
         Console.CursorVisible = false;
         Console.Clear();
-        
+
         _buffer = new Cell[_width, _height];
+        _dirtyMarks = new bool[_width, _height];
+
         Clear();
     }
 
@@ -96,8 +100,8 @@ public class ConsoleRenderer2D
     {
         return x >= 0 && x < _width && y >= 0 && y < _height;
     }
-    
-    public void Clear(ConsoleColor bgColor = ConsoleColor.Black, 
+
+    public void Clear(ConsoleColor bgColor = ConsoleColor.Black,
         ConsoleColor fgColor = ConsoleColor.White)
     {
         lock (_bufferLock)
@@ -118,13 +122,17 @@ public class ConsoleRenderer2D
         {
             if (IsValidCoordinate(x, y))
             {
-                _buffer[x, y] = cell;
+                if (!_buffer[x, y].Equals(cell))
+                {
+                    _buffer[x, y] = cell;
+                    _dirtyMarks[x, y] = true;
+                }
             }
         }
     }
 
-    public void DrawText(int x, int y, string text, 
-        ConsoleColor bgColor = ConsoleColor.Black, 
+    public void DrawText(int x, int y, string text,
+        ConsoleColor bgColor = ConsoleColor.Black,
         ConsoleColor fgColor = ConsoleColor.White)
     {
         lock (_bufferLock)
@@ -132,14 +140,14 @@ public class ConsoleRenderer2D
             for (int i = 0; i < text.Length; i++)
             {
                 SetCell(x + i, y, new Cell(text[i], bgColor, fgColor));
-            }   
+            }
         }
     }
 
     public void DrawBox(int x, int y, int width, int height,
         ConsoleColor bg = ConsoleColor.Black,
         ConsoleColor fg = ConsoleColor.White)
-        
+
     {
         lock (_bufferLock)
         {
@@ -196,8 +204,8 @@ public class ConsoleRenderer2D
         }
     }
 
-    public void FillRect(int x, int y, 
-        int width, 
+    public void FillRect(int x, int y,
+        int width,
         int height,
         char character = ' ',
         ConsoleColor bg = ConsoleColor.Black,
@@ -209,13 +217,13 @@ public class ConsoleRenderer2D
             {
                 for (int dx = 0; dx < width; dx++)
                 {
-                    if (IsValidCoordinate(x+dx, y+dy))
+                    if (IsValidCoordinate(x + dx, y + dy))
                     {
-                        Cell cell = _buffer[x+dx, y+dy];
+                        Cell cell = _buffer[x + dx, y + dy];
                         cell.BackgroundColor = bg;
                         cell.ForegroundColor = fg;
                         cell.Character = character;
-                        SetCell(x + dx, y + dy, cell);   
+                        SetCell(x + dx, y + dy, cell);
                     }
                 }
             }
@@ -226,6 +234,7 @@ public class ConsoleRenderer2D
     {
         lock (_bufferLock)
         {
+            var sb = new StringBuilder(_width * _height);
             Console.SetCursorPosition(0, 0);
 
             for (int y = 0; y < _height; y++)
@@ -233,15 +242,21 @@ public class ConsoleRenderer2D
                 for (int x = 0; x < _width; x++)
                 {
                     Cell cell = _buffer[x, y];
-
-                    if (Console.ForegroundColor != cell.ForegroundColor)
-                        Console.ForegroundColor = cell.ForegroundColor;
-                    if (Console.BackgroundColor != cell.BackgroundColor)
-                        Console.BackgroundColor = cell.BackgroundColor;
-
-                    Console.Write(cell.Character);
+                    if (_dirtyMarks[x, y])
+                    {
+                        sb.Append(GetAnsiColorCode(cell.ForegroundColor, cell.BackgroundColor));
+                        sb.Append(_buffer[x, y].Character);
+                        _dirtyMarks[x, y] = false;
+                    }
+                    else
+                    {
+                        sb.Append(GetAnsiColorCode(cell.ForegroundColor, cell.BackgroundColor));
+                        sb.Append(cell.Character);
+                    }
                 }
             }
+
+            Console.Write(sb.ToString());
         }
     }
 
@@ -251,7 +266,7 @@ public class ConsoleRenderer2D
         Render();
         Clear();
     }
-    
+
     private string GetAnsiColorCode(ConsoleColor fg, ConsoleColor bg)
     {
         // Convert ConsoleColor to ANSI escape codes
@@ -275,7 +290,7 @@ public class ConsoleRenderer2D
             ConsoleColor.White => 97,
             _ => 37
         };
-        
+
         int bgCode = bg switch
         {
             ConsoleColor.Black => 40,
@@ -296,7 +311,7 @@ public class ConsoleRenderer2D
             ConsoleColor.White => 107,
             _ => 40
         };
-        
+
         return $"\x1b[{fgCode};{bgCode}m";
     }
 }
