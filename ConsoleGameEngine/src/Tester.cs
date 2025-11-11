@@ -162,8 +162,8 @@ class Tester
         //renderManager.Dispose();
         rootGraphicsPanel.Dispose();
     }
-    
-    static void Main(string[] args)
+
+    public void EngineTest()
     {
         var engine = new ConsoleEngine();
         engine.Initialize();
@@ -175,6 +175,143 @@ class Tester
         {
             Thread.Sleep(100);
         }
+    }
+    
+    static void Main(string[] args)
+    {
+        var engine = new ConsoleEngine();
+        engine.Initialize();
+        engine.SetInitialScene(new SimpleScene());
+        engine.OnStart();
+
+        // Keep main thread alive while engine runs
+        while (engine.IsRunning)
+        {
+            Thread.Sleep(100);
+        }
+    }
+}
+
+class SimpleScene : IGameScene
+{
+    ConsoleEngine? _engine;
+    ConsoleGraphicsLabel? _titleLabel;
+    ConsoleGraphicsLabel? _instructionLabel;
+    ConsoleGraphicsPanel? _rootPanel;
+    ConsoleGraphicsPanel? panel;
+    private ConsoleGraphicsPanel? panel2;
+    public void Initialize(ConsoleEngine consoleEngine)
+    {
+        _engine = consoleEngine;
+        
+        var root = consoleEngine.GetRootPanel();
+        
+        var title = new ConsoleGraphicsLabel
+        {
+            RelativePosition = new Position2D(30, 2),
+            Text = "SIMPLE DOOM ENGINE",
+            ForegroundColor = ConsoleColor.Red
+        };
+        
+        panel = new ConsoleGraphicsPanel
+        {
+            RelativePosition = new Position2D(10, 5),
+            Size = new Dimension2D(60, 15),
+            BackgroundColor = ConsoleColor.DarkBlue,
+            BorderColor = ConsoleColor.Cyan
+        };
+        var text = new ConsoleGraphicsLabel
+        {
+            RelativePosition = new Position2D(0, 0),
+            Text = "Sprite",
+            ForegroundColor = ConsoleColor.White,
+            BackgroundColor = ConsoleColor.DarkGray,
+            Visible = true
+        };
+        
+        panel2 = new ConsoleGraphicsPanel
+        {
+            RelativePosition = new Position2D(20, 10),
+            Size = new Dimension2D(9, 5),
+            BackgroundColor = ConsoleColor.DarkGray,
+            BorderColor = ConsoleColor.Black
+        };
+        
+        var info = new ConsoleGraphicsLabel
+        {
+            RelativePosition = new Position2D(12, 6),
+            Text = "Press ESC to exit",
+            ForegroundColor = ConsoleColor.White
+        };
+        bool _isRunning = true;
+
+        var label = new ConsoleGraphicsLabel
+        {
+            RelativePosition = new Position2D(0, 0),
+            Text = "Hello World!",
+            ForegroundColor = ConsoleColor.Green,
+            Visible = false
+        };
+        panel2.AddChild(text);
+        panel.AddChild(panel2);
+        
+        root.AddChild(title);
+        root.AddChild(panel);
+        panel.AddChild(info);
+        panel.AddChild(label);
+        
+        consoleEngine.Input.OnEscapePressed += OnEscapePressed;
+        consoleEngine.Input.OnKeyPressed += OnKeyPressed;
+    }
+    
+
+    public void OnEnter()
+    {
+    }
+
+    public void OnUpdate(double deltaTime)
+    {
+        
+    }
+    
+    private void OnKeyPressed(object? sender, KeyEventArgs e)
+    {
+        // Move player
+        switch (e.Key)
+        {
+            case ConsoleKey.UpArrow:
+                panel2.RelativePosition.Y -= 1;
+                break;
+
+            case ConsoleKey.DownArrow:
+               panel2.RelativePosition.Y += 1;
+                break;
+            
+            case ConsoleKey.LeftArrow:
+                panel2.RelativePosition.X += -1;
+                break;
+            
+            case ConsoleKey.RightArrow:
+                panel2.RelativePosition.X += 1;
+                break;
+            case ConsoleKey.E:
+                panel2.Visible = !panel2.Visible;
+                break;
+        }
+    }
+
+
+    public void OnExit()
+    {
+        if (_engine != null)
+        {
+            _engine.Input.OnSpacePressed -= OnEscapePressed;
+        }
+    }
+    
+    private void OnEscapePressed(object? sender, EventArgs eventArgs)
+    {
+        _engine?.Stop();
     }
 }
 
