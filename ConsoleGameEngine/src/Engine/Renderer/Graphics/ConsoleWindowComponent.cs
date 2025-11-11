@@ -6,6 +6,8 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 public class ConsoleWindowComponent : IConsoleComponent
 {
     private ConsoleGraphicsComponent _consoleGraphicsComponent;
+    
+    public ConsoleGraphicsComponent ConsoleGraphicsComponent => _consoleGraphicsComponent;
     public Dimension2D WorldSize
     {
         get { return new Dimension2D(Console.WindowWidth, Console.WindowHeight); }
