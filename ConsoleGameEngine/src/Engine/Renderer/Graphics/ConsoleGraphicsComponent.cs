@@ -164,7 +164,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
     public virtual bool Visible { get; set; } = true;
 
 
-    protected ConsoleGraphicsComponent(int width, int height, 
+    public ConsoleGraphicsComponent(int width, int height, 
         Position2D? relativePosition, 
         ConsoleColor backgroundColor, 
         ConsoleColor foregroundColor, 
@@ -178,13 +178,19 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
         BorderColor = borderColor;
     }
     
-    protected ConsoleGraphicsComponent(int width, int height, 
+    public ConsoleGraphicsComponent(int width, int height, 
         Position2D? relativePosition)
     {
         _width = width;
         _height = height;
         _relativePosition = relativePosition;
     }
+
+    public ConsoleGraphicsComponent()
+    {
+        
+    }
+    
 
     public Dimension2D WorldSize
     {
