@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
@@ -33,10 +34,10 @@ class Tester
             Thread.Sleep(500);
         }
     }
-    
-    static void Main(string[] args)
+
+
+    static void UiTester()
     {
-        
         InputManager _inputManager = new InputManager();
         ConsoleRenderer2D _renderer = new ConsoleRenderer2D(Console.WindowWidth, Console.WindowHeight);
         
@@ -161,4 +162,307 @@ class Tester
         //renderManager.Dispose();
         rootGraphicsPanel.Dispose();
     }
+    
+    static void Main(string[] args)
+    {
+        var engine = new ConsoleEngine();
+        engine.Initialize();
+        engine.SetInitialScene(new GameScene());
+        engine.OnStart();
+
+        // Keep main thread alive while engine runs
+        while (engine.IsRunning)
+        {
+            Thread.Sleep(100);
+        }
+    }
 }
+
+
+ class MenuScene : IGameScene
+  {
+      private ConsoleEngine? _engine;
+      private ConsoleGraphicsLabel? _titleLabel;
+      private ConsoleGraphicsLabel? _instructionLabel;
+
+      public void Initialize(ConsoleEngine engine)
+      {
+          _engine = engine;
+
+          // Get root panel
+          var root = engine.GetRootPanel();
+
+          // Create title
+          _titleLabel = new ConsoleGraphicsLabel
+          {
+              RelativePosition = new Position2D(30, 5),
+              Text = "=== CONSOLE GAME ===",
+              ForegroundColor = ConsoleColor.Cyan
+          };
+
+          // Create instructions
+          _instructionLabel = new ConsoleGraphicsLabel
+          {
+              RelativePosition = new Position2D(25, 10),
+              Text = "Press SPACE to start | ESC to quit",
+              ForegroundColor = ConsoleColor.White
+          };
+
+          root.AddChild(_titleLabel);
+          root.AddChild(_instructionLabel);
+
+          // Subscribe to input
+          engine.Input.OnSpacePressed += OnSpacePressed;
+          engine.Input.OnEscapePressed += OnEscapePressed;
+      }
+
+      public void OnEnter()
+      {
+          // Scene activated
+      }
+
+      public void OnUpdate(double deltaTime)
+      {
+          // Could animate title here, e.g., blinking effect
+      }
+
+      public void OnExit()
+      {
+          // Cleanup
+          if (_engine != null)
+          {
+              _engine.Input.OnSpacePressed -= OnSpacePressed;
+              _engine.Input.OnEscapePressed -= OnEscapePressed;
+          }
+      }
+
+      private void OnSpacePressed(object? sender, EventArgs eventArgs)
+      {
+          // Start game
+          _engine?.LoadScene(new GameScene());
+      }
+
+      private void OnEscapePressed(object? sender, EventArgs eventArgs)
+      {
+          _engine?.Stop();
+      }
+  }
+
+  // ========================================
+  // Game Scene
+  // ========================================
+
+  class GameScene : IGameScene
+  {
+      private ConsoleEngine? _engine;
+      private ConsoleGraphicsLabel? _playerLabel;
+      private ConsoleGraphicsLabel? _scoreLabel;
+      private ConsoleGraphicsLabel? _enemyLabel;
+
+      private Position2D _playerPosition;
+      private Position2D _enemyPosition;
+      private int _score;
+      private double _enemySpeed = 5.0; // cells per second
+
+      public void Initialize(ConsoleEngine engine)
+      {
+          _engine = engine;
+          var root = engine.GetRootPanel();
+
+          // Initial positions
+          _playerPosition = new Position2D(10, 15);
+          _enemyPosition = new Position2D(70, 15);
+
+          // Create player
+          _playerLabel = new ConsoleGraphicsLabel
+          {
+              RelativePosition = _playerPosition,
+              Text = "@",
+              ForegroundColor = ConsoleColor.Green
+          };
+
+          // Create enemy
+          _enemyLabel = new ConsoleGraphicsLabel
+          {
+              RelativePosition = _enemyPosition,
+              Text = "X",
+              ForegroundColor = ConsoleColor.Red
+          };
+
+          // Create score display
+          _scoreLabel = new ConsoleGraphicsLabel
+          {
+              RelativePosition = new Position2D(2, 1),
+              Text = "Score: 0",
+              ForegroundColor = ConsoleColor.Yellow
+          };
+
+          // Create game area panel
+          var gamePanel = new ConsoleGraphicsPanel
+          {
+              RelativePosition = new Position2D(5, 5),
+              Size = new Dimension2D(70, 20),
+              HasBorder = true,
+              BorderColor = ConsoleColor.DarkGray
+          };
+
+          root.AddChild(gamePanel);
+          root.AddChild(_scoreLabel);
+          root.AddChild(_playerLabel);
+          root.AddChild(_enemyLabel);
+
+          // Subscribe to input
+          engine.Input.OnKeyPressed += OnKeyPressed;
+      }
+
+      public void OnEnter()
+      {
+          _score = 0;
+          UpdateScore();
+      }
+
+      public void OnUpdate(double deltaTime)
+      {
+          // Move enemy towards player
+          if (_enemyPosition.X > _playerPosition.X)
+          {
+              _enemyPosition = new Position2D(
+                  _enemyPosition.X - (int)(_enemySpeed * deltaTime),
+                  _enemyPosition.Y
+              );
+              _enemyLabel!.RelativePosition = _enemyPosition;
+          }
+
+          // Check collision
+          if (_enemyPosition.X <= _playerPosition.X)
+          {
+              // Game over!
+              _engine?.LoadScene(new GameOverScene(_score));
+          }
+      }
+
+      public void OnExit()
+      {
+          if (_engine != null)
+          {
+              _engine.Input.OnKeyPressed -= OnKeyPressed;
+          }
+      }
+
+      private void OnKeyPressed(object? sender, KeyEventArgs e)
+      {
+          // Move player
+          switch (e.Key)
+          {
+              case ConsoleKey.UpArrow:
+                  _playerPosition = new Position2D(_playerPosition.X, _playerPosition.Y - 1);
+                  _playerLabel!.RelativePosition = _playerPosition;
+                  break;
+
+              case ConsoleKey.DownArrow:
+                  _playerPosition = new Position2D(_playerPosition.X, _playerPosition.Y + 1);
+                  _playerLabel!.RelativePosition = _playerPosition;
+                  break;
+
+              case ConsoleKey.Spacebar:
+                  // Shoot! Reset enemy and gain points
+                  _enemyPosition = new Position2D(70, _playerPosition.Y);
+                  _enemyLabel!.RelativePosition = _enemyPosition;
+                  _score += 10;
+                  UpdateScore();
+                  break;
+
+              case ConsoleKey.Escape:
+                  _engine?.LoadScene(new MenuScene());
+                  break;
+          }
+      }
+
+      private void UpdateScore()
+      {
+          _scoreLabel!.Text = $"Score: {_score}";
+      }
+  }
+
+  // ========================================
+  // Game Over Scene
+  // ========================================
+
+  class GameOverScene : IGameScene
+  {
+      private readonly int _finalScore;
+      private ConsoleEngine? _engine;
+
+      public GameOverScene(int finalScore)
+      {
+          _finalScore = finalScore;
+      }
+
+      public void Initialize(ConsoleEngine engine)
+      {
+          _engine = engine;
+          var root = engine.GetRootPanel();
+
+          // Game over panel
+          var panel = new ConsoleGraphicsPanel
+          {
+              RelativePosition = new Position2D(30, 10),
+              Size = new Dimension2D(40, 10),
+              HasBorder = true,
+              BorderColor = ConsoleColor.Red,
+              BackgroundColor = ConsoleColor.DarkRed
+          };
+
+          var gameOverLabel = new ConsoleGraphicsLabel
+          {
+              RelativePosition = new Position2D(35, 12),
+              Text = "GAME OVER",
+              ForegroundColor = ConsoleColor.White
+          };
+
+          var scoreLabel = new ConsoleGraphicsLabel
+          {
+              RelativePosition = new Position2D(32, 14),
+              Text = $"Final Score: {_finalScore}",
+              ForegroundColor = ConsoleColor.Yellow
+          };
+
+          var restartLabel = new ConsoleGraphicsLabel
+          {
+              RelativePosition = new Position2D(28, 16),
+              Text = "Press R to restart | ESC to menu",
+              ForegroundColor = ConsoleColor.Gray
+          };
+
+          root.AddChild(panel);
+          root.AddChild(gameOverLabel);
+          root.AddChild(scoreLabel);
+          root.AddChild(restartLabel);
+
+          engine.Input.OnKeyPressed += OnKeyPressed;
+      }
+
+      public void OnEnter() { }
+
+      public void OnUpdate(double deltaTime) { }
+
+      public void OnExit()
+      {
+          if (_engine != null)
+          {
+              _engine.Input.OnKeyPressed -= OnKeyPressed;
+          }
+      }
+
+      private void OnKeyPressed(object? sender, KeyEventArgs e)
+      {
+          if (e.Key == ConsoleKey.R)
+          {
+              _engine?.LoadScene(new GameScene());
+          }
+          else if (e.Key == ConsoleKey.Escape)
+          {
+              _engine?.LoadScene(new MenuScene());
+          }
+      }
+  }
