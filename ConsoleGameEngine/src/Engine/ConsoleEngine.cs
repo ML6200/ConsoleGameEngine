@@ -133,7 +133,10 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
 
     public void Dispose()
     {
-        // TODO release managed resources here
+        Stop();
+        _cancellationTokenSource?.Dispose();
+        _renderManager.Dispose();
+        _inputManager.Dispose();
     }
     
     public void UpdateLoop()
