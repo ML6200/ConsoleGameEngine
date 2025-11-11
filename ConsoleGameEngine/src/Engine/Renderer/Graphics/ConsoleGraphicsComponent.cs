@@ -62,23 +62,13 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
  *  ConsoleGraphicsPanel panel1 = new ConsoleGraphicsPanel(3, 4, 20, 30);
  *  ConsoleGraphicsPanel panel2 = new ConsoleGraphicsPanel(3, 4, 20, 30);
  *
- * 
- *  Alapvetően nem tűnik logikusnak mindkettőt megadni,
- *  viszont van olyan helyzet amikor ugyan a panelhez tartozik a gomb,
- *  de a panelen kívül akarjuk elhelyezni.
- *
- *  Ez a megoldás meglehetősen kezdetleges, ezt a későbbiekben kiválthatjuk
- *  egy layout-manager bevezetésével ami automatikusan kezeli az elrendezést.
- *
- *                             
- *
- *
- * */
+ */
+
 public abstract class ConsoleGraphicsComponent : IConsoleComponent
 {
     private int _width;
     private int _height;
-    private Position2D? _absolutePosition;
+
     private Position2D? _relativePosition;
     
     public Dimension2D Size
@@ -93,31 +83,64 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
             _height = value.Height;
         }
     }
-    
+
+    /*
+     * A komponensek az újabb tervezetben csak a lokális(relatív) pozícíciót
+     * tárolják ezzel csökkentve a komplexitást. Az előző változatban mind a
+     * globális és a lokális pozíciót is követtük, mely eléggé logikátlan, mivel
+     * dupla számolást jelent. Ezzel ellentétben ha a fa mentén bejárjuk a gyerek nodeok
+     * felől és mindig az adott szülő a referencia pont ezzel megkaphatjuk az aktuális
+     * pozíciót a rendereléshez.
+     *
+     * PL:
+     *
+     * [Parent:root] 
+     *     -> lok(0, 0)
+     *     -> glob(0, 0)
+     *
+     * [Child1]
+     *  ->lok(1, 1)
+     *  ->glob=Parent.glob + (1, 1) => (1, 1)
+     * 
+     * [Child2]
+     *  ->lok(1, 1)
+     *  ->glob=Child1.glob + (1, 1) => (2, 2)
+     *
+     *
+     * !!!Megjegyzés+++
+     * Ezt a rekurzív megoldást később kiválthatjuk egy külön layout manager
+     * vagy Transform osztály bevezetésével.
+     * 
+     */
     public Position2D AbsolutePosition
     {
-        get => _absolutePosition ?? new Position2D(0, 0);
-        //init => _absolutePosition = value;
-        set
+        get
         {
-            _absolutePosition = value;
-            _absolutePosition.Clamp(0, Console.WindowWidth, 0, Console.WindowHeight);
-
             if (Parent is ConsoleGraphicsComponent parent)
             {
-                _relativePosition = value - parent.AbsolutePosition;
+                return parent.AbsolutePosition + _relativePosition;
             }
+            return _relativePosition;
         }
     }
 
+    public void SetAbsolutePosition(Position2D absolutePosition)
+    {
+        if (Parent is ConsoleGraphicsComponent parent)
+        {
+            _relativePosition = absolutePosition - parent.AbsolutePosition;
+        } else 
+        {
+            _relativePosition = absolutePosition;
+        }
+    }
+    
     public Position2D RelativePosition
     {
         get => _relativePosition ?? new Position2D(0, 0);
         set
         {
             _relativePosition = value;
-            //_absolutePosition = ComputeAbsolutePosition();
-            // _absolutePosition?.Clamp(0, Console.WindowWidth, 0, Console.WindowHeight);
         }
     }
 
@@ -128,7 +151,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
     
     public List<ConsoleGraphicsComponent> Children { get; } = new();
     
-    public IConsoleComponent Parent { get; set; }
+    private IConsoleComponent Parent { get; set; }
 
     public void AddChild(ConsoleGraphicsComponent child)
     {
@@ -139,6 +162,29 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
 
     
     public virtual bool Visible { get; set; } = true;
+
+
+    protected ConsoleGraphicsComponent(int width, int height, 
+        Position2D? relativePosition, 
+        ConsoleColor backgroundColor, 
+        ConsoleColor foregroundColor, 
+        ConsoleColor borderColor)
+    {
+        _width = width;
+        _height = height;
+        _relativePosition = relativePosition;
+        BackgroundColor = backgroundColor;
+        ForegroundColor = foregroundColor;
+        BorderColor = borderColor;
+    }
+    
+    protected ConsoleGraphicsComponent(int width, int height, 
+        Position2D? relativePosition)
+    {
+        _width = width;
+        _height = height;
+        _relativePosition = relativePosition;
+    }
 
     public Dimension2D WorldSize
     {
@@ -155,15 +201,6 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
         foreach (var child in Children)
         {
             child.Render(renderer);
-        }
-    }
-
-    public void UpdateChildrendPosition()
-    {
-        foreach (var child in Children)
-        {
-            child._absolutePosition = _absolutePosition + child.RelativePosition;
-            child.UpdateChildrendPosition();
         }
     }
 

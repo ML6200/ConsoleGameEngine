@@ -42,7 +42,7 @@ class Tester
         
         ConsoleGraphicsPanel rootGraphicsPanel = new ConsoleGraphicsPanel 
         { 
-            AbsolutePosition = new Position2D(0, 0),
+            RelativePosition = new Position2D(0, 0),
             Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight),
             HasBorder = false
         };
@@ -53,21 +53,21 @@ class Tester
         
         var title = new ConsoleGraphicsLabel
         {
-            AbsolutePosition = new Position2D(30, 2),
+            RelativePosition = new Position2D(30, 2),
             Text = "SIMPLE DOOM ENGINE",
             ForegroundColor = ConsoleColor.Red
         };
         
         var panel = new ConsoleGraphicsPanel
         {
-            AbsolutePosition = new Position2D(10, 5),
+            RelativePosition = new Position2D(10, 5),
             Size = new Dimension2D(60, 15),
             BackgroundColor = ConsoleColor.DarkBlue,
             BorderColor = ConsoleColor.Cyan
         };
         var text = new ConsoleGraphicsLabel
         {
-            AbsolutePosition = new Position2D(22, 12),
+            RelativePosition = new Position2D(0, 0),
             Text = "Sprite",
             ForegroundColor = ConsoleColor.White,
             BackgroundColor = ConsoleColor.DarkGray,
@@ -76,7 +76,7 @@ class Tester
         
         var panel2 = new ConsoleGraphicsPanel
         {
-            AbsolutePosition = new Position2D(20, 10),
+            RelativePosition = new Position2D(20, 10),
             Size = new Dimension2D(9, 5),
             BackgroundColor = ConsoleColor.DarkGray,
             BorderColor = ConsoleColor.Black
@@ -84,7 +84,7 @@ class Tester
         
         var info = new ConsoleGraphicsLabel
         {
-            AbsolutePosition = new Position2D(12, 6),
+            RelativePosition = new Position2D(12, 6),
             Text = "Press Enter to exit",
             ForegroundColor = ConsoleColor.White
         };
@@ -92,7 +92,7 @@ class Tester
 
         var label = new ConsoleGraphicsLabel
         {
-            AbsolutePosition = new Position2D(0, 0),
+            RelativePosition = new Position2D(0, 0),
             Text = "Hello World!",
             ForegroundColor = ConsoleColor.Green,
             Visible = false
@@ -116,23 +116,23 @@ class Tester
                 panel2.Visible = !panel2.Visible;
             } else if (e.Key == ConsoleKey.RightArrow)
             {
-                panel2.AbsolutePosition.X += 1;
-                text.AbsolutePosition.X += 1;
+                panel2.RelativePosition.X += 1;
+                //text.AbsolutePosition.X += 1;
                 
             } else if (e.Key == ConsoleKey.LeftArrow)
             {
-                panel2.AbsolutePosition.X -= 1;
-                text.AbsolutePosition.X -= 1;
+                panel2.RelativePosition.X -= 1;
+                //text.AbsolutePosition.X -= 1;
             }
             else if (e.Key == ConsoleKey.UpArrow)
             {
-                panel2.AbsolutePosition.Y -= 1;
-                text.AbsolutePosition.Y -= 1;
+                panel2.RelativePosition.Y -= 1;
+                //text.AbsolutePosition.Y -= 1;
             }
             else if (e.Key == ConsoleKey.DownArrow)
             {
-                panel2.AbsolutePosition.Y += 1;
-                text.AbsolutePosition.Y += 1;
+                panel2.RelativePosition.Y += 1;
+                //text.AbsolutePosition.Y += 1;
             }
         };
         
