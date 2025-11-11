@@ -167,7 +167,7 @@ class Tester
     {
         var engine = new ConsoleEngine();
         engine.Initialize();
-        engine.SetInitialScene(new GameScene());
+        engine.SetInitialScene(new GameOverScene(100));
         engine.OnStart();
 
         // Keep main thread alive while engine runs
@@ -406,38 +406,42 @@ class Tester
           // Game over panel
           var panel = new ConsoleGraphicsPanel
           {
-              RelativePosition = new Position2D(30, 10),
+              RelativePosition = new Position2D(20, 10),
               Size = new Dimension2D(40, 10),
               HasBorder = true,
               BorderColor = ConsoleColor.Red,
               BackgroundColor = ConsoleColor.DarkRed
           };
+          
+          int w = panel.Size.Width;
+          int h = panel.Size.Height;
 
           var gameOverLabel = new ConsoleGraphicsLabel
           {
-              RelativePosition = new Position2D(35, 12),
+              RelativePosition = new Position2D(w/2-5, h/2 -5),
               Text = "GAME OVER",
               ForegroundColor = ConsoleColor.White
           };
 
           var scoreLabel = new ConsoleGraphicsLabel
           {
-              RelativePosition = new Position2D(32, 14),
+              RelativePosition = new Position2D(3, h/2 -3),
               Text = $"Final Score: {_finalScore}",
               ForegroundColor = ConsoleColor.Yellow
           };
 
-          var restartLabel = new ConsoleGraphicsLabel
+          var restartLabel = new ConsoleGraphicsLabel   
           {
-              RelativePosition = new Position2D(28, 16),
+              RelativePosition = new Position2D(3, h/2),
               Text = "Press R to restart | ESC to menu",
               ForegroundColor = ConsoleColor.Gray
           };
+          
+          panel.AddChild(gameOverLabel);
+          panel.AddChild(scoreLabel);
+          panel.AddChild(restartLabel);
 
           root.AddChild(panel);
-          root.AddChild(gameOverLabel);
-          root.AddChild(scoreLabel);
-          root.AddChild(restartLabel);
 
           engine.Input.OnKeyPressed += OnKeyPressed;
       }

@@ -66,8 +66,8 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
 public abstract class ConsoleGraphicsComponent : IConsoleComponent
 {
-    private int _width;
-    private int _height;
+    protected int Width;
+    protected int Height;
 
     private Position2D? _relativePosition;
     
@@ -75,12 +75,12 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
     {
         get
         {
-            return new Dimension2D(_width, _height);
+            return new Dimension2D(Width, Height);
         }
         set
         {
-            _width = value.Width;
-            _height = value.Height;
+            Width = value.Width;
+            Height = value.Height;
         }
     }
 
@@ -170,8 +170,8 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
         ConsoleColor foregroundColor, 
         ConsoleColor borderColor)
     {
-        _width = width;
-        _height = height;
+        Width = width;
+        Height = height;
         _relativePosition = relativePosition;
         BackgroundColor = backgroundColor;
         ForegroundColor = foregroundColor;
@@ -181,8 +181,8 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
     public ConsoleGraphicsComponent(int width, int height, 
         Position2D? relativePosition)
     {
-        _width = width;
-        _height = height;
+        Width = width;
+        Height = height;
         _relativePosition = relativePosition;
     }
 

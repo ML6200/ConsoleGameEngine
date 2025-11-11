@@ -1,3 +1,6 @@
+using System.Dynamic;
+using ConsoleGameEngine.Engine.Renderer.Geometry;
+
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
 public class ConsoleGraphicsLabel : ConsoleGraphicsComponent
@@ -11,6 +14,8 @@ public class ConsoleGraphicsLabel : ConsoleGraphicsComponent
     public ConsoleGraphicsLabel(string text)
     {
         Text = text;
+        Width = text.Length;
+        Height = 1;
     }
 
     public override void Update()
