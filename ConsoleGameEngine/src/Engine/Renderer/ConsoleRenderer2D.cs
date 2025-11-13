@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 
@@ -43,6 +44,9 @@ public class ConsoleRenderer2D
     private readonly object _bufferLock = new object();
     private int _width;
     private int _height;
+    
+    private Cell[,] _buffer;
+    private bool[,] _dirtyMarks;
 
     public int Width
     {
@@ -62,12 +66,10 @@ public class ConsoleRenderer2D
             _width = width;
             _height = height;
             _buffer = new Cell[_width, _height];
+            _dirtyMarks = new bool[_width, _height];
             Clear();
         }
     }
-
-    private Cell[,] _buffer;
-    private bool[,] _dirtyMarks;
 
     public ConsoleRenderer2D(int width, int height)
     {
@@ -229,12 +231,12 @@ public class ConsoleRenderer2D
             }
         }
     }
-
+    
     public void Render()
     {
         lock (_bufferLock)
         {
-            var sb = new StringBuilder(_width * _height);
+            StringBuilder sb = new StringBuilder(_width * _height);
             Console.SetCursorPosition(0, 0);
 
             for (int y = 0; y < _height; y++)

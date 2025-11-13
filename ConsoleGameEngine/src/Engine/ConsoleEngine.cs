@@ -143,7 +143,13 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     {
         if (!_isInitialized)
         {
-            throw new InvalidOperationException("Engine must be initialized before disposing");
+            throw new InvalidOperationException("Engine must be initialized before starting update loop");
+        }
+
+        _lastUpdateTime = DateTime.Now;
+        while (_isRunning && !_cancellationTokenSource!.Token.IsCancellationRequested)
+        {
+            OnUpdate();
         }
     }
     

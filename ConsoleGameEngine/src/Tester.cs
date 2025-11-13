@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.AccessControl;
 using System.Threading;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
@@ -163,11 +164,11 @@ class Tester
         rootGraphicsPanel.Dispose();
     }
 
-    public void EngineTest()
+    static void EngineTest()
     {
         var engine = new ConsoleEngine();
         engine.Initialize();
-        engine.SetInitialScene(new GameOverScene(100));
+        engine.SetInitialScene(new GameScene());
         engine.OnStart();
 
         // Keep main thread alive while engine runs
@@ -176,8 +177,8 @@ class Tester
             Thread.Sleep(100);
         }
     }
-    
-    static void Main(string[] args)
+
+    static void UiEngineTest()
     {
         var engine = new ConsoleEngine();
         engine.Initialize();
@@ -190,6 +191,11 @@ class Tester
             Thread.Sleep(100);
         }
     }
+    
+    static void Main(string[] args)
+    {
+       UiEngineTest();
+    }
 }
 
 class SimpleScene : IGameScene
@@ -198,8 +204,10 @@ class SimpleScene : IGameScene
     ConsoleGraphicsLabel? _titleLabel;
     ConsoleGraphicsLabel? _instructionLabel;
     ConsoleGraphicsPanel? _rootPanel;
-    ConsoleGraphicsPanel? panel;
-    private ConsoleGraphicsPanel? panel2;
+    ConsoleGraphicsPanel? panel, spritePanel2;
+    private ConsoleGraphicsPanel? spritePanel;
+
+    private int _spriteX = 0;
     public void Initialize(ConsoleEngine consoleEngine)
     {
         _engine = consoleEngine;
@@ -228,10 +236,27 @@ class SimpleScene : IGameScene
             BackgroundColor = ConsoleColor.DarkGray,
             Visible = true
         };
-        
-        panel2 = new ConsoleGraphicsPanel
+
+        spritePanel = new ConsoleGraphicsPanel
         {
             RelativePosition = new Position2D(20, 10),
+            Size = new Dimension2D(9, 5),
+            BackgroundColor = ConsoleColor.DarkGray,
+            BorderColor = ConsoleColor.Black
+        };
+
+        var text2 = new ConsoleGraphicsLabel
+        {
+            RelativePosition = new Position2D(0, 0),
+            Text = "Sprite",
+            ForegroundColor = ConsoleColor.White,
+            BackgroundColor = ConsoleColor.DarkGray,
+            Visible = true
+        };
+
+        spritePanel2 = new ConsoleGraphicsPanel
+        {
+            RelativePosition = new Position2D(5, 10),
             Size = new Dimension2D(9, 5),
             BackgroundColor = ConsoleColor.DarkGray,
             BorderColor = ConsoleColor.Black
@@ -252,8 +277,10 @@ class SimpleScene : IGameScene
             ForegroundColor = ConsoleColor.Green,
             Visible = false
         };
-        panel2.AddChild(text);
-        panel.AddChild(panel2);
+        spritePanel.AddChild(text);
+        panel.AddChild(spritePanel);
+
+        root.AddChild(spritePanel2);
         
         root.AddChild(title);
         root.AddChild(panel);
@@ -271,7 +298,7 @@ class SimpleScene : IGameScene
 
     public void OnUpdate(double deltaTime)
     {
-        
+        spritePanel2.RelativePosition.X += 1;
     }
     
     private void OnKeyPressed(object? sender, KeyEventArgs e)
@@ -280,22 +307,22 @@ class SimpleScene : IGameScene
         switch (e.Key)
         {
             case ConsoleKey.UpArrow:
-                panel2.RelativePosition.Y -= 1;
+                spritePanel.RelativePosition.Y -= 1;
                 break;
 
             case ConsoleKey.DownArrow:
-               panel2.RelativePosition.Y += 1;
+               spritePanel.RelativePosition.Y += 1;
                 break;
             
             case ConsoleKey.LeftArrow:
-                panel2.RelativePosition.X += -1;
+                spritePanel.RelativePosition.X += -1;
                 break;
             
             case ConsoleKey.RightArrow:
-                panel2.RelativePosition.X += 1;
+                spritePanel.RelativePosition.X += 1;
                 break;
             case ConsoleKey.E:
-                panel2.Visible = !panel2.Visible;
+                spritePanel.Visible = !spritePanel.Visible;
                 break;
         }
     }
