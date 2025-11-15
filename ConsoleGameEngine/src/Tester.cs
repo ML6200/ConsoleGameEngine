@@ -277,15 +277,16 @@ class SimpleScene : IGameScene
             ForegroundColor = ConsoleColor.Green,
             Visible = false
         };
-        spritePanel.AddChild(text);
-        panel.AddChild(spritePanel);
-
-        root.AddChild(spritePanel2);
         
         root.AddChild(title);
         root.AddChild(panel);
         panel.AddChild(info);
         panel.AddChild(label);
+        
+        spritePanel.AddChild(text);
+        panel.AddChild(spritePanel);
+        
+        root.AddChild(spritePanel2);
         
         consoleEngine.Input.OnEscapePressed += OnEscapePressed;
         consoleEngine.Input.OnKeyPressed += OnKeyPressed;
