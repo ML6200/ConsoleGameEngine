@@ -16,23 +16,26 @@ public class InputManager: IDisposable
     private Thread inputThread;
     private bool isRunning;
 
+    private CancellationTokenSource _cts;
+
     private Dictionary<ConsoleKey, bool> keyStates = new Dictionary<ConsoleKey, bool>();
 
     public InputManager()
     {
-        isRunning = true;
+        _cts = new CancellationTokenSource();
         
-        inputThread = new Thread(InputLoop)
+        inputThread = new Thread(()=> InputLoop(_cts.Token))
         {
+            Name = "Input Loop",
             IsBackground = true
         };
         
         inputThread.Start();
     }
 
-    private void InputLoop()
+    private void InputLoop(CancellationToken ctxToken)
     {
-        while (isRunning)
+        while (!ctxToken.IsCancellationRequested)
         {
             if (Console.KeyAvailable)
             {
@@ -70,11 +73,6 @@ public class InputManager: IDisposable
         }
     }
 
-    public void HandleKeyReleased(ConsoleKeyInfo keyInfo)
-    {
-        throw new NotImplementedException();
-    }
-
     public bool IsKeyDown(ConsoleKey key)
     {
         return keyStates.ContainsKey(key) && keyStates[key];    
@@ -82,7 +80,11 @@ public class InputManager: IDisposable
     
     public void Dispose()
     {
-        isRunning = false;
-        inputThread.Join(1000);
+        if (_cts != null)
+        {
+            _cts.Cancel();
+            inputThread.Join();
+            _cts.Dispose();
+        }
     }
 }
