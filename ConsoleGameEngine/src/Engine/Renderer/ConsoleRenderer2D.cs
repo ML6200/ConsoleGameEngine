@@ -145,6 +145,50 @@ public class ConsoleRenderer2D
             }
         }
     }
+    
+    /*           #
+     *          # #
+     *         #   #
+     *        ######
+     *
+     *
+     *         *   
+     *        ***
+     *       *****
+     *      *******
+     *
+     *
+     *        WIDTH    H
+     *      +-------+  E
+     *      |   *   |  I
+     *      |  ***  |  G
+     *      | ***** |  H
+     *      +-------+  T
+     *
+     * WIDTH=5
+     * HEIGHT=3
+     * 
+     *
+     */
+    public void DrawTriangle(int x, int y,
+        int height,
+        Cell cell)
+    {
+        lock (_bufferLock)
+        {
+            for (int dy = 1; dy <= height; dy++)
+            {
+                for (int i = 1; i <= dy; i++)
+                {
+                    _buffer[x, y + i] = new Cell(
+                        RenderSpecCharacters.Empty,
+                        cell.BackgroundColor,
+                        cell.ForegroundColor
+                    );
+                }
+            }
+        }
+    }
 
     public void DrawBox(int x, int y, int width, int height,
         ConsoleColor bg = ConsoleColor.Black,
