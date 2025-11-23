@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ConsoleGameEngine.Engine.Renderer.Geometry;
 
-public struct Cell
+public struct Cell : IEquatable<Cell>
 {
     public char Character {get; set;}
     public ConsoleColor BackgroundColor 
@@ -36,8 +36,19 @@ public struct Cell
                    ForegroundColor == other.ForegroundColor &&
                    BackgroundColor == other.BackgroundColor;
         }
-
         
         return base.Equals(obj);
+    }
+
+    public bool Equals(Cell other)
+    {
+        return Character == other.Character 
+               && BackgroundColor == other.BackgroundColor 
+               && ForegroundColor == other.ForegroundColor;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Character, (int)BackgroundColor, (int)ForegroundColor);
     }
 }

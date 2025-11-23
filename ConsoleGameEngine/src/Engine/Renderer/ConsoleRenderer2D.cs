@@ -112,7 +112,7 @@ public class ConsoleRenderer2D
             {
                 for (int j = 0; j < _width; j++)
                 {
-                    _buffer[j, i] = new Cell(' ', bgColor, fgColor);
+                    _buffer[j, i] = new Cell(RenderSpecCharacters.Empty, bgColor, fgColor);
                 }
             }
         }
@@ -155,7 +155,7 @@ public class ConsoleRenderer2D
         {
             SetCell(x, y, 
                 new Cell(
-                    RenderCharacterInfo.TopLeftCorner,
+                    RenderSpecCharacters.TopLeftCorner,
                     bg,
                     fg
                 )
@@ -163,7 +163,7 @@ public class ConsoleRenderer2D
 
             SetCell(x + width - 1, y, 
                 new Cell(
-                    RenderCharacterInfo.TopRightCorner,
+                    RenderSpecCharacters.TopRightCorner,
                     bg,
                     fg
                 )
@@ -171,7 +171,7 @@ public class ConsoleRenderer2D
 
             SetCell(x, y + height - 1, 
                 new Cell(
-                    RenderCharacterInfo.BottomLeftCorner,
+                    RenderSpecCharacters.BottomLeftCorner,
                     bg,
                     fg
                 )
@@ -179,7 +179,7 @@ public class ConsoleRenderer2D
 
             SetCell(x + width - 1, y + height - 1,
                 new Cell(
-                    RenderCharacterInfo.BottomRightCorner,
+                    RenderSpecCharacters.BottomRightCorner,
                     bg,
                     fg
                 )
@@ -189,7 +189,7 @@ public class ConsoleRenderer2D
             {
                 SetCell(x + xIndex, y,
                     new Cell(
-                        RenderCharacterInfo.HorizontalLine, 
+                        RenderSpecCharacters.HorizontalLine, 
                         bg, 
                         fg
                     )
@@ -197,7 +197,7 @@ public class ConsoleRenderer2D
 
                 SetCell(x + xIndex, y + height - 1,
                     new Cell(
-                        RenderCharacterInfo.HorizontalLine,
+                        RenderSpecCharacters.HorizontalLine,
                         bg,
                         fg
                     )
@@ -208,14 +208,14 @@ public class ConsoleRenderer2D
             {
                 SetCell(x, y + yIndex,
                     new Cell(
-                        RenderCharacterInfo.VerticalLine,
+                        RenderSpecCharacters.VerticalLine,
                         bg,
                         fg
                     )
                 );
                 SetCell(x + width - 1, y + yIndex,
                     new Cell(
-                        RenderCharacterInfo.VerticalLine,
+                        RenderSpecCharacters.VerticalLine,
                         bg,
                         fg
                     )
@@ -227,7 +227,7 @@ public class ConsoleRenderer2D
     public void FillRect(int x, int y,
         int width,
         int height,
-        char character = ' ',
+        char character = RenderSpecCharacters.Empty,
         ConsoleColor bg = ConsoleColor.Black,
         ConsoleColor fg = ConsoleColor.White)
     {
@@ -337,7 +337,7 @@ public class ConsoleRenderer2D
         return $"\x1b[{fgCode};{bgCode}m";
     }
 
-    public static class RenderCharacterInfo
+    private static class RenderSpecCharacters
     {
         /*
          * SOURCE: https://ss64.com/ascii.html
@@ -349,5 +349,6 @@ public class ConsoleRenderer2D
         
         public const char VerticalLine = (char) 0x2502;
         public const char HorizontalLine = (char) 0x2500;
+        public const char Empty = ' ';
     }
 }
