@@ -153,54 +153,72 @@ public class ConsoleRenderer2D
     {
         lock (_bufferLock)
         {
-            SetCell(x, y, new Cell('┌',
-                bg,
-                fg)
+            SetCell(x, y, 
+                new Cell(
+                    RenderCharacterInfo.TopLeftCorner,
+                    bg,
+                    fg
+                )
             ); // top left corner
 
-            SetCell(x + width - 1, y, new Cell('┐',
-                bg,
-                fg)
+            SetCell(x + width - 1, y, 
+                new Cell(
+                    RenderCharacterInfo.TopRightCorner,
+                    bg,
+                    fg
+                )
             ); // top right corner
 
-            SetCell(x, y + height - 1,
-                new Cell('└',
+            SetCell(x, y + height - 1, 
+                new Cell(
+                    RenderCharacterInfo.BottomLeftCorner,
                     bg,
-                    fg)
+                    fg
+                )
             ); // bottom left corner
 
             SetCell(x + width - 1, y + height - 1,
-                new Cell('┘',
+                new Cell(
+                    RenderCharacterInfo.BottomRightCorner,
                     bg,
-                    fg)
+                    fg
+                )
             ); // bottom right corner
 
             for (int xIndex = 1; xIndex < width - 1; xIndex++)
             {
                 SetCell(x + xIndex, y,
-                    new Cell('─',
-                        bg,
-                        fg)
+                    new Cell(
+                        RenderCharacterInfo.HorizontalLine, 
+                        bg, 
+                        fg
+                    )
                 );
 
                 SetCell(x + xIndex, y + height - 1,
-                    new Cell('─',
+                    new Cell(
+                        RenderCharacterInfo.HorizontalLine,
                         bg,
-                        fg)
+                        fg
+                    )
                 );
             }
 
             for (int yIndex = 1; yIndex < height - 1; yIndex++)
             {
                 SetCell(x, y + yIndex,
-                    new Cell('│',
+                    new Cell(
+                        RenderCharacterInfo.VerticalLine,
                         bg,
-                        fg)
+                        fg
+                    )
                 );
                 SetCell(x + width - 1, y + yIndex,
-                    new Cell('│',
+                    new Cell(
+                        RenderCharacterInfo.VerticalLine,
                         bg,
-                        fg)
+                        fg
+                    )
                 );
             }
         }
@@ -246,13 +264,15 @@ public class ConsoleRenderer2D
                     Cell cell = _buffer[x, y];
                     if (_dirtyMarks[x, y])
                     {
-                        sb.Append(GetAnsiColorCode(cell.ForegroundColor, cell.BackgroundColor));
+                        sb.Append(GetAnsiColorCode(cell.ForegroundColor, 
+                            cell.BackgroundColor));
                         sb.Append(_buffer[x, y].Character);
                         _dirtyMarks[x, y] = false;
                     }
                     else
                     {
-                        sb.Append(GetAnsiColorCode(cell.ForegroundColor, cell.BackgroundColor));
+                        sb.Append(GetAnsiColorCode(cell.ForegroundColor, 
+                            cell.BackgroundColor));
                         sb.Append(cell.Character);
                     }
                 }
@@ -315,5 +335,19 @@ public class ConsoleRenderer2D
         };
 
         return $"\x1b[{fgCode};{bgCode}m";
+    }
+
+    public static class RenderCharacterInfo
+    {
+        /*
+         * SOURCE: https://ss64.com/ascii.html
+         */
+        public const char TopLeftCorner = (char) 0x250C;
+        public const char TopRightCorner = (char) 0x2510;
+        public const char BottomLeftCorner = (char) 0x2514;
+        public const char BottomRightCorner = (char) 0x2518;
+        
+        public const char VerticalLine = (char) 0x2502;
+        public const char HorizontalLine = (char) 0x2500;
     }
 }

@@ -90,6 +90,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
             IsBackground = true,
             Name = nameof(ConsoleEngine)
         };
+        _updateThread.Start();
 
         if (_currentScene != null)
         {

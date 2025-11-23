@@ -42,7 +42,7 @@ public class InputManager: IDisposable
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 HandleKeyPressed(keyInfo);
             }
-            Thread.Sleep(10); // Delay to prevent cpu spinning
+            Thread.Sleep(5); // Delay to prevent cpu spinning
         }
     }
 
