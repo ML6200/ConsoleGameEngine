@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Security.AccessControl;
 using System.Threading;
 using ConsoleGameEngine.Engine;
@@ -7,10 +8,15 @@ using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 
-namespace ConsoleGameEngine;
+namespace ConsoleGameEngine.Demo;
 
-class Tester
+class Program
 {
+    static void Main(string[] args)
+    {
+        UiEngineTest();
+    }
+    
     static void RenderTester()
     {
         var renderer = new ConsoleRenderer2D(Console.WindowWidth, Console.WindowHeight);
@@ -192,10 +198,6 @@ class Tester
         }
     }
     
-    static void Main(string[] args)
-    {
-       UiEngineTest();
-    }
 }
 
 class SimpleScene : IGameScene
