@@ -172,7 +172,7 @@ public class ConsoleRenderer2D
      */
     public void DrawTriangle(int x, int y,
         int height,
-        Cell cell)
+        Cell cell = default)
     {
         lock (_bufferLock)
         {

@@ -5,7 +5,7 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
 public class ConsoleWindowComponent : IConsoleComponent
 {
-    private ConsoleGraphicsComponent _consoleGraphicsComponent;
+    private readonly ConsoleGraphicsComponent _consoleGraphicsComponent;
     
     public ConsoleGraphicsComponent ConsoleGraphicsComponent => _consoleGraphicsComponent;
     public Dimension2D WorldSize

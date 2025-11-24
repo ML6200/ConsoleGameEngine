@@ -72,17 +72,23 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     {
         if (!_isInitialized)
         {
-            throw new InvalidOperationException("Engine must be initialized before starting");
+            throw 
+                new InvalidOperationException(
+                    "Engine must be initialized " +
+                    "before starting"
+                );
         }
 
         if (_isRunning)
         {
-            throw new InvalidOperationException("Engine is already running");
+            throw 
+                new InvalidOperationException(
+                    "Engine is already running"
+                );
         }
         
         _isRunning = true;
         _cancellationTokenSource = new CancellationTokenSource();
-        
         _renderManager.Start();
 
         _updateThread = new Thread(UpdateLoop)
@@ -144,11 +150,16 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     {
         if (!_isInitialized)
         {
-            throw new InvalidOperationException("Engine must be initialized before starting update loop");
+            throw 
+                new InvalidOperationException(
+                    "Engine must be initialized " +
+                    "before starting update loop"
+                );
         }
 
         _lastUpdateTime = DateTime.Now;
-        while (_isRunning && !_cancellationTokenSource!.Token.IsCancellationRequested)
+        while (_isRunning 
+               && !_cancellationTokenSource!.Token.IsCancellationRequested)
         {
             OnUpdate();
         }
@@ -163,7 +174,11 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     {
         if (_isRunning)
         {
-            throw new InvalidOperationException("Cannot set initial scene while engine is running. Use LoadScene instead.");
+            throw 
+                new InvalidOperationException(
+                    "Cannot set initial scene while " +
+                    "engine is running. Use LoadScene instead."
+                );
         }
 
         _currentScene = scene;
@@ -178,7 +193,6 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         }
 
         _isRunning = false;
-
         _cancellationTokenSource?.Cancel();
 
         // Wait for update thread to finish
@@ -188,9 +202,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         }
 
         _renderManager.Stop();
-        
         _currentScene?.OnExit();
-
         Console.CursorVisible = true;
         Console.Clear();
     }

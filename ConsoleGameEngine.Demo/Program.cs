@@ -289,6 +289,7 @@ class SimpleScene : IGameScene
         panel.AddChild(spritePanel);
         
         root.AddChild(spritePanel2);
+        consoleEngine.Renderer.DrawText(1, 2, "Hello World!");
         
         consoleEngine.Input.OnEscapePressed += OnEscapePressed;
         consoleEngine.Input.OnKeyPressed += OnKeyPressed;
