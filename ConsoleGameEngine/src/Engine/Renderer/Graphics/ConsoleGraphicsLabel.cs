@@ -4,7 +4,7 @@ using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public class ConsoleGraphicsLabel : ConsoleGraphicsRenderable
+public class ConsoleGraphicsLabel : ConsoleGraphicsComponent
 {
     public string Text { get; set; } = "";
 

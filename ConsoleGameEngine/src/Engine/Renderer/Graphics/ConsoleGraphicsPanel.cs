@@ -2,7 +2,7 @@ using System;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public class ConsoleGraphicsPanel : ConsoleGraphicsRenderable
+public class ConsoleGraphicsPanel : ConsoleGraphicsComponent
 {
     public bool HasBorder { get; set; } = true;
 

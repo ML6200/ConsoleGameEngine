@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
+using ConsoleGameEngine.Engine.Renderer.Animation;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
@@ -64,12 +66,40 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
  *
  */
 
-public abstract class ConsoleGraphicsRenderable : IConsoleRenderable
+public abstract class ConsoleGraphicsComponent : IConsoleRenderable
 {
     protected int Width;
     protected int Height;
 
     private Position2D? _relativePosition;
+    private List<Animation.Animation> Animations { get; } = new List<Animation.Animation>();
+
+    public virtual void Update(double deltaTime)
+    {
+        foreach (var anim in Animations.ToList())
+        {
+            anim.OnUpdate(deltaTime);
+            if (anim.IsComplete)
+            {
+                Animations.Remove(anim);
+            }
+        }
+
+        foreach (var child in Children)
+        {
+            child.Update(deltaTime);
+        }
+    }
+    
+    public void AddAnimation(Animation.Animation animation)
+    {
+        Animations.Add(animation);
+    }
+
+    public void ClearAnimations()
+    {
+        Animations.Clear();
+    }
     
     public Dimension2D Size
     {
@@ -116,7 +146,7 @@ public abstract class ConsoleGraphicsRenderable : IConsoleRenderable
     {
         get
         {
-            if (Parent is ConsoleGraphicsRenderable parent)
+            if (Parent is ConsoleGraphicsComponent parent)
             {
                 return parent.AbsolutePosition + _relativePosition;
             }
@@ -126,7 +156,7 @@ public abstract class ConsoleGraphicsRenderable : IConsoleRenderable
 
     public void SetAbsolutePosition(Position2D absolutePosition)
     {
-        if (Parent is ConsoleGraphicsRenderable parent)
+        if (Parent is ConsoleGraphicsComponent parent)
         {
             _relativePosition = absolutePosition - parent.AbsolutePosition;
         } else 
@@ -149,22 +179,20 @@ public abstract class ConsoleGraphicsRenderable : IConsoleRenderable
     public ConsoleColor BorderColor { get; set; }
     
     
-    public List<ConsoleGraphicsRenderable> Children { get; } = new();
+    public List<ConsoleGraphicsComponent> Children { get; } = new();
     
     private IConsoleRenderable Parent { get; set; }
 
-    public void AddChild(ConsoleGraphicsRenderable child)
+    public void AddChild(ConsoleGraphicsComponent child)
     {
         Children.Add(child);
         child.Parent = this;
     }
-    public void RemoveChild(ConsoleGraphicsRenderable child) => Children.Remove(child);
-
-    
+    public void RemoveChild(ConsoleGraphicsComponent child) => Children.Remove(child);
     public virtual bool Visible { get; set; } = true;
 
 
-    public ConsoleGraphicsRenderable(int width, int height, 
+    public ConsoleGraphicsComponent(int width, int height, 
         Position2D? relativePosition, 
         ConsoleColor backgroundColor, 
         ConsoleColor foregroundColor, 
@@ -178,7 +206,7 @@ public abstract class ConsoleGraphicsRenderable : IConsoleRenderable
         BorderColor = borderColor;
     }
     
-    public ConsoleGraphicsRenderable(int width, int height, 
+    public ConsoleGraphicsComponent(int width, int height, 
         Position2D? relativePosition)
     {
         Width = width;
@@ -186,7 +214,7 @@ public abstract class ConsoleGraphicsRenderable : IConsoleRenderable
         _relativePosition = relativePosition;
     }
 
-    public ConsoleGraphicsRenderable()
+    public ConsoleGraphicsComponent()
     {
         
     }

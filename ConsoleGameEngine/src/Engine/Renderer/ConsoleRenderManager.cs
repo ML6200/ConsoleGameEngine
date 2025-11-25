@@ -12,18 +12,18 @@ public class ConsoleRenderManager : IDisposable
     private readonly object graphicsLock = new();
     private CancellationTokenSource _cts;
     private ConsoleRenderer2D _renderer;
-    private ConsoleWindowRenderable _rootRenderable;
+    private ConsoleWindowComponent _rootComponent;
     private int _updatesPerSecond;
     
     public FocusManager FocusManager { get; set; }
 
     public event EventHandler OnWindowResized;
 
-    public ConsoleRenderManager(ConsoleRenderer2D renderer, ConsoleWindowRenderable rootRenderable, int updatesPerSecond)
+    public ConsoleRenderManager(ConsoleRenderer2D renderer, ConsoleWindowComponent rootComponent, int updatesPerSecond)
     {
         _renderer = renderer;
         _renderer.InitRenderer();
-        _rootRenderable = rootRenderable;
+        _rootComponent = rootComponent;
         _updatesPerSecond = updatesPerSecond;
         
         FocusManager = new FocusManager();
@@ -85,11 +85,11 @@ public class ConsoleRenderManager : IDisposable
         }
     }
 
-    public void SetRootComponent(ConsoleWindowRenderable rootRenderable)
+    public void SetRootComponent(ConsoleWindowComponent rootComponent)
     {
         lock (graphicsLock)
         {
-            _rootRenderable = rootRenderable;
+            _rootComponent = rootComponent;
         }
     }
     
@@ -101,10 +101,10 @@ public class ConsoleRenderManager : IDisposable
         {
             DateTime frameStartTime = DateTime.Now;
             
-            ConsoleWindowRenderable root;
+            ConsoleWindowComponent root;
             lock (graphicsLock)
             {
-                root = _rootRenderable;
+                root = _rootComponent;
             }
             
             _renderer.Clear();

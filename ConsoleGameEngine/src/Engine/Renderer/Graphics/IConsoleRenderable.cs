@@ -7,5 +7,4 @@ public interface IConsoleRenderable
     Dimension2D WorldSize { get; }
     bool Visible { get; set; }
     void Render(ConsoleRenderer2D renderer);
-    //void Update(double deltaTime);
 }

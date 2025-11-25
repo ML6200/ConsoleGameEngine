@@ -3,7 +3,7 @@ using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public class ConsoleGraphicsButton : ConsoleGraphicsRenderable, IFocusable
+public class ConsoleGraphicsButton : ConsoleGraphicsComponent, IFocusable
 {
     private int _width;
     private int _height;
