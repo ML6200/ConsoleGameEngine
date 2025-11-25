@@ -18,15 +18,20 @@ public static class AnimationTween
         });
     }
 
-    public static Animation Blink(ConsoleGraphicsComponent target, double interval)
+    public static Animation Blink(ConsoleGraphicsComponent target, double interval, bool loop = true)
     {
+        bool visible = target.Visible;
         return new Animation(interval, progress =>
         {
-            target.Visible = progress < 0.5f;
+            if (loop) target.Visible = progress < 0.5f;
+            else target.Visible = progress >= 0.5f;
         })
         {
-            Loop = true
-        };
+            Loop = loop
+        }.OnComplete(()=>
+        {
+            if (!loop) target.Visible = visible;
+        });
     }
 
     public static Animation FadeColor(ConsoleGraphicsButton button, ConsoleColor from, ConsoleColor to, double duration)

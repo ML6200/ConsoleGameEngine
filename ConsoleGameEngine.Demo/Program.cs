@@ -298,6 +298,7 @@ class SimpleScene : IGameScene
             HasBorder = false
         };
         
+        /*
         startButton.OnClick += (s, e) =>
         {
             var originalY = button.RelativePosition.Y;
@@ -314,10 +315,13 @@ class SimpleScene : IGameScene
                 AnimationTween.FadeColor(button, ConsoleColor.White, button.NormalBgColor, 0.2)
             );
         };
+        */
+        
         
         button.OnClick += (s, e) =>
         {
             var originalY = button.RelativePosition.Y;
+
 
             button.AddAnimation(
                 AnimationTween.MoveTo(button, new Position2D(30, originalY + 1), 0.1)
@@ -326,6 +330,7 @@ class SimpleScene : IGameScene
                         button.AddAnimation(AnimationTween.MoveTo(button, new Position2D(30, originalY), 0.1));
                     })
             );
+            
             
             button.AddAnimation(
                 AnimationTween.FadeColor(button, ConsoleColor.White, button.NormalBgColor, 0.2)

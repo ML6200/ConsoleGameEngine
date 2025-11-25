@@ -1,4 +1,5 @@
 using System;
+using ConsoleGameEngine.Engine.Renderer.Animation;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
@@ -48,6 +49,8 @@ public class ConsoleGraphicsButton : ConsoleGraphicsComponent, IFocusable
 
     public void OnFocusActivate()
     {
+        AddAnimation(AnimationTween.Blink(this, 0.3, false));
+        
         OnClick?.Invoke(this, EventArgs.Empty);
     }
     
