@@ -210,8 +210,6 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
         }
     }
 
-    public abstract void Update();
-    
     public void Dispose()
     {
         Children.Clear();

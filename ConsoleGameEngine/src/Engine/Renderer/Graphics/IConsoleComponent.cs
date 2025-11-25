@@ -7,5 +7,5 @@ public interface IConsoleComponent
     Dimension2D WorldSize { get; }
     bool Visible { get; set; }
     void Render(ConsoleRenderer2D renderer);
-    void Update();
+    //void Update(); Kihasználatlanság miatt(tervezési hiba)
 }

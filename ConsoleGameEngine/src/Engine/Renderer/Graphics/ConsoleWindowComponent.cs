@@ -33,12 +33,4 @@ public class ConsoleWindowComponent : IConsoleComponent
         _consoleGraphicsComponent = consoleGraphicsComponent;
         Visible = true;
     }
-
-    public void Update()
-    {
-        if (!Visible) return;
-        
-        foreach (var child in _consoleGraphicsComponent.Children)
-            child.Update();
-    }
 }

@@ -6,14 +6,6 @@ public class ConsoleGraphicsPanel : ConsoleGraphicsComponent
 {
     public bool HasBorder { get; set; } = true;
 
-    public override void Update()
-    {
-        if (!Visible) return;
-        
-        foreach (var child in Children)
-            child.Update();
-    }
-
     public override void Render(ConsoleRenderer2D renderer)
     {
         if (!Visible) return;

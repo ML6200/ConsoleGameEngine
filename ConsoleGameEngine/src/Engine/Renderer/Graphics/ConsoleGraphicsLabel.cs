@@ -19,9 +19,6 @@ public class ConsoleGraphicsLabel : ConsoleGraphicsComponent
         Height = 1;
     }
 
-    public override void Update()
-    { }
-
     public override void Render(ConsoleRenderer2D renderer)
     {
         if (!Visible) return;

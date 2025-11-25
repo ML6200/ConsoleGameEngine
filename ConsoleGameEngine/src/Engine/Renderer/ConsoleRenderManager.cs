@@ -101,7 +101,6 @@ public class ConsoleRenderManager : IDisposable
             }
             
             _renderer.Clear();
-            root?.Update();
             root?.Render(_renderer);
             _renderer.Render();
             

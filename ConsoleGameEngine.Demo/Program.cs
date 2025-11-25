@@ -283,15 +283,17 @@ class SimpleScene : IGameScene
         var startButton = new ConsoleGraphicsButton
         {
             Text = "Start",
-            RelativePosition = new Position2D(30, 10)
+            RelativePosition = new Position2D(30, 10),
+            Size = new Dimension2D(9, 3),
         };
         
         var otherButton = new ConsoleGraphicsButton
         {
             Text = "VISIBLE",
             RelativePosition = new Position2D(50, 10),
+            Size = new Dimension2D(0, 1),
+            HasBorder = false
         };
-        otherButton.Size = new Dimension2D(otherButton.MinWidth + 2, otherButton.MinHeight);
         
         otherButton.OnClick += (s, e) => label.Visible = !label.Visible;
         startButton.OnClick += (s, e) => _engine.LoadScene(new GameScene());
