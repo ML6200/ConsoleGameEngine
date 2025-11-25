@@ -122,6 +122,11 @@ public class ConsoleRenderManager : IDisposable
         }
     }
 
+    public void SetTargetRenderFPS(int fps)
+    {
+        _updatesPerSecond = fps;
+    }
+
     private void WindowEventLoop(CancellationToken ct)
     {
         while (!ct.IsCancellationRequested)

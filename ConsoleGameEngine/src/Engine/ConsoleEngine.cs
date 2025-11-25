@@ -9,7 +9,6 @@ namespace ConsoleGameEngine.Engine;
 
 public class ConsoleEngine : IEngineLifecycle, IDisposable
 {
-    
     private InputManager _inputManager;
     private readonly ConsoleRenderManager _renderManager;
     private readonly ConsoleRenderer2D _renderer;
@@ -24,12 +23,24 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     private IGameScene? _pendingScene;
     private readonly object _sceneLock = new object();
     
-    private int _targetUpdatesPerSecond = 60;
+    private int _targetUpdatesPerSecond = 60; // A jatek logikahoz
+    private int _targetRenderFps = 60; // rendereléshez
 
     public int TargetUpdatesPerSecond
     {
         get => _targetUpdatesPerSecond;
         set { _targetUpdatesPerSecond = value != 0 ? value : 60; }
+    }
+
+    public int TargetRenderFPS
+    {
+        get => _targetRenderFps;
+        set
+        {
+            _targetRenderFps = value != 0 ? value : 60;
+            _renderManager?.SetTargetRenderFPS(_targetRenderFps);
+        }
+        
     }
 
     private DateTime _lastUpdateTime;
