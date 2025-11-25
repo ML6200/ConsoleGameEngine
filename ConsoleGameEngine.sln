@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleGameEngine.Tests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleGameEngine.Demo", "ConsoleGameEngine.Demo\ConsoleGameEngine.Demo.csproj", "{56F27E05-D2A0-4570-A2E7-244C81D52EAE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDoomDemo", "SimpleDoomDemo\SimpleDoomDemo.csproj", "{53BA42A2-2BB1-42EF-BF46-4DA0F2EABF69}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +32,10 @@ Global
 		{56F27E05-D2A0-4570-A2E7-244C81D52EAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56F27E05-D2A0-4570-A2E7-244C81D52EAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56F27E05-D2A0-4570-A2E7-244C81D52EAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53BA42A2-2BB1-42EF-BF46-4DA0F2EABF69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53BA42A2-2BB1-42EF-BF46-4DA0F2EABF69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53BA42A2-2BB1-42EF-BF46-4DA0F2EABF69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53BA42A2-2BB1-42EF-BF46-4DA0F2EABF69}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
