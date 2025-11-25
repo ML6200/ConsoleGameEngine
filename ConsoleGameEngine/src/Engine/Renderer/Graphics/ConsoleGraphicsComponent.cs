@@ -84,8 +84,9 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
                 Animations.Remove(anim);
             }
         }
-
-        foreach (var child in Children)
+        
+        var childrenSnapshot = Children.ToList();
+        foreach (var child in childrenSnapshot)
         {
             child.Update(deltaTime);
         }
@@ -232,7 +233,9 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
     {
         if (!Visible) return;
 
-        foreach (var child in Children)
+        // Create snapshot to avoid concurrent modification during iteration
+        var childrenSnapshot = Children.ToList();
+        foreach (var child in childrenSnapshot)
         {
             child.Render(renderer);
         }

@@ -332,7 +332,7 @@ class SimpleScene : IGameScene
             );
         };
         
-        startButton.OnClick += (s, e) => _engine.LoadScene(new GameScene());
+        //startButton.OnClick += (s, e) => _engine.LoadScene(new GameScene());
         _engine.RenderManager.FocusManager.Register(startButton);
         _engine.RenderManager.FocusManager.Register(button);
         

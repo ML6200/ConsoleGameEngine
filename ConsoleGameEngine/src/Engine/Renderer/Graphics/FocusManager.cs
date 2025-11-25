@@ -9,7 +9,7 @@ public class FocusManager
     private int _currentFocusIndex = -1;
     
     public IFocusable? FocusedComponent => 
-        _currentFocusIndex > 0 && _currentFocusIndex < _focusableComponents.Count 
+        _currentFocusIndex >= 0 && _currentFocusIndex < _focusableComponents.Count 
             ? _focusableComponents[_currentFocusIndex] :  null;
     
     public void Register(IFocusable focusable)
