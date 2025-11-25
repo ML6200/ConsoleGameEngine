@@ -13,7 +13,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     private InputManager _inputManager;
     private readonly ConsoleRenderManager _renderManager;
     private readonly ConsoleRenderer2D _renderer;
-    private readonly ConsoleWindowComponent _window;
+    private readonly ConsoleWindowRenderable _window;
     
     private Thread? _updateThread;
     private CancellationTokenSource? _cancellationTokenSource;
@@ -49,7 +49,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         int height = windowHeight ?? Console.WindowHeight;
         _renderer = new ConsoleRenderer2D(width, height);
 
-        ConsoleGraphicsComponent rootPane = new ConsoleGraphicsPanel()
+        ConsoleGraphicsRenderable rootPane = new ConsoleGraphicsPanel()
         {
             RelativePosition = new Position2D(0, 0),
             Size = new Dimension2D(width, height),
@@ -57,7 +57,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
             Visible = true
         };
         
-        _window = new ConsoleWindowComponent(rootPane);
+        _window = new ConsoleWindowRenderable(rootPane);
         _renderManager = new ConsoleRenderManager(_renderer, _window, _targetUpdatesPerSecond);
     }
     
@@ -187,7 +187,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     
     public ConsoleGraphicsPanel GetRootPanel()
     {
-        return (ConsoleGraphicsPanel)_window.ConsoleGraphicsComponent;
+        return (ConsoleGraphicsPanel)_window.ConsoleGraphicsRenderable;
     }
     
     public void SetInitialScene(IGameScene scene)

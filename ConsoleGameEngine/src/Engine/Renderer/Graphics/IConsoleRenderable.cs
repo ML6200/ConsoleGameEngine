@@ -2,10 +2,10 @@ using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public interface IConsoleComponent
+public interface IConsoleRenderable
 {
     Dimension2D WorldSize { get; }
     bool Visible { get; set; }
     void Render(ConsoleRenderer2D renderer);
-    //void Update(); Kihasználatlanság miatt(tervezési hiba)
+    //void Update(double deltaTime);
 }

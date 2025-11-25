@@ -3,11 +3,11 @@ using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public class ConsoleWindowComponent : IConsoleComponent
+public class ConsoleWindowRenderable : IConsoleRenderable
 {
-    private readonly ConsoleGraphicsComponent _consoleGraphicsComponent;
+    private readonly ConsoleGraphicsRenderable _consoleGraphicsRenderable;
     
-    public ConsoleGraphicsComponent ConsoleGraphicsComponent => _consoleGraphicsComponent;
+    public ConsoleGraphicsRenderable ConsoleGraphicsRenderable => _consoleGraphicsRenderable;
     public Dimension2D WorldSize
     {
         get { return new Dimension2D(Console.WindowWidth, Console.WindowHeight); }
@@ -22,15 +22,15 @@ public class ConsoleWindowComponent : IConsoleComponent
     {
         if (!Visible) return;
 
-        foreach (var child in _consoleGraphicsComponent.Children)
+        foreach (var child in _consoleGraphicsRenderable.Children)
         {
             child.Render(renderer);
         }
     }
 
-    public ConsoleWindowComponent(ConsoleGraphicsComponent consoleGraphicsComponent)
+    public ConsoleWindowRenderable(ConsoleGraphicsRenderable consoleGraphicsRenderable)
     {
-        _consoleGraphicsComponent = consoleGraphicsComponent;
+        _consoleGraphicsRenderable = consoleGraphicsRenderable;
         Visible = true;
     }
 }

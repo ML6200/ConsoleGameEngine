@@ -64,7 +64,7 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
  *
  */
 
-public abstract class ConsoleGraphicsComponent : IConsoleComponent
+public abstract class ConsoleGraphicsRenderable : IConsoleRenderable
 {
     protected int Width;
     protected int Height;
@@ -116,7 +116,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
     {
         get
         {
-            if (Parent is ConsoleGraphicsComponent parent)
+            if (Parent is ConsoleGraphicsRenderable parent)
             {
                 return parent.AbsolutePosition + _relativePosition;
             }
@@ -126,7 +126,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
 
     public void SetAbsolutePosition(Position2D absolutePosition)
     {
-        if (Parent is ConsoleGraphicsComponent parent)
+        if (Parent is ConsoleGraphicsRenderable parent)
         {
             _relativePosition = absolutePosition - parent.AbsolutePosition;
         } else 
@@ -149,22 +149,22 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
     public ConsoleColor BorderColor { get; set; }
     
     
-    public List<ConsoleGraphicsComponent> Children { get; } = new();
+    public List<ConsoleGraphicsRenderable> Children { get; } = new();
     
-    private IConsoleComponent Parent { get; set; }
+    private IConsoleRenderable Parent { get; set; }
 
-    public void AddChild(ConsoleGraphicsComponent child)
+    public void AddChild(ConsoleGraphicsRenderable child)
     {
         Children.Add(child);
         child.Parent = this;
     }
-    public void RemoveChild(ConsoleGraphicsComponent child) => Children.Remove(child);
+    public void RemoveChild(ConsoleGraphicsRenderable child) => Children.Remove(child);
 
     
     public virtual bool Visible { get; set; } = true;
 
 
-    public ConsoleGraphicsComponent(int width, int height, 
+    public ConsoleGraphicsRenderable(int width, int height, 
         Position2D? relativePosition, 
         ConsoleColor backgroundColor, 
         ConsoleColor foregroundColor, 
@@ -178,7 +178,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
         BorderColor = borderColor;
     }
     
-    public ConsoleGraphicsComponent(int width, int height, 
+    public ConsoleGraphicsRenderable(int width, int height, 
         Position2D? relativePosition)
     {
         Width = width;
@@ -186,7 +186,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleComponent
         _relativePosition = relativePosition;
     }
 
-    public ConsoleGraphicsComponent()
+    public ConsoleGraphicsRenderable()
     {
         
     }
