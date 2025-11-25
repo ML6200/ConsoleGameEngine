@@ -24,9 +24,14 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     private IGameScene? _pendingScene;
     private readonly object _sceneLock = new object();
     
-    
-    private const int TargetUpdatesPerSecond = 60;
-    private const double TargetUpdateInterval = 1000.0 / TargetUpdatesPerSecond;
+    private int _targetUpdatesPerSecond = 60;
+
+    public int TargetUpdatesPerSecond
+    {
+        get => _targetUpdatesPerSecond;
+        set { _targetUpdatesPerSecond = value != 0 ? value : 60; }
+    }
+
     private DateTime _lastUpdateTime;
     
     public InputManager Input => _inputManager;
@@ -53,7 +58,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         };
         
         _window = new ConsoleWindowComponent(rootPane);
-        _renderManager = new ConsoleRenderManager(_renderer, _window);
+        _renderManager = new ConsoleRenderManager(_renderer, _window, _targetUpdatesPerSecond);
     }
     
     public void Initialize()
@@ -151,7 +156,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     {
         if (!_isInitialized)
         {
-            throw 
+            throw
                 new InvalidOperationException(
                     "Engine must be initialized " +
                     "before starting update loop"
@@ -159,10 +164,24 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         }
 
         _lastUpdateTime = DateTime.Now;
-        while (_isRunning 
+        double targetFrameTime = 1.0 / _targetUpdatesPerSecond;
+
+        while (_isRunning
                && !_cancellationTokenSource!.Token.IsCancellationRequested)
         {
+            var frameStart = DateTime.Now;
+
             OnUpdate();
+
+            // Throttle to target FPS
+            var frameEnd = DateTime.Now;
+            double frameTime = (frameEnd - frameStart).TotalSeconds;
+            double sleepTime = targetFrameTime - frameTime;
+
+            if (sleepTime > 0)
+            {
+                Thread.Sleep((int)(sleepTime * 1000));
+            }
         }
     }
     

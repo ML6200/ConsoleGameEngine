@@ -13,15 +13,18 @@ public class ConsoleRenderManager : IDisposable
     private CancellationTokenSource _cts;
     private ConsoleRenderer2D _renderer;
     private ConsoleWindowComponent _rootComponent;
+    private int _updatesPerSecond;
+    
     public FocusManager FocusManager { get; set; }
 
     public event EventHandler OnWindowResized;
 
-    public ConsoleRenderManager(ConsoleRenderer2D renderer, ConsoleWindowComponent rootComponent)
+    public ConsoleRenderManager(ConsoleRenderer2D renderer, ConsoleWindowComponent rootComponent, int updatesPerSecond)
     {
         _renderer = renderer;
         _renderer.InitRenderer();
         _rootComponent = rootComponent;
+        _updatesPerSecond = updatesPerSecond;
         
         FocusManager = new FocusManager();
     }
@@ -92,8 +95,12 @@ public class ConsoleRenderManager : IDisposable
     
     private void RenderLoop(CancellationToken ct)
     {
+        double targetFrameTime = 1.0 / _updatesPerSecond;
+        
         while (!ct.IsCancellationRequested)
         {
+            DateTime frameStartTime = DateTime.Now;
+            
             ConsoleWindowComponent root;
             lock (graphicsLock)
             {
@@ -104,7 +111,14 @@ public class ConsoleRenderManager : IDisposable
             root?.Render(_renderer);
             _renderer.Render();
             
-            Thread.Sleep(10);
+            DateTime frameEndTime = DateTime.Now;
+            double elapsedTime = (frameEndTime - frameStartTime).TotalSeconds;
+            double sleepTime = targetFrameTime - elapsedTime;
+
+            if (sleepTime > 0)
+            {
+                Thread.Sleep((int)(sleepTime * 1000));
+            }
         }
     }
 

@@ -42,7 +42,8 @@ class Program
         }
     }
 
-
+    
+    /*
     static void UiTester()
     {
         InputManager _inputManager = new InputManager();
@@ -169,6 +170,7 @@ class Program
         //renderManager.Dispose();
         rootGraphicsPanel.Dispose();
     }
+    */
 
     static void EngineTest()
     {
@@ -187,6 +189,7 @@ class Program
     static void UiEngineTest()
     {
         var engine = new ConsoleEngine();
+        engine.TargetUpdatesPerSecond = 100;
         engine.Initialize();
         engine.SetInitialScene(new SimpleScene());
         engine.OnStart();
