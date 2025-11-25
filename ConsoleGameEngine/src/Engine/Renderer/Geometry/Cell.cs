@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ConsoleGameEngine.Engine.Renderer.Geometry;
 
-public struct Cell : IEquatable<Cell>
+public class Cell : IEquatable<Cell>
 {
     public char Character {get; set;}
     public ConsoleColor BackgroundColor 

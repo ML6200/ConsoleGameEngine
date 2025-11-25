@@ -45,7 +45,7 @@ public class ConsoleRenderer2D
     private int _width;
     private int _height;
     
-    private Cell[,] _buffer;
+    private Cell[,] _renderBuffer;
     private bool[,] _dirtyMarks;
 
     public int Width
@@ -65,7 +65,7 @@ public class ConsoleRenderer2D
         {
             _width = width;
             _height = height;
-            _buffer = new Cell[_width, _height];
+            _renderBuffer = new Cell[_width, _height];
             _dirtyMarks = new bool[_width, _height];
             Clear();
         }
@@ -88,8 +88,8 @@ public class ConsoleRenderer2D
     {
         Console.CursorVisible = false;
         Console.Clear();
-
-        _buffer = new Cell[_width, _height];
+        
+        _renderBuffer = new Cell[_width, _height];
         _dirtyMarks = new bool[_width, _height];
 
         Clear();
@@ -98,7 +98,7 @@ public class ConsoleRenderer2D
 
     // Kezdesnek megteszi, de később érdemes külön osztályt bevezetni
     // a koordinátáknak és clampelni
-    public bool IsValidCoordinate(int x, int y)
+    private bool IsValidCoordinate(int x, int y)
     {
         return x >= 0 && x < _width && y >= 0 && y < _height;
     }
@@ -112,7 +112,7 @@ public class ConsoleRenderer2D
             {
                 for (int j = 0; j < _width; j++)
                 {
-                    _buffer[j, i] = new Cell(RenderSpecCharacters.Empty, bgColor, fgColor);
+                    _renderBuffer[j, i] = new Cell(RenderSpecCharacters.Empty, bgColor, fgColor);
                 }
             }
         }
@@ -124,9 +124,9 @@ public class ConsoleRenderer2D
         {
             if (IsValidCoordinate(x, y))
             {
-                if (!_buffer[x, y].Equals(cell))
+                if (!_renderBuffer[x, y].Equals(cell))
                 {
-                    _buffer[x, y] = cell;
+                    _renderBuffer[x, y] = cell;
                     _dirtyMarks[x, y] = true;
                 }
             }
@@ -180,7 +180,7 @@ public class ConsoleRenderer2D
             {
                 for (int i = 1; i <= dy; i++)
                 {
-                    _buffer[x, y + i] = new Cell(
+                    _renderBuffer[x, y + i] = new Cell(
                         RenderSpecCharacters.Empty,
                         cell.BackgroundColor,
                         cell.ForegroundColor
@@ -283,7 +283,7 @@ public class ConsoleRenderer2D
                 {
                     if (IsValidCoordinate(x + dx, y + dy))
                     {
-                        Cell cell = _buffer[x + dx, y + dy];
+                        Cell cell = _renderBuffer[x + dx, y + dy];
                         cell.BackgroundColor = bg;
                         cell.ForegroundColor = fg;
                         cell.Character = character;
@@ -294,43 +294,34 @@ public class ConsoleRenderer2D
         }
     }
     
+    private readonly StringBuilder _writeBuffer = new StringBuilder();
+    
     public void Render()
     {
+        int withSnapshot, heightSnapshot;
+        Cell[,] bufferSnapshot;
+        
         lock (_bufferLock)
         {
-            StringBuilder sb = new StringBuilder(_width * _height);
-            Console.SetCursorPosition(0, 0);
-
-            for (int y = 0; y < _height; y++)
-            {
-                for (int x = 0; x < _width; x++)
-                {
-                    Cell cell = _buffer[x, y];
-                    if (_dirtyMarks[x, y])
-                    {
-                        sb.Append(GetAnsiColorCode(cell.ForegroundColor, 
-                            cell.BackgroundColor));
-                        sb.Append(_buffer[x, y].Character);
-                        _dirtyMarks[x, y] = false;
-                    }
-                    else
-                    {
-                        sb.Append(GetAnsiColorCode(cell.ForegroundColor, 
-                            cell.BackgroundColor));
-                        sb.Append(cell.Character);
-                    }
-                }
-            }
-
-            Console.Write(sb.ToString());
+            bufferSnapshot = _renderBuffer;
+            withSnapshot = _width;
+            heightSnapshot = _height;
         }
-    }
 
+        _writeBuffer.Clear();
+        Console.SetCursorPosition(0, 0);
 
-    public void Update()
-    {
-        Render();
-        Clear();
+        for (int y = 0; y < heightSnapshot; y++)
+        {
+            for (int x = 0; x < withSnapshot; x++)
+            {
+                Cell cell = bufferSnapshot[x, y];
+                _writeBuffer.Append(GetAnsiColorCode(cell.ForegroundColor, 
+                    cell.BackgroundColor) + cell.Character);
+            }
+        }
+
+        Console.Write(_writeBuffer.ToString());
     }
 
     private string GetAnsiColorCode(ConsoleColor fg, ConsoleColor bg)
@@ -378,7 +369,7 @@ public class ConsoleRenderer2D
             _ => 40
         };
 
-        return $"\x1b[{fgCode};{bgCode}m";
+        return "\x1b["+fgCode+";"+bgCode+"m";
     }
 
     private static class RenderSpecCharacters
