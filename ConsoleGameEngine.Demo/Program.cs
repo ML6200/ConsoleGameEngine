@@ -5,6 +5,7 @@ using System.Threading;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer;
+using ConsoleGameEngine.Engine.Renderer.Animation;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 
@@ -290,25 +291,57 @@ class SimpleScene : IGameScene
             Size = new Dimension2D(9, 3),
         };
         
-        var otherButton = new ConsoleGraphicsButton
+        var button = new ConsoleGraphicsButton("Click")
         {
-            Text = "VISIBLE",
             RelativePosition = new Position2D(50, 10),
             Size = new Dimension2D(0, 1),
             HasBorder = false
         };
         
-        otherButton.OnClick += (s, e) => label.Visible = !label.Visible;
+        startButton.OnClick += (s, e) =>
+        {
+            var originalY = button.RelativePosition.Y;
+
+            button.AddAnimation(
+                AnimationTween.MoveTo(button, new Position2D(10, originalY + 1), 0.1)
+                    .OnComplete(() =>
+                    {
+                        button.AddAnimation(AnimationTween.MoveTo(button, new Position2D(30, originalY), 0.1));
+                    })
+            );
+            
+            button.AddAnimation(
+                AnimationTween.FadeColor(button, ConsoleColor.White, button.NormalBgColor, 0.2)
+            );
+        };
+        
+        button.OnClick += (s, e) =>
+        {
+            var originalY = button.RelativePosition.Y;
+
+            button.AddAnimation(
+                AnimationTween.MoveTo(button, new Position2D(30, originalY + 1), 0.1)
+                    .OnComplete(() =>
+                    {
+                        button.AddAnimation(AnimationTween.MoveTo(button, new Position2D(30, originalY), 0.1));
+                    })
+            );
+            
+            button.AddAnimation(
+                AnimationTween.FadeColor(button, ConsoleColor.White, button.NormalBgColor, 0.2)
+            );
+        };
+        
         startButton.OnClick += (s, e) => _engine.LoadScene(new GameScene());
         _engine.RenderManager.FocusManager.Register(startButton);
-        _engine.RenderManager.FocusManager.Register(otherButton);
+        _engine.RenderManager.FocusManager.Register(button);
         
         root.AddChild(title);
         root.AddChild(panel);
         panel.AddChild(info);
         panel.AddChild(label);
         root.AddChild(startButton);
-        root.AddChild(otherButton);
+        root.AddChild(button);
         
         spritePanel.AddChild(text);
         panel.AddChild(spritePanel);
