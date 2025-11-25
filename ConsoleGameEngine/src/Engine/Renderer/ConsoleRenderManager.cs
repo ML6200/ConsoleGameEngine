@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 
 namespace ConsoleGameEngine.Engine.Renderer;
@@ -12,6 +13,7 @@ public class ConsoleRenderManager : IDisposable
     private CancellationTokenSource _cts;
     private ConsoleRenderer2D _renderer;
     private ConsoleWindowComponent _rootComponent;
+    public FocusManager FocusManager { get; set; }
 
     public event EventHandler OnWindowResized;
 
@@ -19,8 +21,30 @@ public class ConsoleRenderManager : IDisposable
     {
         _renderer = renderer;
         _renderer.InitRenderer();
-        
         _rootComponent = rootComponent;
+        
+        FocusManager = new FocusManager();
+    }
+
+    public void SubsribeFocusEventsToInput(InputManager inputManager)
+    {
+        inputManager.OnKeyPressed += HandleFocusInput;
+        inputManager.OnEnterPressed += (s, e) => FocusManager.ActivateFocused();
+    }
+
+    private void HandleFocusInput(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == ConsoleKey.Tab)
+        {
+            if (e.Shift)
+            {
+                FocusManager.FocusPrevious();
+            }
+            else
+            {
+                FocusManager.FocusNext();
+            }
+        }
     }
 
     public void Start()

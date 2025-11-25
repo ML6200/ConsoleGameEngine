@@ -10,7 +10,7 @@ namespace ConsoleGameEngine.Engine;
 public class ConsoleEngine : IEngineLifecycle, IDisposable
 {
     
-    private readonly InputManager _inputManager;
+    private InputManager _inputManager;
     private readonly ConsoleRenderManager _renderManager;
     private readonly ConsoleRenderer2D _renderer;
     private readonly ConsoleWindowComponent _window;
@@ -31,6 +31,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     
     public InputManager Input => _inputManager;
     public ConsoleRenderer2D Renderer => _renderer;
+    public ConsoleRenderManager RenderManager => _renderManager;
     public bool IsRunning => _isRunning;
     public IGameScene? CurrentScene => _currentScene;
 
@@ -64,7 +65,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         
         Console.CursorVisible = false;
         Console.Clear();
-        
+        _renderManager.SubsribeFocusEventsToInput(_inputManager);
         _isInitialized = true;
     }
 

@@ -280,16 +280,36 @@ class SimpleScene : IGameScene
             Visible = false
         };
         
+        var startButton = new ConsoleGraphicsButton
+        {
+            Text = "Start",
+            RelativePosition = new Position2D(30, 10)
+        };
+        
+        var otherButton = new ConsoleGraphicsButton
+        {
+            Text = "VISIBLE",
+            RelativePosition = new Position2D(50, 10),
+        };
+        otherButton.Size = new Dimension2D(otherButton.MinWidth + 2, otherButton.MinHeight);
+        
+        otherButton.OnClick += (s, e) => label.Visible = !label.Visible;
+        startButton.OnClick += (s, e) => _engine.LoadScene(new GameScene());
+        _engine.RenderManager.FocusManager.Register(startButton);
+        _engine.RenderManager.FocusManager.Register(otherButton);
+        
         root.AddChild(title);
         root.AddChild(panel);
         panel.AddChild(info);
         panel.AddChild(label);
+        root.AddChild(startButton);
+        root.AddChild(otherButton);
         
         spritePanel.AddChild(text);
         panel.AddChild(spritePanel);
         
+        //consoleEngine.Renderer.DrawText(1, 2, "Hello World!");
         root.AddChild(spritePanel2);
-        consoleEngine.Renderer.DrawText(1, 2, "Hello World!");
         
         consoleEngine.Input.OnEscapePressed += OnEscapePressed;
         consoleEngine.Input.OnKeyPressed += OnKeyPressed;
@@ -375,9 +395,11 @@ class SimpleScene : IGameScene
               Text = "Press SPACE to start | ESC to quit",
               ForegroundColor = ConsoleColor.White
           };
-
+ 
+          
           root.AddChild(_titleLabel);
           root.AddChild(_instructionLabel);
+          
 
           // Subscribe to input
           engine.Input.OnSpacePressed += OnSpacePressed;
