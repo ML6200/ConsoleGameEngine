@@ -138,6 +138,8 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
             }
         }
 
+        GetRootPanel()?.Update(deltaTime);
+        
         _currentScene?.OnUpdate(deltaTime);
     }
     
