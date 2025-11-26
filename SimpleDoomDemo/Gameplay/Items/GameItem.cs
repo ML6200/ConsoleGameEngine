@@ -102,9 +102,18 @@ public class GameItem : ConsoleGraphicsComponent
         }
     }
 
+    /// <summary>
+    /// Update visibility based on distance from player.
+    /// </summary>
+    public void UpdateVisibility(Position2D playerPosition, double sightRange)
+    {
+        double distance = Position2D.Distance(AbsolutePosition, playerPosition);
+        Visible = Available && distance <= sightRange;
+    }
+
     public override void Render(ConsoleRenderer2D renderer)
     {
-        if (!Available) return;
+        if (!Visible) return;
 
         renderer.SetCell(AbsolutePosition.X, AbsolutePosition.Y,
             new Cell(_glyph, BackgroundColor, ForegroundColor));

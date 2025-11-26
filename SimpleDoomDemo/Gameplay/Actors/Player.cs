@@ -127,7 +127,11 @@ public class Player : ConsoleGraphicsComponent
 
     public override void Render(ConsoleRenderer2D renderer)
     {
-        if (!_alive) return;
+        if (!_alive)
+        {
+            Visible = false;
+            return;
+        }
 
         renderer.SetCell(AbsolutePosition.X, AbsolutePosition.Y,
             new Cell('0', ConsoleColor.Black, ConsoleColor.Green));

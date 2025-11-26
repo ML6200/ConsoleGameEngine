@@ -7,6 +7,7 @@ using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
 using SimpleDoomDemo.Gameplay.Systems;
+using SimpleDoomDemo.Gameplay.UI;
 using SimpleDoomEngine;
 using SimpleDoomEngine.Engine;
 using SimpleDoomEngine.Gameplay.Actors;
@@ -24,6 +25,9 @@ public class DoomGameScene : IGameScene
     private ConsoleEngine _engine;
     private ConsoleGraphicsPanel _rootPanel;
     private InputManager _input;
+
+    // ============================= UI ==============================
+    private GameHUD _hud;
 
     // ============================= ENTITIES ==============================
     public Player Player { get; private set; }
@@ -88,6 +92,15 @@ public class DoomGameScene : IGameScene
             _rootPanel.AddChild(demon);
         }
 
+        // Create and add HUD (positioned at bottom of screen)
+        int hudWidth = Math.Min(50, Console.WindowWidth - 2);
+        int hudHeight = 9;
+        _hud = new GameHUD(Player, hudWidth, hudHeight)
+        {
+            RelativePosition = new Position2D(1, Console.WindowHeight - hudHeight - 1)
+        };
+        _rootPanel.AddChild(_hud);
+
         // Start music
         AudioPlayer.PlayMusic(Path.Combine("assets", "sounds", "doom_music.mp3"));
     }
@@ -134,8 +147,32 @@ public class DoomGameScene : IGameScene
         _movementSystem.Update(deltaTime);
         _interactionSystem.Update(deltaTime);
 
+        // Update visibility (fog of war)
+        UpdateVisibility();
+
+        // Update HUD
+        _hud?.UpdateHUD();
+
         // Cleanup dead entities
         CleanupEntities();
+    }
+
+    private void UpdateVisibility()
+    {
+        Position2D playerPos = Player.AbsolutePosition;
+        double sightRange = Player.SightRange;
+
+        // Update item visibility
+        foreach (var item in Items)
+        {
+            item.UpdateVisibility(playerPos, sightRange);
+        }
+
+        // Update demon visibility
+        foreach (var demon in Demons)
+        {
+            demon.UpdateVisibility(playerPos, sightRange);
+        }
     }
 
     private void OnKeyPressed(object sender, KeyEventArgs e)
