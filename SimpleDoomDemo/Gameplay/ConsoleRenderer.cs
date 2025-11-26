@@ -1,18 +1,18 @@
 using System;
 using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
+using SimpleDoomDemo.Gameplay;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
-using SimpleDoomEngine.Gameplay.Actors;
 using SimpleDoomEngine.Gameplay.Items;
 
 namespace SimpleDoomEngine.Engine;
 
 public class ConsoleRenderer
 {
-    private Game _game;
+    private DoomGame _game;
     private ConsoleRenderer2D _renderer2D;
 
-    public ConsoleRenderer(Game game)
+    public ConsoleRenderer(DoomGame game)
     {
         _game = game;
         _renderer2D = new ConsoleRenderer2D(Console.WindowWidth, Console.WindowHeight - 1);
