@@ -9,7 +9,7 @@ public class Imp : Demon
     public Imp(int x, int y) : base(x, y)
     {
         FillingRatio = 0.4d;
-        Health = 60;
+        Health = 200;
         SightRange = 70;
         AttackRange = 6;
         _speed = 93;

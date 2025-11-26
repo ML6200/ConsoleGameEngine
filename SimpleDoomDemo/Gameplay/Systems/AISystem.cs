@@ -25,6 +25,9 @@ public class AISystem : IGameSystem
             // Update demon state based on player position
             demon.UpdateState(_game.Player);
 
+            // Update attack cooldown timer
+            demon.UpdateAttackCooldown(deltaTime);
+
             // Execute behavior based on state
             switch (demon.State)
             {
@@ -38,8 +41,12 @@ public class AISystem : IGameSystem
                     break;
 
                 case DemonState.Attack:
-                    // Demon is close enough to attack
-                    _combatSystem.DemonAttack(demon);
+                    // Demon is close enough to attack, but check cooldown
+                    if (demon.CanAttack())
+                    {
+                        _combatSystem.DemonAttack(demon);
+                        demon.ResetAttackCooldown();
+                    }
                     break;
             }
         }

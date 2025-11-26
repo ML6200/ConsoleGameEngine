@@ -15,7 +15,7 @@ public class Zombieman : Demon
         // AttackRange = 3;
         // _speed = 93;
         FillingRatio = 0.4D;
-        Health = 20;
+        Health = 100;
         SightRange = 70;
         AttackRange = 3;
         _speed = 93;

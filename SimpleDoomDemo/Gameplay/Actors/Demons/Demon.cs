@@ -11,6 +11,7 @@ public abstract class Demon : ConsoleGraphicsComponent
 {
     // =========================FIELDS_PRIVATE==============================
     protected int _speed;
+    private long _timeSinceLastAttack = 0;
 
     // =========================FIELDS_SETTERS&GETTERS==============================
     public double FillingRatio { get; protected set; }
@@ -20,6 +21,7 @@ public abstract class Demon : ConsoleGraphicsComponent
     public int AttackRange { get; set; }
     public int Speed { get { return _speed; } }
     public DemonState  State { get; private set; }
+    public int AttackCooldownMs { get; protected set; } = 500; // 0.5 seconds between attacks
     
     // =============================METHODS==============================
 
@@ -51,6 +53,21 @@ public abstract class Demon : ConsoleGraphicsComponent
     {
         Health -= damage;
         if (Health <= 0) Alive = false;
+    }
+
+    public void UpdateAttackCooldown(long deltaTimeMs)
+    {
+        _timeSinceLastAttack += deltaTimeMs;
+    }
+
+    public bool CanAttack()
+    {
+        return _timeSinceLastAttack >= AttackCooldownMs;
+    }
+
+    public void ResetAttackCooldown()
+    {
+        _timeSinceLastAttack = 0;
     }
 
     public abstract int GetAttackDamageRange(out int min, out int max);
