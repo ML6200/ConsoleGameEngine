@@ -24,9 +24,21 @@ public class Zombieman : Demon
     public override void Render(ConsoleRenderer2D consoleRenderer2D)
     {
         if (!Alive) return;
-        consoleRenderer2D.SetCell(AbsolutePosition.X, 
-            AbsolutePosition.Y, 
+        consoleRenderer2D.SetCell(AbsolutePosition.X,
+            AbsolutePosition.Y,
             new Cell('o', ConsoleColor.Black, ConsoleColor.Red));
         base.Render(consoleRenderer2D);
+    }
+
+    public override int GetAttackDamageRange(out int min, out int max)
+    {
+        min = 3;
+        max = 15;
+        return min;
+    }
+
+    public override int GetCombatPoints()
+    {
+        return 1;
     }
 }

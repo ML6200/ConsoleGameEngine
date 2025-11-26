@@ -19,9 +19,21 @@ public class Mancubus : Demon
     public override void Render(ConsoleRenderer2D consoleRenderer2D)
     {
         if (!Alive) return;
-        consoleRenderer2D.SetCell(AbsolutePosition.X, 
-            AbsolutePosition.Y, 
+        consoleRenderer2D.SetCell(AbsolutePosition.X,
+            AbsolutePosition.Y,
             new Cell('O', ConsoleColor.Black, ConsoleColor.DarkRed));
         base.Render(consoleRenderer2D);
+    }
+
+    public override int GetAttackDamageRange(out int min, out int max)
+    {
+        min = 8;
+        max = 64;
+        return min;
+    }
+
+    public override int GetCombatPoints()
+    {
+        return 10;
     }
 }

@@ -1,4 +1,7 @@
 using System;
+using ConsoleGameEngine.Engine.Renderer;
+using ConsoleGameEngine.Engine.Renderer.Geometry;
+using SimpleDoomDemo.Gameplay.Actors.Demons;
 using SimpleDoomEngine.Gameplay.Actors;
 using SimpleDoomEngine.Gameplay.Items;
 
@@ -7,29 +10,21 @@ namespace SimpleDoomEngine.Engine;
 public class ConsoleRenderer
 {
     private Game _game;
+    private ConsoleRenderer2D _renderer2D;
 
     public ConsoleRenderer(Game game)
     {
         _game = game;
+        _renderer2D = new ConsoleRenderer2D(Console.WindowWidth, Console.WindowHeight - 1);
+        _renderer2D.InitRenderer();
     }
-    
-    public static bool IsPointWithinBounds(Position position)
+
+    public static bool IsPointWithinBounds(Position2D position)
     {
         return position.X < Console.WindowWidth
                && position.X >= 0
-               && position.Y < Console.WindowHeight
+               && position.Y < Console.WindowHeight - 1
                && position.Y >= 0;
-    }
-    
-    private void RenderSingleSprite(Position position, ConsoleSprite sprite)
-    {
-        if (IsPointWithinBounds(position))
-        {
-            Console.BackgroundColor = sprite.backgroundColor;
-            Console.ForegroundColor = sprite.foregroundColor;
-            Console.SetCursorPosition(position.X, position.Y);
-            Console.Write(sprite.glypth);
-        }
     }
 
     public void RenderFullScreenText(string text, ConsoleColor bg = ConsoleColor.Black, ConsoleColor fg = ConsoleColor.White)
@@ -65,33 +60,33 @@ public class ConsoleRenderer
     
     public void RenderGame()
     {
-        Console.ResetColor();
-        Console.Clear();
+        _renderer2D.Clear();
 
         foreach (GameItem item in _game.Items)
         {
             if (item.Available)
             {
-                double distance = Position.Distance(item.Position, _game.Player.Position);
-                
+                double distance = Position2D.Distance(item.AbsolutePosition, _game.Player.AbsolutePosition);
+
                 if (distance <= _game.Player.SightRange)
                 {
-                    RenderSingleSprite(item.Position, item.Sprite);
+                    item.Render(_renderer2D);
                 }
             }
         }
-        
+
         foreach (Demon demon in _game.Demons)
         {
-            double distance = Position.Distance(demon.Position, _game.Player.Position);
+            double distance = Position2D.Distance(demon.AbsolutePosition, _game.Player.AbsolutePosition);
 
             if (distance <= _game.Player.SightRange)
             {
-                RenderSingleSprite(demon.Position, demon.Sprite);
+                demon.Render(_renderer2D);
             }
         }
 
-        RenderSingleSprite(_game._player.Position, _game._player.Sprite);
+        _game.Player.Render(_renderer2D);
+        _renderer2D.Render();
         RenderHud();
     }
 }

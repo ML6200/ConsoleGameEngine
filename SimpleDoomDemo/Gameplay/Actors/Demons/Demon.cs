@@ -7,7 +7,7 @@ using SimpleDoomEngine.Gameplay.Actors;
 namespace SimpleDoomDemo.Gameplay.Actors.Demons;
 
 
-public class Demon : ConsoleGraphicsComponent
+public abstract class Demon : ConsoleGraphicsComponent
 {
     // =========================FIELDS_PRIVATE==============================
     protected int _speed;
@@ -52,4 +52,7 @@ public class Demon : ConsoleGraphicsComponent
         Health -= damage;
         if (Health <= 0) Alive = false;
     }
+
+    public abstract int GetAttackDamageRange(out int min, out int max);
+    public abstract int GetCombatPoints();
 }

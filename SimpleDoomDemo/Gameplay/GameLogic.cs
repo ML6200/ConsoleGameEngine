@@ -25,14 +25,14 @@ public class GameLogic
 
         for (int i = 0; i < _game._items.Count; i++)
         {
-            double distance = Position2D.Distance(position, _game._items[i].Position);
+            double distance = Position2D.Distance(position, _game._items[i].AbsolutePosition);
 
             if (distance <= distanceTreshold)
             {
                 closeItems.Add(_game._items[i]);
             }
         }
-        
+
         return closeItems;
     }
 
@@ -63,14 +63,14 @@ public class GameLogic
 
         for (int i = 0; i < _game.Demons.Count; i++)
         {
-            double distance = Position2D.Distance(position, _game._demons[i].Position);
+            double distance = Position2D.Distance(position, _game._demons[i].AbsolutePosition);
 
             if (distance <= distanceTreshold)
             {
                 closeItems.Add(_game.Demons[i]);
             }
         }
-        
+
         return closeItems;
     }
 
@@ -128,6 +128,31 @@ public class GameLogic
 
     
 
+    public void PlayerAttackLogic()
+    {
+        if (_game.Player.Ammo > 0)
+        {
+            _game.Player.Shoot();
+            _game.PlaySoundEffect(SoundEffectType.Shotgun);
+
+            List<Demon> nearbyDemons = GetDemonsWithinDistance(_game.Player.AbsolutePosition, _game.Player.SightRange);
+
+            foreach (Demon demon in nearbyDemons)
+            {
+                int u = RNG.Next(35, 106);
+                int distance = (int)Position2D.Distance(demon.AbsolutePosition, _game.Player.AbsolutePosition);
+                int damage = 2 * u / (1 + distance);
+
+                demon.TakeDamage(damage);
+
+                if (!demon.Alive)
+                {
+                    _game.Player.AddCombatPoints(demon.GetCombatPoints());
+                }
+            }
+        }
+    }
+
     public void PlayerBFGAttackLogic()
     {
         if (_game.Player.BFGCells > 0)
@@ -135,7 +160,7 @@ public class GameLogic
             _game.Player.ShootBFG();
             _game.PlaySoundEffect(SoundEffectType.BFG);
 
-            List<Demon> nearbyDemons = GetDemonsWithinDistance(_game.Player.Position, _game.Player.SightRange);
+            List<Demon> nearbyDemons = GetDemonsWithinDistance(_game.Player.AbsolutePosition, _game.Player.SightRange);
 
             foreach (Demon demon in nearbyDemons)
             {
@@ -144,7 +169,7 @@ public class GameLogic
 
                 if (!demon.Alive)
                 {
-                    _game.Player.AddCombatPoints(1);
+                    _game.Player.AddCombatPoints(demon.GetCombatPoints());
                 }
             }
         }
@@ -152,24 +177,13 @@ public class GameLogic
 
     public void DemonAttackLogic(Demon demon)
     {
-        int u = 0;
-        
-        switch (demon.Type)
-        {
-            case DemonType.Zombieman: 
-                u = RNG.Next(3, 15); 
-                break;
-            case DemonType.Imp: 
-                u = RNG.Next(3, 24); 
-                break;
-            case DemonType.Mancubus: 
-                u = RNG.Next(8, 64); 
-                break;
-        }
-        
+        int min, max;
+        demon.GetAttackDamageRange(out min, out max);
+        int u = RNG.Next(min, max);
+
         int distance = (int)Position2D.Distance(demon.AbsolutePosition, _game.Player.AbsolutePosition);
         int damage = 2 * u / (1 + distance);
-        
+
         _game.Player.TakeDamage(damage);
         _game.PlaySoundEffect(SoundEffectType.Pain);
     }
@@ -193,26 +207,27 @@ public class GameLogic
         }
     }
 
-public void PlayerDirectInteractionLogic()
-{
-    List<GameItem> items = GetGameItemsWithinDistance(_game.Player.Position, 1);
-    foreach (GameItem item in items)
+    public void PlayerDirectInteractionLogic()
     {
-        switch (item.Type)
+        List<GameItem> items = GetGameItemsWithinDistance(_game.Player.AbsolutePosition, 1);
+        foreach (GameItem item in items)
         {
-            case ItemType.DOOR: 
-                item.Interact();  
-                _game.PlaySoundEffect(SoundEffectType.Door);
-                break;
-            case ItemType.LEVELEXIT:
+            switch (item.Type)
             {
-                item.Interact();
-                _game.Exited =  true;
-                _game.PlaySoundEffect(SoundEffectType.LevelExit);
-            } break;
+                case ItemType.DOOR:
+                    item.Interact();
+                    _game.PlaySoundEffect(SoundEffectType.Door);
+                    break;
+                case ItemType.LEVELEXIT:
+                {
+                    item.Interact();
+                    _game.Exited = true;
+                    _game.PlaySoundEffect(SoundEffectType.LevelExit);
+                }
+                    break;
+            }
         }
     }
-}
 
     public void PlayerIndirectInteractionLogic()
     {

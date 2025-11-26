@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using ConsoleGameEngine.Engine.Renderer.Geometry;
+using SimpleDoomDemo.Gameplay.Actors.Demons;
 using SimpleDoomEngine.Engine;
 using SimpleDoomEngine.Gameplay.Actors;
 using SimpleDoomEngine.Gameplay.Items;
@@ -67,7 +69,7 @@ public class Game
 
     private void UserMoveBy(int x, int y)
     {
-        Position comp = _player.Position.Add(new Position(x, y));
+        Position2D comp = _player.AbsolutePosition + new Position2D(x, y);
         if (ConsoleRenderer.IsPointWithinBounds(comp))
             _gameLogic.Move(_player, comp);
     }
@@ -204,17 +206,17 @@ public class Game
                             break;
                         //DEMONS
                         case 'z':
-                            _demons.Add(new Demon(j, i - 1, DemonType.Zombieman));
+                            _demons.Add(new Zombieman(j, i - 1));
                             break;
                         case 'i':
-                            _demons.Add(new Demon(j, i - 1, DemonType.Imp));
+                            _demons.Add(new Imp(j, i - 1));
                             break;
                         case 'm':
-                            _demons.Add(new Demon(j, i - 1, DemonType.Mancubus));
+                            _demons.Add(new Mancubus(j, i - 1));
                             break;
                         //PLAYER
                         case 'p':
-                            _player.Position = new Position(j, i - 1);
+                            _player.RelativePosition = new Position2D(j, i - 1);
                             break;
                     }
                 }

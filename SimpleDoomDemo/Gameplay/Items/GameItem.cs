@@ -1,74 +1,81 @@
 using System;
-using SimpleDoomEngine.Engine;
+using ConsoleGameEngine.Engine.Renderer;
+using ConsoleGameEngine.Engine.Renderer.Geometry;
+using ConsoleGameEngine.Engine.Renderer.Graphics;
 
 namespace SimpleDoomEngine.Gameplay.Items;
 
-public class GameItem
+public class GameItem : ConsoleGraphicsComponent
 {
     // =============================FIELDS_PUBLIC==============================
-    public Position Position { get; }
-    public ConsoleActor Actor { get; private set; }
     public ItemType Type { get; }
     public double FillingRatio { get; set; }
     public bool Available { get; private set; }
 
     
     // =============================METHODS==============================
+    private char _glyph;
+
     private void SetInitialProperties()
     {
         Available = true;
         switch (Type)
         {
             case ItemType.AMMO:
-            {
                 FillingRatio = 0.0;
-                Actor = new ConsoleActor(ConsoleColor.Red, ConsoleColor.Yellow, 'A');
-            }
+                BackgroundColor = ConsoleColor.Red;
+                ForegroundColor = ConsoleColor.Yellow;
+                _glyph = 'A';
                 break;
 
             case ItemType.BFGCELL:
-            {
                 FillingRatio = 0.0;
-                Actor = new ConsoleActor(ConsoleColor.Green, ConsoleColor.White, 'B');
-            }
+                BackgroundColor = ConsoleColor.Green;
+                ForegroundColor = ConsoleColor.White;
+                _glyph = 'B';
                 break;
+
             case ItemType.DOOR:
-            {
-                Actor = new ConsoleActor(ConsoleColor.Gray, ConsoleColor.Yellow, '/');
-            }
-                break;
-            case ItemType.LEVELEXIT:
-            {
                 FillingRatio = 1.0;
-                Actor = new ConsoleActor(ConsoleColor.Blue, ConsoleColor.Black, 'E');
-            }
+                BackgroundColor = ConsoleColor.Gray;
+                ForegroundColor = ConsoleColor.Yellow;
+                _glyph = '/';
                 break;
+
+            case ItemType.LEVELEXIT:
+                FillingRatio = 1.0;
+                BackgroundColor = ConsoleColor.Blue;
+                ForegroundColor = ConsoleColor.Black;
+                _glyph = 'E';
+                break;
+
             case ItemType.MEDKIT:
-            {
                 FillingRatio = 0.0;
-                Actor = new ConsoleActor(ConsoleColor.DarkGray, ConsoleColor.Red, '+');
-            }
+                BackgroundColor = ConsoleColor.DarkGray;
+                ForegroundColor = ConsoleColor.Red;
+                _glyph = '+';
                 break;
 
             case ItemType.TOXICWASTE:
-            {
                 FillingRatio = 0.0;
-                Actor = new ConsoleActor(ConsoleColor.Green, ConsoleColor.DarkGray, ':');
-            }
+                BackgroundColor = ConsoleColor.Green;
+                ForegroundColor = ConsoleColor.DarkGray;
+                _glyph = ':';
                 break;
 
             case ItemType.WALL:
-            {
                 FillingRatio = 1.0;
-                Actor = new ConsoleActor(ConsoleColor.Gray, ConsoleColor.Gray, ' ');
-            } break;
+                BackgroundColor = ConsoleColor.Gray;
+                ForegroundColor = ConsoleColor.Gray;
+                _glyph = ' ';
+                break;
         }
     }
 
     public GameItem(int x, int y, ItemType type)
     {
-        this.Position = new Position(x, y);
-        this.Type = type;
+        RelativePosition = new Position2D(x, y);
+        Type = type;
         SetInitialProperties();
     }
 
@@ -80,19 +87,28 @@ public class GameItem
         {
             Available = false;
         }
-
         else if (Type == ItemType.DOOR)
         {
             if (FillingRatio.Equals(1.0))
             {
                 FillingRatio = 0.0;
-                Actor = new ConsoleActor(ConsoleColor.Gray, ConsoleColor.DarkYellow, '/');
+                ForegroundColor = ConsoleColor.DarkYellow;
             }
             else
             {
-                Actor = new ConsoleActor(ConsoleColor.Gray, ConsoleColor.Yellow, '/');
+                ForegroundColor = ConsoleColor.Yellow;
                 FillingRatio = 1.0;
             }
         }
+    }
+
+    public override void Render(ConsoleRenderer2D renderer)
+    {
+        if (!Available) return;
+
+        renderer.SetCell(AbsolutePosition.X, AbsolutePosition.Y,
+            new Cell(_glyph, BackgroundColor, ForegroundColor));
+
+        base.Render(renderer);
     }
 }
