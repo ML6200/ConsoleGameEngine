@@ -1,4 +1,6 @@
-﻿namespace SimpleDoomDemo;
+﻿using System;
+
+namespace SimpleDoomDemo;
 
 class Program
 {
