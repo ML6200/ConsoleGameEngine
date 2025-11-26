@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
-using ConsoleGameEngine.Engine.Renderer.Animation;
+using ConsoleGameEngine.Engine.Renderer.Animations;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
@@ -72,7 +72,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
     protected int Height;
 
     private Position2D? _relativePosition;
-    private List<Animation.Animation> Animations { get; } = new List<Animation.Animation>();
+    private List<Animation> Animations { get; } = new List<Animation>();
 
     public virtual void Update(double deltaTime)
     {
@@ -92,7 +92,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
         }
     }
     
-    public void AddAnimation(Animation.Animation animation)
+    public void AddAnimation(Animation animation)
     {
         Animations.Add(animation);
     }

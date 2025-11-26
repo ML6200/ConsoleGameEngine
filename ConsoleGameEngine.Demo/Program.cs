@@ -5,7 +5,7 @@ using System.Threading;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer;
-using ConsoleGameEngine.Engine.Renderer.Animation;
+using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 

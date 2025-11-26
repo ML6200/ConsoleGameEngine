@@ -1,6 +1,6 @@
 using System;
 
-namespace ConsoleGameEngine.Engine.Renderer.Animation;
+namespace ConsoleGameEngine.Engine.Renderer.Animations;
 
 public static class Easing
 {

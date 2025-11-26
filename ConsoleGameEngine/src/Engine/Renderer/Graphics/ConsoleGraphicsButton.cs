@@ -1,5 +1,5 @@
 using System;
-using ConsoleGameEngine.Engine.Renderer.Animation;
+using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;

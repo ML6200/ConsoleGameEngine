@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
+using ConsoleGameEngine.Engine.Renderer.Animations;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
 public class ConsoleWindowComponent : IConsoleRenderable
 {
     private readonly ConsoleGraphicsComponent _consoleGraphicsComponent;
-    public List<Animation.Animation> Animations { get; } = new List<Animation.Animation>();
-    
+    public List<Animation> Animations { get; } = new List<Animation>();
+
     public ConsoleGraphicsComponent ConsoleGraphicsComponent => _consoleGraphicsComponent;
     public Dimension2D WorldSize
     {

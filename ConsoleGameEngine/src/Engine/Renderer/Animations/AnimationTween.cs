@@ -2,7 +2,7 @@ using System;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 
-namespace ConsoleGameEngine.Engine.Renderer.Animation;
+namespace ConsoleGameEngine.Engine.Renderer.Animations;
 
 public static class AnimationTween
 {
