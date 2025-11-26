@@ -28,7 +28,6 @@ public class DoomGameScene : IGameScene
     private InputManager _input;
 
     // ============================= SYSTEMS ==============================
-    private CameraSystem _cameraSystem;
     private MovementSystem _movementSystem;
     private CombatSystem _combatSystem;
     private InteractionSystem _interactionSystem;
@@ -83,7 +82,7 @@ public class DoomGameScene : IGameScene
         _rootPanel.AddChild(_gameViewport);
 
         // Initialize camera system
-        _cameraSystem = new CameraSystem(Player, _gameViewport, Console.WindowWidth, Console.WindowHeight);
+        //_cameraSystem = new CameraSystem(Player, _gameViewport, Console.WindowWidth, Console.WindowHeight);
 
         // Subscribe to input events
         _input.OnKeyPressed += OnKeyPressed;
@@ -118,7 +117,7 @@ public class DoomGameScene : IGameScene
         _rootPanel.AddChild(_hud);
 
         // Initialize camera position
-        _cameraSystem.UpdateCamera();
+        //_cameraSystem.UpdateCamera();
 
         // Start music
         AudioPlayer.PlayMusic(Path.Combine("assets", "sounds", "doom_music.mp3"));
@@ -144,7 +143,7 @@ public class DoomGameScene : IGameScene
             _logicAccumulator = 0;
         }
         // Update camera to follow player (smooth scrolling)
-        _cameraSystem.UpdateCamera();
+        //_cameraSystem.UpdateCamera();
     }
 
     public void OnExit()
