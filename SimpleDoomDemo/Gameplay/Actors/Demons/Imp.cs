@@ -9,7 +9,7 @@ public class Imp : Demon
     public Imp(int x, int y) : base(x, y)
     {
         FillingRatio = 0.4d;
-        Health = 200;
+        Health = 20;
         SightRange = 70;
         AttackRange = 6;
         _speed = 93;
@@ -17,7 +17,7 @@ public class Imp : Demon
     
     public override void Render(ConsoleRenderer2D consoleRenderer2D)
     {
-        if (!Alive || !Visible) return;
+        if (!IsVisibleThreadSafe) return;
         consoleRenderer2D.SetCell(AbsolutePosition.X,
             AbsolutePosition.Y,
             new Cell('o', ConsoleColor.Black, ConsoleColor.White));

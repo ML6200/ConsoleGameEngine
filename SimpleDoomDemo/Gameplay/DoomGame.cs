@@ -49,6 +49,10 @@ public class DoomGameScene : IGameScene
     private const double LOGIC_UPDATE_INTERVAL = 0.5; // 500ms in seconds
     private double _logicAccumulator = 0;
 
+    // ============================= SYNCHRONIZATION ==============================
+    private readonly object _visibilityLock = new object();
+    public object VisibilityLock => _visibilityLock;
+
     public DoomGameScene()
     {
         // Initialize entities
@@ -162,16 +166,19 @@ public class DoomGameScene : IGameScene
         Position2D playerPos = Player.AbsolutePosition;
         double sightRange = Player.SightRange;
 
-        // Update item visibility
-        foreach (var item in Items)
+        lock (_visibilityLock)
         {
-            item.UpdateVisibility(playerPos, sightRange);
-        }
+            // Update item visibility
+            foreach (var item in Items)
+            {
+                item.UpdateVisibility(playerPos, sightRange);
+            }
 
-        // Update demon visibility
-        foreach (var demon in Demons)
-        {
-            demon.UpdateVisibility(playerPos, sightRange);
+            // Update demon visibility
+            foreach (var demon in Demons)
+            {
+                demon.UpdateVisibility(playerPos, sightRange);
+            }
         }
     }
 

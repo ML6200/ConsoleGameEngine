@@ -49,7 +49,7 @@ public class CombatSystem : IGameSystem
         {
             int u = _random.Next(35, 106);
             int distance = (int)Position2D.Distance(demon.AbsolutePosition, _game.Player.AbsolutePosition);
-            int damage = u / (1 + distance);
+            int damage = 2 * u / (1 + distance);
 
             DealDamageToDemon(demon, damage);
         }
