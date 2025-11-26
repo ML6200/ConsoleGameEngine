@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using ConsoleGameEngine.Engine;
 using SimpleDoomDemo.Gameplay.Scenes;
 
@@ -11,8 +12,8 @@ class Program
     {
         // Create the ConsoleEngine
         ConsoleEngine engine = new ConsoleEngine();
-        engine.TargetUpdatesPerSecond = 60;  // Game logic updates at 60 FPS
-        engine.TargetRenderFPS = 40;         // Rendering at 40 FPS
+        engine.TargetUpdatesPerSecond = 40;  // Game logic updates at 60 FPS
+        engine.TargetRenderFPS = 60;         // Rendering at 40 FPS
         engine.Initialize();
 
         // Determine map path
@@ -30,7 +31,7 @@ class Program
         // Wait for engine to stop
         while (engine.IsRunning)
         {
-            System.Threading.Thread.Sleep(100);
+            Thread.Sleep(100);
         }
 
         // Cleanup

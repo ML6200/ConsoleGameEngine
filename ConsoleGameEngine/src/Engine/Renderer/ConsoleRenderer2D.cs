@@ -113,6 +113,7 @@ public class ConsoleRenderer2D
                 for (int j = 0; j < _width; j++)
                 {
                     _renderBuffer[j, i] = new Cell(RenderSpecCharacters.Empty, bgColor, fgColor);
+                    _dirtyMarks[j, i] = true;  // Mark as dirty to trigger render
                 }
             }
         }
@@ -295,33 +296,48 @@ public class ConsoleRenderer2D
     }
     
     private readonly StringBuilder _writeBuffer = new StringBuilder();
-    
+    private ConsoleColor _lastFg = ConsoleColor.White;
+    private ConsoleColor _lastBg = ConsoleColor.Black;
+
     public void Render()
     {
-        int withSnapshot, heightSnapshot;
+        int widthSnapshot, heightSnapshot;
         Cell[,] bufferSnapshot;
-        
+        bool[,] dirtySnapshot;
+
         lock (_bufferLock)
         {
-            bufferSnapshot = _renderBuffer;
-            withSnapshot = _width;
+            bufferSnapshot = (Cell[,])_renderBuffer.Clone();
+            dirtySnapshot = (bool[,])_dirtyMarks.Clone();
+            widthSnapshot = _width;
             heightSnapshot = _height;
+
+            // Clear dirty marks for next frame
+            Array.Clear(_dirtyMarks, 0, _dirtyMarks.Length);
         }
 
-        _writeBuffer.Clear();
-        Console.SetCursorPosition(0, 0);
-
+        // Only render dirty cells
         for (int y = 0; y < heightSnapshot; y++)
         {
-            for (int x = 0; x < withSnapshot; x++)
+            for (int x = 0; x < widthSnapshot; x++)
             {
-                Cell cell = bufferSnapshot[x, y];
-                _writeBuffer.Append(GetAnsiColorCode(cell.ForegroundColor, 
-                    cell.BackgroundColor) + cell.Character);
+                if (dirtySnapshot[x, y])
+                {
+                    Cell cell = bufferSnapshot[x, y];
+                    Console.SetCursorPosition(x, y);
+
+                    // Only emit ANSI codes if colors changed
+                    if (cell.ForegroundColor != _lastFg || cell.BackgroundColor != _lastBg)
+                    {
+                        Console.Write(GetAnsiColorCode(cell.ForegroundColor, cell.BackgroundColor));
+                        _lastFg = cell.ForegroundColor;
+                        _lastBg = cell.BackgroundColor;
+                    }
+
+                    Console.Write(cell.Character);
+                }
             }
         }
-
-        Console.Write(_writeBuffer.ToString());
     }
 
     private string GetAnsiColorCode(ConsoleColor fg, ConsoleColor bg)
@@ -369,7 +385,7 @@ public class ConsoleRenderer2D
             _ => 40
         };
 
-        return "\x1b["+fgCode+";"+bgCode+"m";
+        return "\x1b[" + fgCode + ";" + bgCode + "m";
     }
 
     private static class RenderSpecCharacters

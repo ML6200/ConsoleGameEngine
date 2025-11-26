@@ -119,10 +119,12 @@ public class GameOverPanel : ConsoleGraphicsPanel
         // Draw title message
         if (_playerDied)
         {
+            renderer.FillRect(0, 0,  Console.WindowWidth, Console.WindowHeight, ' ', ConsoleColor.DarkRed);
             renderer.DrawText(centerX - 5, centerY - 5, "YOU DIED!", ConsoleColor.Red, ConsoleColor.Black);
         }
         else if (_interrupted)
         {
+            renderer.FillRect(0, 0,  Console.WindowWidth, Console.WindowHeight, ' ', ConsoleColor.Yellow);
             renderer.DrawText(centerX - 3, centerY - 5, "EXITED", ConsoleColor.Yellow, ConsoleColor.Black);
         }
         else if (_levelComplete)

@@ -76,7 +76,7 @@ public class ConsoleRenderManager : IDisposable
 
     public void Stop()
     {
-        if (_cts != null)
+        if (_cts != null && !_cts.IsCancellationRequested)
         {
             _cts.Cancel();
             graphicsThread.Join();
