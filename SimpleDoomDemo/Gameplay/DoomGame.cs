@@ -27,7 +27,7 @@ public class DoomGameScene : IGameScene
     private InputManager _input;
 
     // ============================= UI ==============================
-    private GameHUD _hud;
+    private GameHud _hud;
 
     // ============================= ENTITIES ==============================
     public Player Player { get; private set; }
@@ -93,11 +93,11 @@ public class DoomGameScene : IGameScene
         }
 
         // Create and add HUD (positioned at bottom of screen)
-        int hudWidth = Math.Min(50, Console.WindowWidth - 2);
-        int hudHeight = 9;
-        _hud = new GameHUD(Player, hudWidth, hudHeight)
+        int hudWidth = Console.WindowWidth;
+        int hudHeight = 1;
+        _hud = new GameHud(Player, hudWidth, hudHeight)
         {
-            RelativePosition = new Position2D(1, Console.WindowHeight - hudHeight - 1)
+            RelativePosition = new Position2D(0, Console.WindowHeight - 1)
         };
         _rootPanel.AddChild(_hud);
 
@@ -151,7 +151,7 @@ public class DoomGameScene : IGameScene
         UpdateVisibility();
 
         // Update HUD
-        _hud?.UpdateHUD();
+        _hud?.UpdateHUD(new Position2D(0, _rootPanel.WorldSize.Height-1));
 
         // Cleanup dead entities
         CleanupEntities();

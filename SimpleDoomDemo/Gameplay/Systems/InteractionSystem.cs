@@ -102,6 +102,7 @@ public class InteractionSystem : IGameSystem
 
                 case ItemType.TOXICWASTE:
                     _game.Player.TakeDamage(5);
+                    _game.PlaySoundEffect(SoundEffectType.Pain);
                     // Visual feedback for toxic damage (player blinks)
                     var toxicAnim = AnimationTween.Blink(_game.Player, 100, loop: false);
                     _game.Player.AddAnimation(toxicAnim);
