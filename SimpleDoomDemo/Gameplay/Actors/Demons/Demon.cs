@@ -55,4 +55,13 @@ public abstract class Demon : ConsoleGraphicsComponent
 
     public abstract int GetAttackDamageRange(out int min, out int max);
     public abstract int GetCombatPoints();
+
+    /// <summary>
+    /// Update visibility based on distance from player.
+    /// </summary>
+    public void UpdateVisibility(Position2D playerPosition, double sightRange)
+    {
+        double distance = Position2D.Distance(AbsolutePosition, playerPosition);
+        Visible = Alive && distance <= sightRange;
+    }
 }
