@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Gameplay\" />
+      <ProjectReference Include="..\ConsoleGameEngine\ConsoleGameEngine.csproj" />
     </ItemGroup>
 
 </Project>
