@@ -24,7 +24,15 @@ public class DoomGameScene : IGameScene
     // ============================= ENGINE ==============================
     private ConsoleEngine _engine;
     private ConsoleGraphicsPanel _rootPanel;
+    private ConsoleGraphicsPanel _gameViewport;  // Viewport that holds all game entities
     private InputManager _input;
+
+    // ============================= SYSTEMS ==============================
+    private CameraSystem _cameraSystem;
+    private MovementSystem _movementSystem;
+    private CombatSystem _combatSystem;
+    private InteractionSystem _interactionSystem;
+    private AISystem _aiSystem;
 
     // ============================= UI ==============================
     private GameHUD _hud;
@@ -34,11 +42,6 @@ public class DoomGameScene : IGameScene
     public List<Demon> Demons { get; private set; }
     public List<GameItem> Items { get; private set; }
 
-    // ============================= SYSTEMS ==============================
-    private MovementSystem _movementSystem;
-    private CombatSystem _combatSystem;
-    private InteractionSystem _interactionSystem;
-    private AISystem _aiSystem;
 
     // ============================= GAME STATE ==============================
     public bool Interrupted { get; set; }
@@ -69,6 +72,19 @@ public class DoomGameScene : IGameScene
         _rootPanel = _engine.GetRootPanel();
         _input = _engine.Input;
 
+        // Create game viewport (holds all game entities and scrolls with camera)
+        _gameViewport = new ConsoleGraphicsPanel
+        {
+            RelativePosition = new Position2D(0, 0),
+            Size = new Dimension2D(Console.WindowWidth * 3, Console.WindowHeight * 3), // Large world
+            HasBorder = false,
+            BackgroundColor = ConsoleColor.Black
+        };
+        _rootPanel.AddChild(_gameViewport);
+
+        // Initialize camera system
+        _cameraSystem = new CameraSystem(Player, _gameViewport, Console.WindowWidth, Console.WindowHeight);
+
         // Subscribe to input events
         _input.OnKeyPressed += OnKeyPressed;
 
@@ -79,27 +95,30 @@ public class DoomGameScene : IGameScene
 
     public void OnEnter()
     {
-        // Add all entities to root panel as children
-        _rootPanel.AddChild(Player);
+        // Add all game entities to the viewport (these will scroll with camera)
+        _gameViewport.AddChild(Player);
 
         foreach (var item in Items)
         {
-            _rootPanel.AddChild(item);
+            _gameViewport.AddChild(item);
         }
 
         foreach (var demon in Demons)
         {
-            _rootPanel.AddChild(demon);
+            _gameViewport.AddChild(demon);
         }
 
-        // Create and add HUD (positioned at bottom of screen)
-        int hudWidth = Math.Min(50, Console.WindowWidth - 2);
+        // Create and add HUD to root panel (stays fixed on screen - top-right corner)
+        int hudWidth = Math.Min(35, Console.WindowWidth - 2);
         int hudHeight = 9;
         _hud = new GameHUD(Player, hudWidth, hudHeight)
         {
-            RelativePosition = new Position2D(1, Console.WindowHeight - hudHeight - 1)
+            RelativePosition = new Position2D(Console.WindowWidth - hudWidth - 1, 1)
         };
         _rootPanel.AddChild(_hud);
+
+        // Initialize camera position
+        _cameraSystem.UpdateCamera();
 
         // Start music
         AudioPlayer.PlayMusic(Path.Combine("assets", "sounds", "doom_music.mp3"));
@@ -114,6 +133,9 @@ public class DoomGameScene : IGameScene
             _engine.Stop();
             return;
         }
+
+        // Update camera to follow player (smooth scrolling)
+        _cameraSystem.UpdateCamera();
 
         // Accumulate time for logic updates (run at 500ms intervals)
         _logicAccumulator += deltaTime;
@@ -225,7 +247,7 @@ public class DoomGameScene : IGameScene
         {
             if (!item.Available)
             {
-                _rootPanel.RemoveChild(item);
+                _gameViewport.RemoveChild(item);
             }
         }
         Items.RemoveAll(item => !item.Available);
@@ -235,7 +257,7 @@ public class DoomGameScene : IGameScene
         {
             if (!demon.Alive)
             {
-                _rootPanel.RemoveChild(demon);
+                _gameViewport.RemoveChild(demon);
             }
         }
         Demons.RemoveAll(demon => !demon.Alive);
