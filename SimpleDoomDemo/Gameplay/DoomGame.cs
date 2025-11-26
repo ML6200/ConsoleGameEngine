@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using ConsoleGameEngine.Engine;
+using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
+using ConsoleGameEngine.Engine.Renderer.Graphics;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
 using SimpleDoomDemo.Gameplay.Systems;
 using SimpleDoomEngine;
@@ -13,11 +15,16 @@ using SimpleDoomEngine.Gameplay.Items;
 namespace SimpleDoomDemo.Gameplay;
 
 /// <summary>
-/// Main game class using Entity-Component-System architecture.
-/// Manages entities (Player, Demons, Items) and delegates logic to Systems.
+/// Main game scene using Entity-Component-System architecture.
+/// Integrates with ConsoleEngine for automatic update/render loop.
 /// </summary>
-public class DoomGame
+public class DoomGameScene : IGameScene
 {
+    // ============================= ENGINE ==============================
+    private ConsoleEngine _engine;
+    private ConsoleGraphicsPanel _rootPanel;
+    private InputManager _input;
+
     // ============================= ENTITIES ==============================
     public Player Player { get; private set; }
     public List<Demon> Demons { get; private set; }
@@ -28,17 +35,17 @@ public class DoomGame
     private CombatSystem _combatSystem;
     private InteractionSystem _interactionSystem;
     private AISystem _aiSystem;
-    private ConsoleEngine _gameEngine;
-
-    // ============================= RENDERING & AUDIO ==============================
-    private ConsoleRenderer _renderer;
 
     // ============================= GAME STATE ==============================
     public bool Interrupted { get; set; }
     public bool Exited { get; set; }
     public double PlayerFillingRatio { get; private set; } = 0.4;
-    
-    public DoomGame()
+
+    // ============================= TIMING ==============================
+    private const double LOGIC_UPDATE_INTERVAL = 0.5; // 500ms in seconds
+    private double _logicAccumulator = 0;
+
+    public DoomGameScene()
     {
         // Initialize entities
         Player = new Player(0, 0);
@@ -50,27 +57,74 @@ public class DoomGame
         _combatSystem = new CombatSystem(this);
         _interactionSystem = new InteractionSystem(this);
         _aiSystem = new AISystem(this, _combatSystem);
-
-        // Initialize renderer
-        _renderer = new ConsoleRenderer(this);
     }
 
-    public void Run()
+    public void Initialize(ConsoleEngine consoleEngine)
     {
-        Console.CursorVisible = false;
-        Console.SetCursorPosition(0, 0);
+        _engine = consoleEngine;
+        _rootPanel = _engine.GetRootPanel();
+        _input = _engine.Input;
+
+        // Subscribe to input events
+        _input.OnKeyPressed += OnKeyPressed;
 
         // Setup cleanup handlers
         Console.CancelKeyPress += (sender, e) => AudioPlayer.StopMusic();
         AppDomain.CurrentDomain.ProcessExit += (sender, e) => AudioPlayer.StopMusic();
+    }
 
+    public void OnEnter()
+    {
+        // Add all entities to root panel as children
+        _rootPanel.AddChild(Player);
+
+        foreach (var item in Items)
+        {
+            _rootPanel.AddChild(item);
+        }
+
+        foreach (var demon in Demons)
+        {
+            _rootPanel.AddChild(demon);
+        }
+
+        // Start music
         AudioPlayer.PlayMusic(Path.Combine("assets", "sounds", "doom_music.mp3"));
+    }
 
-        // Main game loop
-        
+    public void OnUpdate(double deltaTime)
+    {
+        // Check game over conditions
+        if (Interrupted || !Player.Alive || Exited)
+        {
+            HandleGameOver();
+            _engine.Stop();
+            return;
+        }
 
-        // Game over handling
-        HandleGameOver();
+        // Accumulate time for logic updates (run at 500ms intervals)
+        _logicAccumulator += deltaTime;
+
+        if (_logicAccumulator >= LOGIC_UPDATE_INTERVAL)
+        {
+            long deltaTimeMs = (long)(_logicAccumulator * 1000);
+            UpdateGameLogic(deltaTimeMs);
+            _logicAccumulator = 0;
+        }
+
+        // Component animations update automatically via engine
+        // No need to manually call Update() on components
+    }
+
+    public void OnExit()
+    {
+        AudioPlayer.StopMusic();
+
+        // Clean up input events
+        if (_input != null)
+        {
+            _input.OnKeyPressed -= OnKeyPressed;
+        }
     }
 
     private void UpdateGameLogic(long deltaTime)
@@ -84,31 +138,9 @@ public class DoomGame
         CleanupEntities();
     }
 
-    private void UpdateAnimations(double deltaTime)
+    private void OnKeyPressed(object sender, KeyEventArgs e)
     {
-        // Update player animations
-        Player.Update(deltaTime);
-
-        // Update demon animations
-        foreach (Demon demon in Demons)
-        {
-            demon.Update(deltaTime);
-        }
-
-        // Update item animations
-        foreach (GameItem item in Items)
-        {
-            item.Update(deltaTime);
-        }
-    }
-
-    private void ProcessUserInput()
-    {
-        if (!Console.KeyAvailable)
-            return;
-        
-
-        switch (pressedKey.Key)
+        switch (e.Key)
         {
             case ConsoleKey.E:
                 Interrupted = true;
@@ -151,10 +183,24 @@ public class DoomGame
 
     private void CleanupEntities()
     {
-        // Remove unavailable items
+        // Remove unavailable items from rendering
+        foreach (var item in Items)
+        {
+            if (!item.Available)
+            {
+                _rootPanel.RemoveChild(item);
+            }
+        }
         Items.RemoveAll(item => !item.Available);
 
-        // Remove dead demons
+        // Remove dead demons from rendering
+        foreach (var demon in Demons)
+        {
+            if (!demon.Alive)
+            {
+                _rootPanel.RemoveChild(demon);
+            }
+        }
         Demons.RemoveAll(demon => !demon.Alive);
     }
 
@@ -162,20 +208,32 @@ public class DoomGame
     {
         AudioPlayer.StopMusic();
 
+        Console.Clear();
+        Console.SetCursorPosition(Console.WindowWidth / 2 - 10, Console.WindowHeight / 2);
+
         if (!Player.Alive)
         {
             PlaySoundEffect(SoundEffectType.PlayerDeath);
-            _renderer.RenderFullScreenText("YOU DIED!", ConsoleColor.Black, ConsoleColor.Red);
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("YOU DIED!");
         }
         else if (Interrupted)
         {
-            _renderer.RenderFullScreenText("EXITED", ConsoleColor.Black, ConsoleColor.Green);
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("EXITED");
         }
         else if (Exited)
         {
             PlaySoundEffect(SoundEffectType.LevelExit);
-            _renderer.RenderFullScreenText("LEVEL COMPLETE!", ConsoleColor.Black, ConsoleColor.Green);
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("LEVEL COMPLETE!");
         }
+
+        Console.ReadLine();
+        Console.ResetColor();
     }
 
     public void LoadMapFromPlainText(string path)

@@ -11,4 +11,10 @@
       <PackageReference Include="NAudio" Version="2.2.1" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="assets\**\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
 </Project>
