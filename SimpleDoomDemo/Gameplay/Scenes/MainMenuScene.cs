@@ -33,17 +33,7 @@ public class MainMenuScene : IGameScene
         int centerX = Console.WindowWidth / 2;
         int centerY = Console.WindowHeight / 2;
 
-        // Create title panel
-        var titlePanel = new ConsoleGraphicsPanel
-        {
-            RelativePosition = new Position2D(centerX - 20, centerY - 10),
-            Size = new Dimension2D(40, 3),
-            BackgroundColor = ConsoleColor.Black,
-            ForegroundColor = ConsoleColor.Red,
-            HasBorder = true,
-            BorderColor = ConsoleColor.DarkRed
-        };
-        _rootPanel.AddChild(titlePanel);
+        // Title is not needed - buttons are self-explanatory
 
         // Create Play button
         _playButton = new ConsoleGraphicsButton("PLAY GAME")

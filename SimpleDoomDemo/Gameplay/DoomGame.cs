@@ -6,12 +6,14 @@ using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
+using SimpleDoomDemo.Gameplay.Scenes;
 using SimpleDoomDemo.Gameplay.Systems;
 using SimpleDoomDemo.Gameplay.UI;
 using SimpleDoomEngine;
 using SimpleDoomEngine.Engine;
 using SimpleDoomEngine.Gameplay.Actors;
 using SimpleDoomEngine.Gameplay.Items;
+using GameOverScene = SimpleDoomDemo.Gameplay.Scenes.GameOverScene;
 
 namespace SimpleDoomDemo.Gameplay;
 
@@ -44,6 +46,7 @@ public class DoomGameScene : IGameScene
     public bool Interrupted { get; set; }
     public bool Exited { get; set; }
     public double PlayerFillingRatio { get; private set; } = 0.4;
+    private bool _gameOverHandled = false;
 
     // ============================= TIMING ==============================
     private const double LOGIC_UPDATE_INTERVAL = 0.5; // 500ms in seconds
@@ -111,11 +114,17 @@ public class DoomGameScene : IGameScene
 
     public void OnUpdate(double deltaTime)
     {
-        // Check game over conditions
-        if (Interrupted || !Player.Alive || Exited)
+        // Check game over conditions (only once)
+        if ((Interrupted || !Player.Alive || Exited) && !_gameOverHandled)
         {
+            _gameOverHandled = true;
             HandleGameOver();
-            _engine.Stop();
+            return;
+        }
+
+        // Don't update game logic if game over was triggered
+        if (_gameOverHandled)
+        {
             return;
         }
 
@@ -252,32 +261,9 @@ public class DoomGameScene : IGameScene
     {
         AudioPlayer.StopMusic();
 
-        Console.Clear();
-        Console.SetCursorPosition(Console.WindowWidth / 2 - 10, Console.WindowHeight / 2);
-
-        if (!Player.Alive)
-        {
-            PlaySoundEffect(SoundEffectType.PlayerDeath);
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("YOU DIED!");
-        }
-        else if (Interrupted)
-        {
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("EXITED");
-        }
-        else if (Exited)
-        {
-            PlaySoundEffect(SoundEffectType.LevelExit);
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("LEVEL COMPLETE!");
-        }
-
-        Console.ReadLine();
-        Console.ResetColor();
+        // Create game over scene
+        var gameOverScene = new GameOverScene(Player, !Player.Alive, Exited, Interrupted);
+        _engine.LoadScene(gameOverScene);
     }
 
     public void LoadMapFromPlainText(string path)
