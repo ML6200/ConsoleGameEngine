@@ -17,7 +17,7 @@ public class Imp : Demon
     
     public override void Render(ConsoleRenderer2D consoleRenderer2D)
     {
-        if (!Alive) return;
+        if (!Alive || !Visible) return;
         consoleRenderer2D.SetCell(AbsolutePosition.X,
             AbsolutePosition.Y,
             new Cell('o', ConsoleColor.Black, ConsoleColor.White));

@@ -133,10 +133,7 @@ public class DoomGameScene : IGameScene
             _engine.Stop();
             return;
         }
-
-        // Update camera to follow player (smooth scrolling)
-        _cameraSystem.UpdateCamera();
-
+        
         // Accumulate time for logic updates (run at 500ms intervals)
         _logicAccumulator += deltaTime;
 
@@ -146,9 +143,8 @@ public class DoomGameScene : IGameScene
             UpdateGameLogic(deltaTimeMs);
             _logicAccumulator = 0;
         }
-
-        // Component animations update automatically via engine
-        // No need to manually call Update() on components
+        // Update camera to follow player (smooth scrolling)
+        _cameraSystem.UpdateCamera();
     }
 
     public void OnExit()
@@ -171,7 +167,6 @@ public class DoomGameScene : IGameScene
 
         // Update visibility (fog of war)
         UpdateVisibility();
-
         // Update HUD
         _hud?.UpdateHUD();
 
