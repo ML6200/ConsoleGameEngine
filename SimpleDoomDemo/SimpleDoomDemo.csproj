@@ -11,4 +11,17 @@
       <ProjectReference Include="..\ConsoleGameEngine\ConsoleGameEngine.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="bin\Debug\net9.0\assets\maps\demo_map.txt" />
+      <None Include="bin\Debug\net9.0\assets\maps\pmp_arena.txt" />
+      <None Include="bin\Debug\net9.0\assets\sounds\bfg.mp3" />
+      <None Include="bin\Debug\net9.0\assets\sounds\doom_music.mp3" />
+      <None Include="bin\Debug\net9.0\assets\sounds\door.mp3" />
+      <None Include="bin\Debug\net9.0\assets\sounds\item_pickup.mp3" />
+      <None Include="bin\Debug\net9.0\assets\sounds\level_complete.mp3" />
+      <None Include="bin\Debug\net9.0\assets\sounds\pain.mp3" />
+      <None Include="bin\Debug\net9.0\assets\sounds\player_death.mp3" />
+      <None Include="bin\Debug\net9.0\assets\sounds\shotgun.mp3" />
+    </ItemGroup>
+
 </Project>
