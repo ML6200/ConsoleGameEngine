@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer;
@@ -12,7 +13,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     private InputManager _inputManager;
     private readonly ConsoleRenderManager _renderManager;
     private readonly ConsoleRenderer2D _renderer;
-    private readonly ConsoleWindowComponent _window;
+    private readonly ConsoleWindowComponent _rootComponent;
     
     private Thread? _updateThread;
     private CancellationTokenSource? _cancellationTokenSource;
@@ -68,8 +69,8 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
             Visible = true
         };
         
-        _window = new ConsoleWindowComponent(rootPane);
-        _renderManager = new ConsoleRenderManager(_renderer, _window, _targetUpdatesPerSecond);
+        _rootComponent = new ConsoleWindowComponent(rootPane);
+        _renderManager = new ConsoleRenderManager(_renderer, _rootComponent, _targetUpdatesPerSecond);
     }
     
     public void Initialize()
@@ -138,9 +139,9 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
             }
         }
 
-        GetRootPanel()?.Update(deltaTime);
-        
+        GetRootPanel().Update(deltaTime);
         _currentScene?.OnUpdate(deltaTime);
+        
     }
     
     public void LoadScene(IGameScene scene)
@@ -175,32 +176,30 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
                     "before starting update loop"
                 );
         }
-
-        _lastUpdateTime = DateTime.Now;
-        double targetFrameTime = 1.0 / _targetUpdatesPerSecond;
+        double targetFrameTime = 1000.0 / _targetUpdatesPerSecond;
 
         while (_isRunning
                && !_cancellationTokenSource!.Token.IsCancellationRequested)
         {
-            var frameStart = DateTime.Now;
+            DateTime frameStart = DateTime.Now;
 
             OnUpdate();
-
-            // Throttle to target FPS
-            var frameEnd = DateTime.Now;
-            double frameTime = (frameEnd - frameStart).TotalSeconds;
+            
+            DateTime frameEnd = DateTime.Now;
+            double frameTime = (frameEnd - frameStart).TotalMilliseconds;
             double sleepTime = targetFrameTime - frameTime;
-
-            if (sleepTime > 0)
-            {
-                Thread.Sleep((int)(sleepTime * 1000));
-            }
+            
+             if (sleepTime > 0)
+             {
+                 //File.AppendAllText("out.txt", ""+(sleepTime)+"\n");
+                 Thread.Sleep((int)sleepTime);
+             }
         }
     }
     
     public ConsoleGraphicsPanel GetRootPanel()
     {
-        return (ConsoleGraphicsPanel)_window.ConsoleGraphicsComponent;
+        return (ConsoleGraphicsPanel)_rootComponent.ConsoleGraphicsComponent;
     }
     
     public void SetInitialScene(IGameScene scene)

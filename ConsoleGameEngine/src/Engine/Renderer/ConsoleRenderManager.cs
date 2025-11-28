@@ -95,7 +95,7 @@ public class ConsoleRenderManager : IDisposable
     
     private void RenderLoop(CancellationToken ct)
     {
-        double targetFrameTime = 1.0 / _updatesPerSecond;
+        double targetFrameTime = 1000.0 / _updatesPerSecond;
         
         while (!ct.IsCancellationRequested)
         {
@@ -106,18 +106,22 @@ public class ConsoleRenderManager : IDisposable
             {
                 root = _rootComponent;
             }
-            
-            _renderer.Clear();
-            root?.Render(_renderer);
-            _renderer.Render();
-            
-            DateTime frameEndTime = DateTime.Now;
-            double elapsedTime = (frameEndTime - frameStartTime).TotalSeconds;
-            double sleepTime = targetFrameTime - elapsedTime;
 
-            if (sleepTime > 0)
+            if (!IsWindowResized())
             {
-                Thread.Sleep((int)(sleepTime * 1000));
+                _renderer.Clear();
+                root?.Render(_renderer);
+                _renderer.Render();
+            }
+
+
+            DateTime frameEndTime = DateTime.Now;
+            double elapsedTime = (frameEndTime - frameStartTime).TotalMilliseconds;
+            double sleepTime = targetFrameTime - elapsedTime;
+            
+            if (sleepTime > 0) 
+            { 
+                Thread.Sleep((int)(sleepTime));
             }
         }
     }

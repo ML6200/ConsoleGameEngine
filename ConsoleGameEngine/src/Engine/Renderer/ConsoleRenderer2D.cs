@@ -1,6 +1,6 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using System.Threading;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 /*
@@ -46,7 +46,10 @@ public class ConsoleRenderer2D
     private int _height;
     
     private Cell[,] _renderBuffer;
+    private Cell[,] _cacheBuffer;
     private bool[,] _dirtyMarks;
+    
+    private volatile bool _isResizing;
 
     public int Width
     {
@@ -61,14 +64,15 @@ public class ConsoleRenderer2D
 
     public void SetDimension(int width, int height)
     {
-        lock (_bufferLock)
-        {
-            _width = width;
-            _height = height;
-            _renderBuffer = new Cell[_width, _height];
-            _dirtyMarks = new bool[_width, _height];
-            Clear();
-        }
+        _isResizing = true;
+        _width = width;
+        _height = height;
+        _renderBuffer = new Cell[_width, _height];
+        _cacheBuffer = new Cell[_width, _height];
+        _dirtyMarks = new bool[_width, _height];
+        
+        Thread.MemoryBarrier();
+        _isResizing = false;
     }
 
     public ConsoleRenderer2D(int width, int height)
@@ -82,6 +86,7 @@ public class ConsoleRenderer2D
     {
         _width = dimension.Width;
         _height = dimension.Height;
+        InitRenderer();
     }
 
     public void InitRenderer()
@@ -90,6 +95,7 @@ public class ConsoleRenderer2D
         Console.Clear();
         
         _renderBuffer = new Cell[_width, _height];
+        _cacheBuffer = new Cell[_width, _height];
         _dirtyMarks = new bool[_width, _height];
 
         Clear();
@@ -103,33 +109,31 @@ public class ConsoleRenderer2D
         return x >= 0 && x < _width && y >= 0 && y < _height;
     }
 
-    public void Clear(ConsoleColor bgColor = ConsoleColor.Black,
-        ConsoleColor fgColor = ConsoleColor.White)
+    public void Clear()
     {
-        lock (_bufferLock)
+        if (_isResizing) return;
+        
+        for (int i = 0; i < _height; i++)
         {
-            for (int i = 0; i < _height; i++)
+            for (int j = 0; j < _width; j++)
             {
-                for (int j = 0; j < _width; j++)
-                {
-                    _renderBuffer[j, i] = new Cell(RenderSpecCharacters.Empty, bgColor, fgColor);
-                    _dirtyMarks[j, i] = true;  // Mark as dirty to trigger render
-                }
+                _renderBuffer[j, i] = new Cell();
+                _cacheBuffer[j, i] = new Cell();
+                _dirtyMarks[j, i] = true; 
             }
         }
     }
 
     public void SetCell(int x, int y, Cell cell)
     {
-        lock (_bufferLock)
+        if (_isResizing)  return;
+        
+        if (IsValidCoordinate(x, y))
         {
-            if (IsValidCoordinate(x, y))
+            if (!_renderBuffer[x, y].Equals(cell))
             {
-                if (!_renderBuffer[x, y].Equals(cell))
-                {
-                    _renderBuffer[x, y] = cell;
-                    _dirtyMarks[x, y] = true;
-                }
+                _renderBuffer[x, y] = cell;
+                _dirtyMarks[x, y] = true;
             }
         }
     }
@@ -138,12 +142,11 @@ public class ConsoleRenderer2D
         ConsoleColor bgColor = ConsoleColor.Black,
         ConsoleColor fgColor = ConsoleColor.White)
     {
-        lock (_bufferLock)
+        if (_isResizing) return;
+        
+        for (int i = 0; i < text.Length; i++)
         {
-            for (int i = 0; i < text.Length; i++)
-            {
-                SetCell(x + i, y, new Cell(text[i], bgColor, fgColor));
-            }
+            SetCell(x + i, y, new Cell(text[i], bgColor, fgColor));
         }
     }
     
@@ -173,20 +176,19 @@ public class ConsoleRenderer2D
      */
     public void DrawTriangle(int x, int y,
         int height,
-        Cell cell = default)
+        Cell? cell = default)
     {
-        lock (_bufferLock)
+        if (_isResizing) return;
+        
+        for (int dy = 1; dy <= height; dy++)
         {
-            for (int dy = 1; dy <= height; dy++)
+            for (int i = 1; i <= dy; i++)
             {
-                for (int i = 1; i <= dy; i++)
-                {
-                    _renderBuffer[x, y + i] = new Cell(
-                        RenderSpecCharacters.Empty,
-                        cell.BackgroundColor,
-                        cell.ForegroundColor
-                    );
-                }
+                _renderBuffer[x, y + i] = new Cell(
+                    RenderSpecCharacters.Empty,
+                    cell.BackgroundColor,
+                    cell.ForegroundColor
+                );
             }
         }
     }
@@ -196,76 +198,75 @@ public class ConsoleRenderer2D
         ConsoleColor fg = ConsoleColor.White)
 
     {
-        lock (_bufferLock)
+        if (_isResizing) return;
+        
+        SetCell(x, y, 
+            new Cell(
+                RenderSpecCharacters.TopLeftCorner,
+                bg,
+                fg
+            )
+        ); // top left corner
+
+        SetCell(x + width - 1, y, 
+            new Cell(
+                RenderSpecCharacters.TopRightCorner,
+                bg,
+                fg
+            )
+        ); // top right corner
+
+        SetCell(x, y + height - 1, 
+            new Cell(
+                RenderSpecCharacters.BottomLeftCorner,
+                bg,
+                fg
+            )
+        ); // bottom left corner
+
+        SetCell(x + width - 1, y + height - 1,
+            new Cell(
+                RenderSpecCharacters.BottomRightCorner,
+                bg,
+                fg
+            )
+        ); // bottom right corner
+
+        for (int xIndex = 1; xIndex < width - 1; xIndex++)
         {
-            SetCell(x, y, 
+            SetCell(x + xIndex, y,
                 new Cell(
-                    RenderSpecCharacters.TopLeftCorner,
+                    RenderSpecCharacters.HorizontalLine, 
+                    bg, 
+                    fg
+                )
+            );
+
+            SetCell(x + xIndex, y + height - 1,
+                new Cell(
+                    RenderSpecCharacters.HorizontalLine,
                     bg,
                     fg
                 )
-            ); // top left corner
+            );
+        }
 
-            SetCell(x + width - 1, y, 
+        for (int yIndex = 1; yIndex < height - 1; yIndex++)
+        {
+            SetCell(x, y + yIndex,
                 new Cell(
-                    RenderSpecCharacters.TopRightCorner,
+                    RenderSpecCharacters.VerticalLine,
                     bg,
                     fg
                 )
-            ); // top right corner
-
-            SetCell(x, y + height - 1, 
+            );
+            SetCell(x + width - 1, y + yIndex,
                 new Cell(
-                    RenderSpecCharacters.BottomLeftCorner,
+                    RenderSpecCharacters.VerticalLine,
                     bg,
                     fg
                 )
-            ); // bottom left corner
-
-            SetCell(x + width - 1, y + height - 1,
-                new Cell(
-                    RenderSpecCharacters.BottomRightCorner,
-                    bg,
-                    fg
-                )
-            ); // bottom right corner
-
-            for (int xIndex = 1; xIndex < width - 1; xIndex++)
-            {
-                SetCell(x + xIndex, y,
-                    new Cell(
-                        RenderSpecCharacters.HorizontalLine, 
-                        bg, 
-                        fg
-                    )
-                );
-
-                SetCell(x + xIndex, y + height - 1,
-                    new Cell(
-                        RenderSpecCharacters.HorizontalLine,
-                        bg,
-                        fg
-                    )
-                );
-            }
-
-            for (int yIndex = 1; yIndex < height - 1; yIndex++)
-            {
-                SetCell(x, y + yIndex,
-                    new Cell(
-                        RenderSpecCharacters.VerticalLine,
-                        bg,
-                        fg
-                    )
-                );
-                SetCell(x + width - 1, y + yIndex,
-                    new Cell(
-                        RenderSpecCharacters.VerticalLine,
-                        bg,
-                        fg
-                    )
-                );
-            }
+            );
         }
     }
 
@@ -276,57 +277,40 @@ public class ConsoleRenderer2D
         ConsoleColor bg = ConsoleColor.Black,
         ConsoleColor fg = ConsoleColor.White)
     {
-        lock (_bufferLock)
+        if (_isResizing) return;
+        
+        for (int dy = 0; dy < height; dy++)
         {
-            for (int dy = 0; dy < height; dy++)
+            for (int dx = 0; dx < width; dx++)
             {
-                for (int dx = 0; dx < width; dx++)
+                if (IsValidCoordinate(x + dx, y + dy))
                 {
-                    if (IsValidCoordinate(x + dx, y + dy))
-                    {
-                        Cell cell = _renderBuffer[x + dx, y + dy];
-                        cell.BackgroundColor = bg;
-                        cell.ForegroundColor = fg;
-                        cell.Character = character;
-                        SetCell(x + dx, y + dy, cell);
-                    }
+                    Cell cell = _renderBuffer[x + dx, y + dy];
+                    cell.BackgroundColor = bg;
+                    cell.ForegroundColor = fg;
+                    cell.Character = character;
+                    SetCell(x + dx, y + dy, cell);
                 }
             }
-        }
+        }   
     }
     
-    private readonly StringBuilder _writeBuffer = new StringBuilder();
     private ConsoleColor _lastFg = ConsoleColor.White;
     private ConsoleColor _lastBg = ConsoleColor.Black;
 
     public void Render()
     {
-        int widthSnapshot, heightSnapshot;
-        Cell[,] bufferSnapshot;
-        bool[,] dirtySnapshot;
-
-        lock (_bufferLock)
+        if(_isResizing) return;
+        
+        for (int y = 0; y < _height; y++)
         {
-            bufferSnapshot = (Cell[,])_renderBuffer.Clone();
-            dirtySnapshot = (bool[,])_dirtyMarks.Clone();
-            widthSnapshot = _width;
-            heightSnapshot = _height;
-
-            // Clear dirty marks for next frame
-            Array.Clear(_dirtyMarks, 0, _dirtyMarks.Length);
-        }
-
-        // Only render dirty cells
-        for (int y = 0; y < heightSnapshot; y++)
-        {
-            for (int x = 0; x < widthSnapshot; x++)
+            for (int x = 0; x < _width; x++)
             {
-                if (dirtySnapshot[x, y])
+                if (_dirtyMarks[x, y] && _cacheBuffer[x, y] != _renderBuffer[x, y])
                 {
-                    Cell cell = bufferSnapshot[x, y];
+                    Cell cell = _renderBuffer[x, y];
                     Console.SetCursorPosition(x, y);
 
-                    // Only emit ANSI codes if colors changed
                     if (cell.ForegroundColor != _lastFg || cell.BackgroundColor != _lastBg)
                     {
                         Console.Write(GetAnsiColorCode(cell.ForegroundColor, cell.BackgroundColor));
@@ -335,6 +319,7 @@ public class ConsoleRenderer2D
                     }
 
                     Console.Write(cell.Character);
+                    _cacheBuffer[x, y] = cell;
                 }
             }
         }

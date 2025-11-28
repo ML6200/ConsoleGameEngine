@@ -45,7 +45,7 @@ public class InteractionSystem : IGameSystem
                     _game.PlaySoundEffect(SoundEffectType.Door);
 
                     // Door animation - quick blink
-                    var doorAnim = AnimationTween.Blink(item, 100, loop: false);
+                    var doorAnim = AnimationTween.Blink(item, 0.3, loop: false);
                     item.AddAnimation(doorAnim);
                     break;
 
@@ -75,7 +75,7 @@ public class InteractionSystem : IGameSystem
                     _game.PlaySoundEffect(SoundEffectType.ItemPickup);
 
                     // Pickup animation
-                    var pickupAnim = AnimationTween.Blink(item, 50, loop: false);
+                    var pickupAnim = AnimationTween.Blink(item, 0.3, loop: false);
                     item.AddAnimation(pickupAnim);
                     break;
 
@@ -86,7 +86,7 @@ public class InteractionSystem : IGameSystem
                         item.Interact();
                         _game.PlaySoundEffect(SoundEffectType.ItemPickup);
 
-                        var cellPickupAnim = AnimationTween.Blink(item, 50, loop: false);
+                        var cellPickupAnim = AnimationTween.Blink(item, 0.3, loop: false);
                         item.AddAnimation(cellPickupAnim);
                     }
                     break;
@@ -96,15 +96,15 @@ public class InteractionSystem : IGameSystem
                     item.Interact();
                     _game.PlaySoundEffect(SoundEffectType.ItemPickup);
 
-                    var medkitAnim = AnimationTween.Blink(item, 50, loop: false);
+                    var medkitAnim = AnimationTween.Blink(item, 0.5, false);
                     item.AddAnimation(medkitAnim);
                     break;
 
                 case ItemType.TOXICWASTE:
                     _game.Player.TakeDamage(5);
                     _game.PlaySoundEffect(SoundEffectType.Pain);
-                    // Visual feedback for toxic damage (player blinks)
-                    var toxicAnim = AnimationTween.Blink(_game.Player, 100, loop: false);
+
+                    var toxicAnim = AnimationTween.Blink(_game.Player, 0.5, false);
                     _game.Player.AddAnimation(toxicAnim);
                     break;
             }
@@ -124,11 +124,10 @@ public class InteractionSystem : IGameSystem
             {
                 if (item.Type == ItemType.TOXICWASTE)
                 {
-                    demon.TakeDamage(5);
-
-                    // Visual feedback for demon taking toxic damage
-                    var toxicAnim = AnimationTween.Blink(demon, 100, loop: false);
+                    var toxicAnim = AnimationTween.Blink(demon, 0.3);
                     demon.AddAnimation(toxicAnim);
+                    
+                    demon.TakeDamage(5);
                 }
             }
         }
