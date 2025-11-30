@@ -103,7 +103,7 @@ public class DoomGameScene : IGameScene
         // Create and add HUD (positioned at bottom of screen)
         int hudWidth = Console.WindowWidth;
         int hudHeight = 1;
-        _hud = new GameHud(Player, hudWidth, hudHeight)
+        _hud = new GameHud(_engine, Player, hudWidth, hudHeight)
         {
             RelativePosition = new Position2D(0, Console.WindowHeight - 1)
         };

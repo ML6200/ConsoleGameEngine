@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
@@ -15,6 +16,7 @@ public class ConsoleRenderManager : IDisposable
     private ConsoleWindowComponent _rootComponent;
     private int _updatesPerSecond;
     
+    public double CurrentFps {get; private set; }
     public FocusManager FocusManager { get; set; }
 
     public event EventHandler OnWindowResized;
@@ -22,7 +24,7 @@ public class ConsoleRenderManager : IDisposable
     public ConsoleRenderManager(ConsoleRenderer2D renderer, ConsoleWindowComponent rootComponent, int updatesPerSecond)
     {
         _renderer = renderer;
-        _renderer.InitRenderer();
+        //_renderer.InitRenderer();
         _rootComponent = rootComponent;
         _updatesPerSecond = updatesPerSecond;
         
@@ -71,7 +73,7 @@ public class ConsoleRenderManager : IDisposable
             Name = nameof(WindowEventLoop),
             IsBackground = true,
         };
-        windowEventThread.Start();
+        //windowEventThread.Start();
     }
 
     public void Stop()
@@ -93,34 +95,47 @@ public class ConsoleRenderManager : IDisposable
         }
     }
     
+    private Stopwatch timer = new Stopwatch();
     private void RenderLoop(CancellationToken ct)
     {
-        double targetFrameTime = 1000.0 / _updatesPerSecond;
+        long targetTicksPerFrame = (long) 10_000_000 / _updatesPerSecond;
         
         while (!ct.IsCancellationRequested)
         {
-            DateTime frameStartTime = DateTime.Now;
+            timer.Restart();
             
-            ConsoleWindowComponent root = Volatile.Read(ref _rootComponent);
-            if (!IsWindowResized())
+            if (IsWindowResized())
             {
+                _renderer.SetDimension(Console.WindowWidth, Console.WindowHeight);
+                OnWindowResized?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                ConsoleWindowComponent root = Volatile.Read(ref _rootComponent);
+                
                 _renderer.Clear();
                 root.Render(_renderer);
                 _renderer.Render();   
             }
-
-            DateTime frameEndTime = DateTime.Now;
-            double elapsedTime = (frameEndTime - frameStartTime).TotalMilliseconds;
-            double sleepTime = targetFrameTime - elapsedTime;
             
-            if (sleepTime > 0) 
-            { 
-                Thread.Sleep((int)(sleepTime));
+            while (targetTicksPerFrame > timer.ElapsedTicks)
+            {
+                if (targetTicksPerFrame - timer.ElapsedTicks > 20_000)
+                {
+                    Thread.Sleep(1);
+                }
+            }
+
+            double fps = timer.Elapsed.TotalMilliseconds;
+
+            if (fps > 0)
+            {
+                CurrentFps = 1000.0D / fps;
             }
         }
     }
 
-    public void SetTargetRenderFPS(int fps)
+    public void SetTargetRenderFps(int fps)
     {
         _updatesPerSecond = fps;
     }
@@ -131,8 +146,7 @@ public class ConsoleRenderManager : IDisposable
         {
             if (IsWindowResized())
             {
-                _renderer.SetDimension(Console.WindowWidth, Console.WindowHeight);
-                OnWindowResized?.Invoke(this, EventArgs.Empty);
+                
             }
             
             Thread.Sleep(100);

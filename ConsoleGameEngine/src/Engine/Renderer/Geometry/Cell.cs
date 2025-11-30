@@ -3,28 +3,19 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ConsoleGameEngine.Engine.Renderer.Geometry;
 
-public class Cell : IEquatable<Cell>
+public readonly struct Cell : IEquatable<Cell>
 {
-    public char Character {get; set;}
-    public ConsoleColor BackgroundColor 
-    { 
-        get; 
-        set; 
-    }
-
-    public ConsoleColor ForegroundColor
-    {
-        get; 
-        set;
-    }
+    public readonly char Character;
+    public readonly ConsoleColor ForegroundColor;
+    public readonly ConsoleColor BackgroundColor;
 
     public Cell(char character = ' ', 
         ConsoleColor backgroundColor = ConsoleColor.Black, 
         ConsoleColor foregroundColor = ConsoleColor.White)
     {
-        this.Character = character;
-        this.BackgroundColor = backgroundColor;
-        this.ForegroundColor = foregroundColor;
+        Character = character;
+        BackgroundColor = backgroundColor;
+        ForegroundColor = foregroundColor;
     }
 
     public override bool Equals([NotNullWhen(true)] object? obj)
@@ -51,4 +42,6 @@ public class Cell : IEquatable<Cell>
     {
         return HashCode.Combine(Character, (int)BackgroundColor, (int)ForegroundColor);
     }
+    
+    public static Cell Empty => new Cell(' ', ConsoleColor.Black, ConsoleColor.White);
 }

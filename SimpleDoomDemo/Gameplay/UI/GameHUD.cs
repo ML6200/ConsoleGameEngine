@@ -1,4 +1,5 @@
 using System;
+using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
@@ -12,9 +13,11 @@ namespace SimpleDoomDemo.Gameplay.UI;
 public class GameHud : ConsoleGraphicsPanel
 {
     private readonly Player _player;
+    private readonly ConsoleEngine _engine;
 
-    public GameHud(Player player, int width, int height)
+    public GameHud(ConsoleEngine engine, Player player, int width, int height)
     {
+        _engine = engine;
         _player = player;
 
         // Configure panel
@@ -37,7 +40,11 @@ public class GameHud : ConsoleGraphicsPanel
         int x = AbsolutePosition.X;
         int y = AbsolutePosition.Y;
 
-        string hudText = $"HP: {_player.Health}/{_player.MaxHealth}  Ammo: {_player.Ammo}/{_player.MaxAmmo}  BFG: {_player.BFGCells}/{_player.MaxBFGCells}  XP: {_player.CombatPoints}";
+        string hudText = $"HP: {_player.Health}/{_player.MaxHealth}  " +
+                         $"Ammo: {_player.Ammo}/{_player.MaxAmmo}  " +
+                         $"BFG: {_player.BFGCells}/{_player.MaxBFGCells}  " +
+                         $"XP: {_player.CombatPoints}  " +
+                         $"Framerate: {_engine.RenderManager.CurrentFps} FPS";
 
         renderer.DrawText(x, y, hudText, ConsoleColor.White, ConsoleColor.Black);
     }

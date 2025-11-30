@@ -39,7 +39,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         set
         {
             _targetRenderFps = value != 0 ? value : 60;
-            _renderManager?.SetTargetRenderFPS(_targetRenderFps);
+            _renderManager?.SetTargetRenderFps(_targetRenderFps);
         }
         
     }
@@ -51,6 +51,8 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     public ConsoleRenderManager RenderManager => _renderManager;
     public bool IsRunning => _isRunning;
     public IGameScene? CurrentScene => _currentScene;
+    
+    public double CurrentLogicRate { get; private set; }
 
 
     public ConsoleEngine(int? windowWidth = null, int? windowHeight = null)
@@ -188,10 +190,10 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
             DateTime frameEnd = DateTime.Now;
             double frameTime = (frameEnd - frameStart).TotalMilliseconds;
             double sleepTime = targetFrameTime - frameTime;
+            CurrentLogicRate = frameTime * 1000;
             
              if (sleepTime > 0)
              {
-                 //File.AppendAllText("out.txt", ""+(sleepTime)+"\n");
                  Thread.Sleep((int)sleepTime);
              }
         }
