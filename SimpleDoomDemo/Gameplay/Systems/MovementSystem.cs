@@ -7,10 +7,6 @@ using SimpleDoomEngine.Gameplay.Items;
 
 namespace SimpleDoomDemo.Gameplay.Systems;
 
-/// <summary>
-/// Handles movement logic for all entities (player and demons).
-/// Checks collision with walls and other entities using FillingRatio.
-/// </summary>
 public class MovementSystem : IGameSystem
 {
     private readonly DoomGameScene _game;
@@ -22,18 +18,17 @@ public class MovementSystem : IGameSystem
     }
     
     private Dictionary<int, List<object>> _spatialGrid = new();
-    private const int GRID_SIZE = 5;  // 5x5 cell buckets
+    private const int GRID_SIZE = 5;
 
     private int GetGridKey(Position2D pos)
     {
         int gridX = pos.X / GRID_SIZE;
         int gridY = pos.Y / GRID_SIZE;
-        return (gridY << 16) | gridX;  // Pack into int
+        return (gridY << 16) | gridX;
     }
 
     public void Update(double deltaTime)
     {
-        // Build spatial grid ONCE per update
         _spatialGrid.Clear();
 
         foreach (var item in _game.Items)
@@ -51,8 +46,7 @@ public class MovementSystem : IGameSystem
                 _spatialGrid[key] = new List<object>();
             _spatialGrid[key].Add(demon);
         }
-
-        // Move demons towards player if they're in Move state
+        
         foreach (var demon in _game.Demons)
         {
             if (demon.State == DemonState.Move)
@@ -61,10 +55,7 @@ public class MovementSystem : IGameSystem
             }
         }
     }
-
-    /// <summary>
-    /// Moves a demon one step towards the player using simple pathfinding.
-    /// </summary>
+    
     private void MoveDemonTowardsPlayer(Demon demon)
     {
         Position2D demonPos = demon.AbsolutePosition;
