@@ -18,7 +18,7 @@ public class Mancubus : Demon
 
     public override void Render(ConsoleRenderer2D consoleRenderer2D)
     {
-        if (!IsVisibleThreadSafe) return;
+        if (!Visible) return;
         consoleRenderer2D.SetCell(AbsolutePosition.X,
             AbsolutePosition.Y,
             new Cell('O', ConsoleColor.Black, ConsoleColor.DarkRed));

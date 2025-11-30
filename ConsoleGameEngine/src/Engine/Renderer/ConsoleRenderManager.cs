@@ -101,19 +101,13 @@ public class ConsoleRenderManager : IDisposable
         {
             DateTime frameStartTime = DateTime.Now;
             
-            ConsoleWindowComponent root;
-            lock (graphicsLock)
-            {
-                root = _rootComponent;
-            }
-
+            ConsoleWindowComponent root = Volatile.Read(ref _rootComponent);
             if (!IsWindowResized())
             {
                 _renderer.Clear();
-                root?.Render(_renderer);
-                _renderer.Render();
+                root.Render(_renderer);
+                _renderer.Render();   
             }
-
 
             DateTime frameEndTime = DateTime.Now;
             double elapsedTime = (frameEndTime - frameStartTime).TotalMilliseconds;

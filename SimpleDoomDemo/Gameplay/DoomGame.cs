@@ -97,6 +97,7 @@ public class DoomGameScene : IGameScene
         foreach (var demon in Demons)
         {
             _rootPanel.AddChild(demon);
+            demon.UpdateVisibility(Player.AbsolutePosition, Player.SightRange);
         }
 
         // Create and add HUD (positioned at bottom of screen)

@@ -40,7 +40,7 @@ public class CombatSystem : IGameSystem
         _game.PlaySoundEffect(SoundEffectType.Shotgun);
 
         // Trigger attack animation on player
-        var attackAnim = AnimationTween.Blink(_game.Player, 100, loop: false);
+        var attackAnim = AnimationTween.Blink(_game.Player, 0.2, loop: false);
         _game.Player.AddAnimation(attackAnim);
 
         List<Demon> nearbyDemons = GetDemonsWithinRange(_game.Player.AbsolutePosition, _game.Player.SightRange);
@@ -111,13 +111,13 @@ public class CombatSystem : IGameSystem
             _game.Player.AddCombatPoints(demon.GetCombatPoints());
 
             // Death animation - fade out or blink rapidly
-            var deathAnim = AnimationTween.Blink(demon, 50, loop: false);
+            var deathAnim = AnimationTween.Blink(demon, 0.2, loop: false);
             demon.AddAnimation(deathAnim);
         }
         else
         {
             // Hit animation
-            var hitAnim = AnimationTween.Blink(demon, 80, loop: false);
+            var hitAnim = AnimationTween.Blink(demon, 0.2, loop: false);
             demon.AddAnimation(hitAnim);
         }
     }
@@ -130,7 +130,7 @@ public class CombatSystem : IGameSystem
         if (_game.Player.Alive)
         {
             // Pain animation
-            var painAnim = AnimationTween.Blink(_game.Player, 80, loop: false);
+            var painAnim = AnimationTween.Blink(_game.Player, 0.3, loop: false);
             _game.Player.AddAnimation(painAnim);
         }
     }

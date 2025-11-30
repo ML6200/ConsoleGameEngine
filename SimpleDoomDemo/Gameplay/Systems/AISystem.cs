@@ -1,3 +1,4 @@
+using ConsoleGameEngine.Engine.Renderer.Geometry;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
 using SimpleDoomEngine.Gameplay.Actors;
 
@@ -23,7 +24,8 @@ public class AISystem : IGameSystem
         foreach (Demon demon in _game.Demons)
         {
             // Update demon state based on player position
-            demon.UpdateState(_game.Player);
+            demon.LastDistanceToPlayer = Position2D.Distance(_game.Player.AbsolutePosition, demon.AbsolutePosition);
+            demon.UpdateState(_game.Player);  // Use cached distance
 
             // Update attack cooldown timer
             demon.UpdateAttackCooldown(deltaTime);

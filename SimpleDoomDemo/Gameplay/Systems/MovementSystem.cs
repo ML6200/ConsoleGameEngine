@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
 using SimpleDoomEngine.Gameplay.Actors;
@@ -19,16 +20,36 @@ public class MovementSystem : IGameSystem
     {
         _game = game;
     }
+    
+    private Dictionary<int, List<object>> _spatialGrid = new();
+    private const int GRID_SIZE = 5;  // 5x5 cell buckets
+
+    private int GetGridKey(Position2D pos)
+    {
+        int gridX = pos.X / GRID_SIZE;
+        int gridY = pos.Y / GRID_SIZE;
+        return (gridY << 16) | gridX;  // Pack into int
+    }
 
     public void Update(long deltaTime)
     {
-        // Demon movement is handled here
-        foreach (Demon demon in _game.Demons)
+        // Build spatial grid ONCE per update
+        _spatialGrid.Clear();
+
+        foreach (var item in _game.Items)
         {
-            if (demon.State == DemonState.Move)
-            {
-                UpdateDemonMovement(demon, deltaTime);
-            }
+            int key = GetGridKey(item.AbsolutePosition);
+            if (!_spatialGrid.ContainsKey(key))
+                _spatialGrid[key] = new List<object>();
+            _spatialGrid[key].Add(item);
+        }
+
+        foreach (var demon in _game.Demons)
+        {
+            int key = GetGridKey(demon.AbsolutePosition);
+            if (!_spatialGrid.ContainsKey(key))
+                _spatialGrid[key] = new List<object>();
+            _spatialGrid[key].Add(demon);
         }
     }
 
@@ -52,49 +73,24 @@ public class MovementSystem : IGameSystem
         return false;
     }
 
-    private void UpdateDemonMovement(Demon demon, long deltaTime)
-    {
-        double pMove = (demon.Speed / 100.0) * (deltaTime / 1000.0);
-        double randomValue = _random.NextDouble();
-
-        if (randomValue < pMove)
-        {
-            // Random movement
-            int x = demon.AbsolutePosition.X + _random.Next(-1, 2);
-            int y = demon.AbsolutePosition.Y + _random.Next(-1, 2);
-            Position2D targetPosition = new Position2D(x, y);
-
-            if (IsPointWithinBounds(targetPosition))
-            {
-                double totalFillingRatio = GetTotalFillingRatio(targetPosition) + demon.FillingRatio;
-
-                if (totalFillingRatio < 1.0)
-                {
-                    demon.RelativePosition = targetPosition;
-                }
-            }
-        }
-    }
-
     private double GetTotalFillingRatio(Position2D position)
     {
         double sum = 0;
+        int key = GetGridKey(position);
 
-        // Check items
-        foreach (var item in _game.Items)
+        // Only check nearby objects!
+        if (_spatialGrid.TryGetValue(key, out var nearbyObjects))
         {
-            if (Position2D.Distance(position, item.AbsolutePosition) <= 0)
+            foreach (var obj in nearbyObjects)
             {
-                sum += item.FillingRatio;
-            }
-        }
+                Position2D objPos = obj is GameItem item
+                    ? item.AbsolutePosition
+                    : ((Demon)obj).AbsolutePosition;
 
-        // Check demons
-        foreach (var demon in _game.Demons)
-        {
-            if (Position2D.Distance(position, demon.AbsolutePosition) <= 0)
-            {
-                sum += demon.FillingRatio;
+                if (Position2D.Distance(position, objPos) <= 0)
+                {
+                    sum += obj is GameItem i ? i.FillingRatio : ((Demon)obj).FillingRatio;
+                }
             }
         }
 

@@ -12,8 +12,6 @@ public abstract class Demon : ConsoleGraphicsComponent
     // =========================FIELDS_PRIVATE==============================
     protected int _speed;
     private long _timeSinceLastAttack = 0;
-    private static readonly object _visibilityLock = new object();
-    private bool _isVisible;
 
     // =========================FIELDS_SETTERS&GETTERS==============================
     public double FillingRatio { get; protected set; }
@@ -24,17 +22,9 @@ public abstract class Demon : ConsoleGraphicsComponent
     public int Speed { get { return _speed; } }
     public DemonState  State { get; private set; }
     public int AttackCooldownMs { get; protected set; } = 500; // 0.5 seconds between attacks
-
-    protected bool IsVisibleThreadSafe
-    {
-        get
-        {
-            lock (_visibilityLock)
-            {
-                return _isVisible;
-            }
-        }
-    }
+        
+    public double LastDistanceToPlayer { get; set; }
+    
     
     // =============================METHODS==============================
 
@@ -42,6 +32,7 @@ public abstract class Demon : ConsoleGraphicsComponent
     {
         RelativePosition = new Position2D(x, y);
         Alive = true;
+        Visible = true;
     }
 
 
@@ -94,11 +85,7 @@ public abstract class Demon : ConsoleGraphicsComponent
     {
         double distance = Position2D.Distance(AbsolutePosition, playerPosition);
         bool newVisibility = Alive && distance <= sightRange;
-
-        lock (_visibilityLock)
-        {
-            _isVisible = newVisibility;
-            Visible = newVisibility;
-        }
+        
+        Visible = newVisibility;
     }
 }

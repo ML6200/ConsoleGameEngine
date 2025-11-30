@@ -124,8 +124,8 @@ public class InteractionSystem : IGameSystem
             {
                 if (item.Type == ItemType.TOXICWASTE)
                 {
-                    var toxicAnim = AnimationTween.Blink(demon, 0.3);
-                    demon.AddAnimation(toxicAnim);
+                    var damageAnim = AnimationTween.Blink(demon, 0.1, loop: false);
+                    demon.AddAnimation(damageAnim);
                     
                     demon.TakeDamage(5);
                 }
