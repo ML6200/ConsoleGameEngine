@@ -72,35 +72,56 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
     protected int Height;
 
     private Position2D? _relativePosition;
-    private List<Animation> Animations { get; } = new List<Animation>();
+    public virtual bool Visible { get; set; } = true;
+    
+    public ConsoleColor BackgroundColor { get; set; }
+    public ConsoleColor ForegroundColor { get; set; }
+    public ConsoleColor BorderColor { get; set; }
 
-    public void Update(double deltaTime)
+    private List<Animation> Animations { get; } = new List<Animation>();
+    public List<ConsoleGraphicsComponent> Children { get; } = new();
+    private IConsoleRenderable Parent { get; set; }
+    
+    private readonly object _childrenLock = new();
+    
+    
+    public Dimension2D WorldSize
     {
-        foreach (var anim in Animations.ToList())
+        get
         {
-            anim.OnUpdate(deltaTime);
-            if (anim.IsComplete)
-            {
-                Animations.Remove(anim);
-            }
-        }
-        
-        var childrenSnapshot = Children.ToList();
-        foreach (var child in childrenSnapshot)
-        {
-            child.Update(deltaTime);
+            return new Dimension2D(Console.WindowWidth, Console.WindowHeight);
         }
     }
     
-    public void AddAnimation(Animation animation)
+    
+    // ====================CONSTRUCTORS====================
+    public ConsoleGraphicsComponent(int width, int height, 
+        Position2D? relativePosition, 
+        ConsoleColor backgroundColor, 
+        ConsoleColor foregroundColor, 
+        ConsoleColor borderColor)
     {
-        Animations.Add(animation);
+        Width = width;
+        Height = height;
+        _relativePosition = relativePosition;
+        BackgroundColor = backgroundColor;
+        ForegroundColor = foregroundColor;
+        BorderColor = borderColor;
+    }
+    
+    public ConsoleGraphicsComponent(int width, int height, 
+        Position2D? relativePosition)
+    {
+        Width = width;
+        Height = height;
+        _relativePosition = relativePosition;
     }
 
-    public void ClearAnimations()
+    public ConsoleGraphicsComponent()
     {
-        Animations.Clear();
+        
     }
+    // ====================CONSTRUCTORS_END====================
     
     public Dimension2D Size
     {
@@ -143,13 +164,14 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
      * vagy Transform osztály bevezetésével.
      * 
      */
-    public Position2D AbsolutePosition
+    public Position2D? AbsolutePosition
     {
         get
         {
-            if (Parent is ConsoleGraphicsComponent parent)
+            if (Parent is ConsoleGraphicsComponent { AbsolutePosition: not null } parent)
             {
-                return parent.AbsolutePosition + _relativePosition;
+                if (_relativePosition != null)
+                    return parent.AbsolutePosition + _relativePosition;
             }
             return _relativePosition;
         }
@@ -157,7 +179,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
 
     public void SetAbsolutePosition(Position2D absolutePosition)
     {
-        if (Parent is ConsoleGraphicsComponent parent)
+        if (Parent is ConsoleGraphicsComponent {AbsolutePosition: not null} parent)
         {
             _relativePosition = absolutePosition - parent.AbsolutePosition;
         } else 
@@ -169,22 +191,23 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
     public Position2D RelativePosition
     {
         get => _relativePosition ?? new Position2D(0, 0);
-        set
-        {
-            _relativePosition = value;
-        }
+        set => _relativePosition = value;
     }
 
-    public ConsoleColor BackgroundColor { get; set; }
-    public ConsoleColor ForegroundColor { get; set; }
-    public ConsoleColor BorderColor { get; set; }
+    // ====================ANIMATION-MANAGEMENT====================
+    public void AddAnimation(Animation animation)
+    {
+        Animations.Add(animation);
+    }
 
-
-    public List<ConsoleGraphicsComponent> Children { get; } = new();
-    private readonly object _childrenLock = new();
-
-    private IConsoleRenderable Parent { get; set; }
-
+    public void ClearAnimations()
+    {
+        Animations.Clear();
+    }
+    // ====================ANIMATION-MANAGEMENT-END====================
+    
+    
+    // ============================PARENTING===========================
     public void AddChild(ConsoleGraphicsComponent child)
     {
         lock (_childrenLock)
@@ -209,45 +232,9 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
             return Children.ToList();
         }
     }
-    public virtual bool Visible { get; set; } = true;
+    // ============================PARENTING-END====================
 
-
-    public ConsoleGraphicsComponent(int width, int height, 
-        Position2D? relativePosition, 
-        ConsoleColor backgroundColor, 
-        ConsoleColor foregroundColor, 
-        ConsoleColor borderColor)
-    {
-        Width = width;
-        Height = height;
-        _relativePosition = relativePosition;
-        BackgroundColor = backgroundColor;
-        ForegroundColor = foregroundColor;
-        BorderColor = borderColor;
-    }
-    
-    public ConsoleGraphicsComponent(int width, int height, 
-        Position2D? relativePosition)
-    {
-        Width = width;
-        Height = height;
-        _relativePosition = relativePosition;
-    }
-
-    public ConsoleGraphicsComponent()
-    {
-        
-    }
-    
-
-    public Dimension2D WorldSize
-    {
-        get
-        {
-            return new Dimension2D(Console.WindowWidth, Console.WindowHeight);
-        }
-    }
-
+    // ============================RENDERING========================
     public virtual void Render(ConsoleRenderer2D renderer)
     {
         if (!Visible) return;
@@ -258,6 +245,25 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
             child.Render(renderer);
         }
     }
+    
+    public void Update(double deltaTime)
+    {
+        foreach (var anim in Animations.ToList())
+        {
+            anim.OnUpdate(deltaTime);
+            if (anim.IsComplete)
+            {
+                Animations.Remove(anim);
+            }
+        }
+        
+        var childrenSnapshot = Children.ToList();
+        foreach (var child in childrenSnapshot)
+        {
+            child.Update(deltaTime);
+        }
+    }
+    // ============================RENDERING-END========================
 
     public void Dispose()
     {

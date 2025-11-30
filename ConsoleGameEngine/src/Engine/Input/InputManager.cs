@@ -7,30 +7,27 @@ namespace ConsoleGameEngine.Engine.Input;
 public class InputManager: IDisposable
 {
     public event EventHandler<KeyEventArgs> OnKeyPressed;
-    public event EventHandler<KeyEventArgs> OnKeyReleased;
+    //public event EventHandler<KeyEventArgs> OnKeyReleased; // ez nem kell mert egyelőre nem mérhető
     
     public event EventHandler OnEscapePressed;
     public event EventHandler OnEnterPressed;
     public event EventHandler OnSpacePressed;
     
-    private Thread inputThread;
-    private bool isRunning;
-
+    private readonly Thread _inputThread;
     private CancellationTokenSource _cts;
-
     private Dictionary<ConsoleKey, bool> keyStates = new Dictionary<ConsoleKey, bool>();
 
     public InputManager()
     {
         _cts = new CancellationTokenSource();
         
-        inputThread = new Thread(()=> InputLoop(_cts.Token))
+        _inputThread = new Thread(()=> InputLoop(_cts.Token))
         {
             Name = "Input Loop",
             IsBackground = true
         };
         
-        inputThread.Start();
+        _inputThread.Start();
     }
 
     private void InputLoop(CancellationToken ctxToken)
@@ -80,10 +77,10 @@ public class InputManager: IDisposable
     
     public void Dispose()
     {
-        if (_cts != null)
+        if (_cts is { IsCancellationRequested: false })
         {
             _cts.Cancel();
-            inputThread.Join();
+            _inputThread.Join();
             _cts.Dispose();
         }
     }

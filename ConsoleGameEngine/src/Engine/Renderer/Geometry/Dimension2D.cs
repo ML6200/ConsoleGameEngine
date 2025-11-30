@@ -1,6 +1,6 @@
 namespace ConsoleGameEngine.Engine.Renderer.Geometry;
 
-public class Dimension2D
+public struct Dimension2D
 {
     public int Width { get; set; }
     public int Height { get; set; }
