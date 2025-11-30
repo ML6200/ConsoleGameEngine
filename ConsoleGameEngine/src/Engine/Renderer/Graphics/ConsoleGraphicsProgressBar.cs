@@ -26,8 +26,8 @@ public class ConsoleProgressBar : ConsoleGraphicsComponent
 
         // Draw filled part
         renderer.FillRect(
-            WordPosition.X,
-            WordPosition.Y,
+            WorldPosition.X,
+            WorldPosition.Y,
             filledWidth,
             Size.Height,
             '█',
@@ -37,8 +37,8 @@ public class ConsoleProgressBar : ConsoleGraphicsComponent
 
         // Draw empty part
         renderer.FillRect(
-            WordPosition.X + filledWidth,
-            WordPosition.Y,
+            WorldPosition.X + filledWidth,
+            WorldPosition.Y,
             Size.Width - filledWidth,
             Size.Height,
             '░',

@@ -27,7 +27,7 @@ public class AISystem : IGameSystem
         foreach (Demon demon in _game.Demons)
         {
             // Update demon state based on player position
-            demon.LastDistanceToPlayer = Position2D.Distance(_game.Player.WordPosition, demon.WordPosition);
+            demon.LastDistanceToPlayer = Position2D.Distance(_game.Player.WorldPosition, demon.WorldPosition);
             demon.UpdateState(_game.Player);  // Use cached distance
 
             // Update attack cooldown timer

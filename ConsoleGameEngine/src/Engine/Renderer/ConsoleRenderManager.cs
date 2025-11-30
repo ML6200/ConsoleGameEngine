@@ -8,9 +8,8 @@ namespace ConsoleGameEngine.Engine.Renderer;
 
 public class ConsoleRenderManager : IDisposable
 {
-    private Thread windowEventThread;
-    private Thread graphicsThread;
-    private readonly object graphicsLock = new();
+    private Thread _graphicsThread;
+    private readonly object _graphicsLock = new();
     private CancellationTokenSource _cts;
     private ConsoleRenderer2D _renderer;
     private ConsoleWindowComponent _rootComponent;
@@ -18,7 +17,7 @@ public class ConsoleRenderManager : IDisposable
     
     public double CurrentFps {get; private set; }
     public FocusManager FocusManager { get; set; }
-
+    
     public event EventHandler OnWindowResized;
 
     public ConsoleRenderManager(ConsoleRenderer2D renderer, ConsoleWindowComponent rootComponent, int updatesPerSecond)
@@ -54,19 +53,19 @@ public class ConsoleRenderManager : IDisposable
 
     public void Start()
     {
-        if (graphicsThread != null && graphicsThread.IsAlive)
+        if (_graphicsThread != null && _graphicsThread.IsAlive)
         {
             return;
         }
         
         _cts = new CancellationTokenSource();
-        graphicsThread = new Thread(() => RenderLoop(_cts.Token))
+        _graphicsThread = new Thread(() => RenderLoop(_cts.Token))
         {
             Name = nameof(ConsoleRenderManager),
             IsBackground = true,
         };
         
-        graphicsThread.Start();
+        _graphicsThread.Start();
     }
 
     public void Stop()
@@ -74,7 +73,7 @@ public class ConsoleRenderManager : IDisposable
         if (_cts != null && !_cts.IsCancellationRequested)
         {
             _cts.Cancel();
-            graphicsThread.Join();
+            _graphicsThread.Join();
             //windowEventThread.Join();
             _cts.Dispose();
         }
@@ -82,7 +81,7 @@ public class ConsoleRenderManager : IDisposable
 
     public void SetRootComponent(ConsoleWindowComponent rootComponent)
     {
-        lock (graphicsLock)
+        lock (_graphicsLock)
         {
             _rootComponent = rootComponent;
         }

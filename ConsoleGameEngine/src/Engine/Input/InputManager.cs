@@ -7,15 +7,13 @@ namespace ConsoleGameEngine.Engine.Input;
 public class InputManager: IDisposable
 {
     public event EventHandler<KeyEventArgs> OnKeyPressed;
-    //public event EventHandler<KeyEventArgs> OnKeyReleased; // ez nem kell mert egyelőre nem mérhető
-    
     public event EventHandler OnEscapePressed;
     public event EventHandler OnEnterPressed;
     public event EventHandler OnSpacePressed;
     
     private readonly Thread _inputThread;
+    private readonly Dictionary<ConsoleKey, bool> _keyStates = new();
     private CancellationTokenSource _cts;
-    private Dictionary<ConsoleKey, bool> keyStates = new Dictionary<ConsoleKey, bool>();
 
     public InputManager()
     {
@@ -39,7 +37,8 @@ public class InputManager: IDisposable
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 HandleKeyPressed(keyInfo);
             }
-            Thread.Sleep(5); // Delay to prevent cpu spinning
+            // Egy keves kesleltetes a cpu-spinning elkerulesere:
+            Thread.Sleep(5);
         }
     }
 
@@ -72,7 +71,7 @@ public class InputManager: IDisposable
 
     public bool IsKeyDown(ConsoleKey key)
     {
-        return keyStates.ContainsKey(key) && keyStates[key];    
+        return _keyStates.ContainsKey(key) && _keyStates[key];    
     }
     
     public void Dispose()

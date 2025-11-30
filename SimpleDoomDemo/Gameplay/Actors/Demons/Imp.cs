@@ -18,8 +18,8 @@ public class Imp : Demon
     public override void Render(ConsoleRenderer2D consoleRenderer2D)
     {
         if (!Visible) return;
-        consoleRenderer2D.SetCell(WordPosition.X,
-            WordPosition.Y,
+        consoleRenderer2D.SetCell(WorldPosition.X,
+            WorldPosition.Y,
             new Cell('o', ConsoleColor.Black, ConsoleColor.White));
         base.Render(consoleRenderer2D);
     }

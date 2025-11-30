@@ -33,7 +33,7 @@ public class MovementSystem : IGameSystem
 
         foreach (var item in _game.Items)
         {
-            int key = GetGridKey(item.WordPosition);
+            int key = GetGridKey(item.WorldPosition);
             if (!_spatialGrid.ContainsKey(key))
                 _spatialGrid[key] = new List<object>();
             _spatialGrid[key].Add(item);
@@ -41,7 +41,7 @@ public class MovementSystem : IGameSystem
 
         foreach (var demon in _game.Demons)
         {
-            int key = GetGridKey(demon.WordPosition);
+            int key = GetGridKey(demon.WorldPosition);
             if (!_spatialGrid.ContainsKey(key))
                 _spatialGrid[key] = new List<object>();
             _spatialGrid[key].Add(demon);
@@ -58,8 +58,8 @@ public class MovementSystem : IGameSystem
     
     private void MoveDemonTowardsPlayer(Demon demon)
     {
-        Position2D demonPos = demon.WordPosition;
-        Position2D playerPos = _game.Player.WordPosition;
+        Position2D demonPos = demon.WorldPosition;
+        Position2D playerPos = _game.Player.WorldPosition;
 
         // Calculate direction to player
         int dx = playerPos.X - demonPos.X;
@@ -153,9 +153,9 @@ public class MovementSystem : IGameSystem
         {
             foreach (var obj in nearbyObjects)
             {
-                Position2D objPos = obj is GameItem item
-                    ? item.WordPosition
-                    : ((Demon)obj).WordPosition;
+                Position2D? objPos = obj is GameItem item
+                    ? item.WorldPosition
+                    : ((Demon)obj).WorldPosition;
 
                 if (Position2D.Distance(position, objPos) <= 0)
                 {

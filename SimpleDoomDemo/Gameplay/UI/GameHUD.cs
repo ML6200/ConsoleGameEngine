@@ -37,8 +37,8 @@ public class GameHud : ConsoleGraphicsPanel
         if (!Visible) return;
 
         // Render all stats in one line
-        int x = WordPosition.X;
-        int y = WordPosition.Y;
+        int x = WorldPosition.X;
+        int y = WorldPosition.Y;
 
         string hudText = $"HP: {_player.Health}/{_player.MaxHealth}  " +
                          $"Ammo: {_player.Ammo}/{_player.MaxAmmo}  " +

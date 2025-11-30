@@ -25,7 +25,7 @@ public class InteractionSystem : IGameSystem
     
     public void ProcessPlayerDirectInteraction()
     {
-        List<GameItem> nearbyItems = GetItemsWithinRange(_game.Player.WordPosition, 1);
+        List<GameItem> nearbyItems = GetItemsWithinRange(_game.Player.WorldPosition, 1);
 
         foreach (GameItem item in nearbyItems)
         {
@@ -51,7 +51,7 @@ public class InteractionSystem : IGameSystem
     
     private void ProcessPlayerIndirectInteractions()
     {
-        List<GameItem> itemsAtPosition = GetItemsWithinRange(_game.Player.WordPosition, 0);
+        List<GameItem> itemsAtPosition = GetItemsWithinRange(_game.Player.WorldPosition, 0);
 
         foreach (GameItem item in itemsAtPosition)
         {
@@ -102,7 +102,7 @@ public class InteractionSystem : IGameSystem
     {
         foreach (Demon demon in _game.Demons)
         {
-            List<GameItem> itemsAtPosition = GetItemsWithinRange(demon.WordPosition, 0);
+            List<GameItem> itemsAtPosition = GetItemsWithinRange(demon.WorldPosition, 0);
 
             foreach (GameItem item in itemsAtPosition)
             {
@@ -123,7 +123,7 @@ public class InteractionSystem : IGameSystem
 
         foreach (GameItem item in _game.Items)
         {
-            double distance = Position2D.Distance(position, item.WordPosition);
+            double distance = Position2D.Distance(position, item.WorldPosition);
             if (distance <= range)
             {
                 result.Add(item);

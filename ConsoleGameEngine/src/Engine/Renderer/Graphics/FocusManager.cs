@@ -4,7 +4,7 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
 public class FocusManager
 {
-    private readonly List<IFocusable> _focusableComponents = new List<IFocusable>();
+    private readonly List<IFocusable> _focusableComponents = new();
     private int _currentFocusIndex = -1;
     
     public IFocusable? FocusedComponent => 
@@ -38,14 +38,17 @@ public class FocusManager
             previous.IsFocused = false;
             previous.OnFocusLost();
         }
-        
-        _currentFocusIndex = index;
-        
-        if (_currentFocusIndex >= 0 && _currentFocusIndex < _focusableComponents.Count)
+
+        if (_focusableComponents[index].CanFocus)
         {
-            var current = _focusableComponents[_currentFocusIndex];
-            current.IsFocused = true;
-            current.OnFocusGained();
+            _currentFocusIndex = index;
+
+            if (_currentFocusIndex >= 0 && _currentFocusIndex < _focusableComponents.Count)
+            {
+                var current = _focusableComponents[_currentFocusIndex];
+                current.IsFocused = true;
+                current.OnFocusGained();
+            }
         }
     }
     

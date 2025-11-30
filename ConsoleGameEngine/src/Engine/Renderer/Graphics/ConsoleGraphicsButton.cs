@@ -73,8 +73,8 @@ public class ConsoleGraphicsButton : ConsoleGraphicsComponent, IFocusable
         if (HasBorder)
         {
             renderer.FillRect(
-                WordPosition.X,
-                WordPosition.Y,
+                WorldPosition.X,
+                WorldPosition.Y,
                 Size.Width,
                 Size.Height,
                 ' ',
@@ -84,8 +84,8 @@ public class ConsoleGraphicsButton : ConsoleGraphicsComponent, IFocusable
 
             // Szegely
             renderer.DrawBox(
-                WordPosition.X,
-                WordPosition.Y,
+                WorldPosition.X,
+                WorldPosition.Y,
                 Size.Width,
                 Size.Height,
                 bgColor,
@@ -95,8 +95,8 @@ public class ConsoleGraphicsButton : ConsoleGraphicsComponent, IFocusable
         else
         {
             renderer.FillRect(
-                WordPosition.X,
-                WordPosition.Y,
+                WorldPosition.X,
+                WorldPosition.Y,
                 Size.Width,
                 Size.Height,
                 ' ',
@@ -107,8 +107,8 @@ public class ConsoleGraphicsButton : ConsoleGraphicsComponent, IFocusable
 
         // Szoveg
         int padding = HasBorder ? (Size.Width-Text.Length) / 2 : 1;
-        int textX = WordPosition.X + padding;
-        int textY = WordPosition.Y + Size.Height / 2;
+        int textX = WorldPosition.X + padding;
+        int textY = WorldPosition.Y + Size.Height / 2;
 
         renderer.DrawText(textX, textY, Text, bgColor, ForegroundColor);
 

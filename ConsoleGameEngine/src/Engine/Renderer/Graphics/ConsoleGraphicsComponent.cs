@@ -159,14 +159,14 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
      * vagy Transform osztály bevezetésével.
      * 
      */
-    public Position2D? WordPosition
+    public Position2D? WorldPosition
     {
         get
         {
-            if (Parent is ConsoleGraphicsComponent { WordPosition: not null } parent)
+            if (Parent is ConsoleGraphicsComponent { WorldPosition: not null } parent)
             {
                 if (_relativePosition != null)
-                    return parent.WordPosition + _relativePosition;
+                    return parent.WorldPosition + _relativePosition;
             }
             return _relativePosition;
         }
@@ -174,9 +174,9 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
 
     public void SetAbsolutePosition(Position2D absolutePosition)
     {
-        if (Parent is ConsoleGraphicsComponent {WordPosition: not null} parent)
+        if (Parent is ConsoleGraphicsComponent {WorldPosition: not null} parent)
         {
-            _relativePosition = absolutePosition - parent.WordPosition;
+            _relativePosition = absolutePosition - parent.WorldPosition;
         } else 
         {
             _relativePosition = absolutePosition;

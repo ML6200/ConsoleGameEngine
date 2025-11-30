@@ -9,7 +9,7 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 public class ConsoleWindowComponent : IConsoleRenderable
 {
     private readonly ConsoleGraphicsComponent _consoleGraphicsComponent;
-    public List<Animation> Animations { get; } = new List<Animation>();
+    public List<Animation> Animations { get; } = new();
 
     public ConsoleGraphicsComponent ConsoleGraphicsComponent => _consoleGraphicsComponent;
     public Dimension2D WorldSize
