@@ -82,7 +82,7 @@ public class ConsoleRenderManager : IDisposable
         {
             _cts.Cancel();
             graphicsThread.Join();
-            windowEventThread.Join();
+            //windowEventThread.Join();
             _cts.Dispose();
         }
     }

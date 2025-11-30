@@ -10,5 +10,5 @@ public interface IGameSystem
     /// Update the system logic.
     /// </summary>
     /// <param name="deltaTime">Time elapsed since last update in milliseconds</param>
-    void Update(long deltaTime);
+    void Update(double deltaTime);
 }

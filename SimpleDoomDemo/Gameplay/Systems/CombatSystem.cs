@@ -22,7 +22,7 @@ public class CombatSystem : IGameSystem
         _game = game;
     }
 
-    public void Update(long deltaTime)
+    public void Update(double deltaTime)
     {
         // Combat updates happen on-demand (when player/demon attacks)
         // No continuous updates needed here

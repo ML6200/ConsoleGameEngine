@@ -6,8 +6,6 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
 public class ConsoleGraphicsButton : ConsoleGraphicsComponent, IFocusable
 {
-    private int _width;
-    private int _height;
     private string _text;
     
     public string Text
@@ -51,7 +49,7 @@ public class ConsoleGraphicsButton : ConsoleGraphicsComponent, IFocusable
     {
         AddAnimation(AnimationTween.Blink(this, 0.3, false));
         
-        OnClick?.Invoke(this, EventArgs.Empty);
+        OnClick(this, EventArgs.Empty);
     }
     
     private void UpdateSize()

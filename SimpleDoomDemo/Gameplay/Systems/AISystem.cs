@@ -19,8 +19,11 @@ public class AISystem : IGameSystem
         _combatSystem = combatSystem;
     }
 
-    public void Update(long deltaTime)
+    public void Update(double deltaTime)
     {
+        // Convert deltaTime from seconds to milliseconds
+        double deltaTimeMs = deltaTime * 1000.0;
+
         foreach (Demon demon in _game.Demons)
         {
             // Update demon state based on player position
@@ -28,7 +31,7 @@ public class AISystem : IGameSystem
             demon.UpdateState(_game.Player);  // Use cached distance
 
             // Update attack cooldown timer
-            demon.UpdateAttackCooldown(deltaTime);
+            demon.UpdateAttackCooldown(deltaTimeMs);
 
             // Execute behavior based on state
             switch (demon.State)

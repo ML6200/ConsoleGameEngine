@@ -8,10 +8,6 @@ using SimpleDoomEngine.Gameplay.Items;
 
 namespace SimpleDoomDemo.Gameplay.Systems;
 
-/// <summary>
-/// Handles all entity interactions including item pickups,
-/// door opening, level exits, and environmental hazards.
-/// </summary>
 public class InteractionSystem : IGameSystem
 {
     private readonly DoomGameScene _game;
@@ -21,17 +17,12 @@ public class InteractionSystem : IGameSystem
         _game = game;
     }
 
-    public void Update(long deltaTime)
+    public void Update(double deltaTime)
     {
-        // Process automatic (indirect) interactions
         ProcessPlayerIndirectInteractions();
         ProcessDemonIndirectInteractions();
     }
-
-    /// <summary>
-    /// Process direct interactions (e.g., opening doors, using exits).
-    /// Called when player presses interaction key.
-    /// </summary>
+    
     public void ProcessPlayerDirectInteraction()
     {
         List<GameItem> nearbyItems = GetItemsWithinRange(_game.Player.AbsolutePosition, 1);
@@ -57,10 +48,7 @@ public class InteractionSystem : IGameSystem
             }
         }
     }
-
-    /// <summary>
-    /// Process automatic interactions (pickups, toxic waste).
-    /// </summary>
+    
     private void ProcessPlayerIndirectInteractions()
     {
         List<GameItem> itemsAtPosition = GetItemsWithinRange(_game.Player.AbsolutePosition, 0);
@@ -73,8 +61,7 @@ public class InteractionSystem : IGameSystem
                     _game.Player.PickUpAmmo(5);
                     item.Interact();
                     _game.PlaySoundEffect(SoundEffectType.ItemPickup);
-
-                    // Pickup animation
+                    
                     var pickupAnim = AnimationTween.Blink(item, 0.3, loop: false);
                     item.AddAnimation(pickupAnim);
                     break;
@@ -111,9 +98,6 @@ public class InteractionSystem : IGameSystem
         }
     }
 
-    /// <summary>
-    /// Process demon interactions with environment (e.g., toxic waste).
-    /// </summary>
     private void ProcessDemonIndirectInteractions()
     {
         foreach (Demon demon in _game.Demons)
@@ -124,7 +108,7 @@ public class InteractionSystem : IGameSystem
             {
                 if (item.Type == ItemType.TOXICWASTE)
                 {
-                    var damageAnim = AnimationTween.Blink(demon, 0.1, loop: false);
+                    var damageAnim = AnimationTween.Blink(demon, 0.3, loop: false);
                     demon.AddAnimation(damageAnim);
                     
                     demon.TakeDamage(5);

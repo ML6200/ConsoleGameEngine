@@ -74,7 +74,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
     private Position2D? _relativePosition;
     private List<Animation> Animations { get; } = new List<Animation>();
 
-    public virtual void Update(double deltaTime)
+    public void Update(double deltaTime)
     {
         foreach (var anim in Animations.ToList())
         {
@@ -178,18 +178,37 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
     public ConsoleColor BackgroundColor { get; set; }
     public ConsoleColor ForegroundColor { get; set; }
     public ConsoleColor BorderColor { get; set; }
-    
-    
+
+
     public List<ConsoleGraphicsComponent> Children { get; } = new();
-    
+    private readonly object _childrenLock = new();
+
     private IConsoleRenderable Parent { get; set; }
 
     public void AddChild(ConsoleGraphicsComponent child)
     {
-        Children.Add(child);
-        child.Parent = this;
+        lock (_childrenLock)
+        {
+            Children.Add(child);
+            child.Parent = this;
+        }
     }
-    public void RemoveChild(ConsoleGraphicsComponent child) => Children.Remove(child);
+
+    public void RemoveChild(ConsoleGraphicsComponent child)
+    {
+        lock (_childrenLock)
+        {
+            Children.Remove(child);
+        }
+    }
+
+    public List<ConsoleGraphicsComponent> GetChildrenSnapshot()
+    {
+        lock (_childrenLock)
+        {
+            return Children.ToList();
+        }
+    }
     public virtual bool Visible { get; set; } = true;
 
 
@@ -232,8 +251,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
     public virtual void Render(ConsoleRenderer2D renderer)
     {
         if (!Visible) return;
-
-        // Create snapshot to avoid concurrent modification during iteration
+        
         var childrenSnapshot = Children.ToList();
         foreach (var child in childrenSnapshot)
         {

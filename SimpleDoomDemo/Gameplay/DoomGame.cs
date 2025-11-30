@@ -130,14 +130,17 @@ public class DoomGameScene : IGameScene
         }
 
         // Accumulate time for logic updates (run at 500ms intervals)
-        _logicAccumulator += deltaTime;
+        //_logicAccumulator += deltaTime;
 
+        /*
         if (_logicAccumulator >= LOGIC_UPDATE_INTERVAL)
         {
             long deltaTimeMs = (long)(_logicAccumulator * 1000);
             UpdateGameLogic(deltaTimeMs);
             _logicAccumulator = 0;
         }
+        */
+        UpdateGameLogic(deltaTime);
 
         // Component animations update automatically via engine
         // No need to manually call Update() on components
@@ -146,15 +149,10 @@ public class DoomGameScene : IGameScene
     public void OnExit()
     {
         AudioPlayer.StopMusic();
-
-        // Clean up input events
-        if (_input != null)
-        {
-            _input.OnKeyPressed -= OnKeyPressed;
-        }
+        _input.OnKeyPressed -= OnKeyPressed!;
     }
 
-    private void UpdateGameLogic(long deltaTime)
+    private void UpdateGameLogic(double deltaTime)
     {
         // Update all systems
         _aiSystem.Update(deltaTime);
@@ -165,7 +163,7 @@ public class DoomGameScene : IGameScene
         UpdateVisibility();
 
         // Update HUD
-        _hud?.UpdateHUD(new Position2D(0, _rootPanel.WorldSize.Height-1));
+        _hud.UpdateHUD(new Position2D(0, _rootPanel.WorldSize.Height-1));
 
         // Cleanup dead entities
         CleanupEntities();

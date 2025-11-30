@@ -11,7 +11,7 @@ public abstract class Demon : ConsoleGraphicsComponent
 {
     // =========================FIELDS_PRIVATE==============================
     protected int _speed;
-    private long _timeSinceLastAttack = 0;
+    private double _timeSinceLastAttack = 0;
 
     // =========================FIELDS_SETTERS&GETTERS==============================
     public double FillingRatio { get; protected set; }
@@ -59,7 +59,7 @@ public abstract class Demon : ConsoleGraphicsComponent
         if (Health <= 0) Alive = false;
     }
 
-    public void UpdateAttackCooldown(long deltaTimeMs)
+    public void UpdateAttackCooldown(double deltaTimeMs)
     {
         _timeSinceLastAttack += deltaTimeMs;
     }

@@ -26,10 +26,7 @@ public class ConsoleWindowComponent : IConsoleRenderable
     {
         if (!Visible) return;
 
-        // A konkurrens változtatás miatt
-        var childrenSnapshot = _consoleGraphicsComponent.Children.ToList();
-
-        foreach (var child in childrenSnapshot)
+        foreach (var child in _consoleGraphicsComponent.GetChildrenSnapshot())
         {
             child.Render(renderer);
         }

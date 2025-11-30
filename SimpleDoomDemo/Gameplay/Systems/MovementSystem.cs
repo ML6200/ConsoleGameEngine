@@ -31,7 +31,7 @@ public class MovementSystem : IGameSystem
         return (gridY << 16) | gridX;  // Pack into int
     }
 
-    public void Update(long deltaTime)
+    public void Update(double deltaTime)
     {
         // Build spatial grid ONCE per update
         _spatialGrid.Clear();
@@ -51,6 +51,85 @@ public class MovementSystem : IGameSystem
                 _spatialGrid[key] = new List<object>();
             _spatialGrid[key].Add(demon);
         }
+
+        // Move demons towards player if they're in Move state
+        foreach (var demon in _game.Demons)
+        {
+            if (demon.State == DemonState.Move)
+            {
+                MoveDemonTowardsPlayer(demon);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Moves a demon one step towards the player using simple pathfinding.
+    /// </summary>
+    private void MoveDemonTowardsPlayer(Demon demon)
+    {
+        Position2D demonPos = demon.AbsolutePosition;
+        Position2D playerPos = _game.Player.AbsolutePosition;
+
+        // Calculate direction to player
+        int dx = playerPos.X - demonPos.X;
+        int dy = playerPos.Y - demonPos.Y;
+
+        // Normalize to unit steps (-1, 0, or 1)
+        int stepX = dx == 0 ? 0 : (dx > 0 ? 1 : -1);
+        int stepY = dy == 0 ? 0 : (dy > 0 ? 1 : -1);
+
+        // Try to move directly towards player
+        Position2D targetPos = new Position2D(demonPos.X + stepX, demonPos.Y + stepY);
+
+        if (TryMoveDemon(demon, targetPos))
+            return;
+
+        // If diagonal movement failed, try horizontal then vertical
+        if (stepX != 0)
+        {
+            targetPos = new Position2D(demonPos.X + stepX, demonPos.Y);
+            if (TryMoveDemon(demon, targetPos))
+                return;
+        }
+
+        if (stepY != 0)
+        {
+            targetPos = new Position2D(demonPos.X, demonPos.Y + stepY);
+            if (TryMoveDemon(demon, targetPos))
+                return;
+        }
+
+        // If all else fails, try random adjacent movement
+        int randomDir = _random.Next(4);
+        switch (randomDir)
+        {
+            case 0: targetPos = new Position2D(demonPos.X + 1, demonPos.Y); break;
+            case 1: targetPos = new Position2D(demonPos.X - 1, demonPos.Y); break;
+            case 2: targetPos = new Position2D(demonPos.X, demonPos.Y + 1); break;
+            case 3: targetPos = new Position2D(demonPos.X, demonPos.Y - 1); break;
+        }
+
+        TryMoveDemon(demon, targetPos);
+    }
+
+    /// <summary>
+    /// Attempts to move a demon to the specified position.
+    /// Returns true if movement was successful.
+    /// </summary>
+    private bool TryMoveDemon(Demon demon, Position2D targetPosition)
+    {
+        if (!IsPointWithinBounds(targetPosition))
+            return false;
+
+        double totalFillingRatio = GetTotalFillingRatio(targetPosition) + demon.FillingRatio;
+
+        if (totalFillingRatio < 1.0)
+        {
+            demon.RelativePosition = targetPosition;
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>

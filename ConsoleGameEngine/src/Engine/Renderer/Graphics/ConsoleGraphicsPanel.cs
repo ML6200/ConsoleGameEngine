@@ -18,8 +18,9 @@ public class ConsoleGraphicsPanel : ConsoleGraphicsComponent
             renderer.DrawBox(AbsolutePosition.X, AbsolutePosition.Y, Size.Width, Size.Height,
                 BackgroundColor, BorderColor);
         }
-        
-        foreach (var child in Children)
+
+        var childrenSnapshot = GetChildrenSnapshot();
+        foreach (var child in childrenSnapshot)
             child.Render(renderer);
     }
 }
