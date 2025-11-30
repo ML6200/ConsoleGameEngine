@@ -133,7 +133,7 @@ public class Player : ConsoleGraphicsComponent
             return;
         }
 
-        renderer.SetCell(AbsolutePosition.X, AbsolutePosition.Y,
+        renderer.SetCell(WordPosition.X, WordPosition.Y,
             new Cell('0', ConsoleColor.Black, ConsoleColor.Green));
 
         base.Render(renderer);

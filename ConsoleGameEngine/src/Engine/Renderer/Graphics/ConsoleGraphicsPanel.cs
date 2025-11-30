@@ -10,12 +10,12 @@ public class ConsoleGraphicsPanel : ConsoleGraphicsComponent
     {
         if (!Visible) return;
 
-        renderer.FillRect(AbsolutePosition.X, AbsolutePosition.Y, Size.Width, Size.Height,
+        renderer.FillRect(WordPosition.X, WordPosition.Y, Size.Width, Size.Height,
             ' ', BackgroundColor, ConsoleColor.White);
         
         if (HasBorder)
         {
-            renderer.DrawBox(AbsolutePosition.X, AbsolutePosition.Y, Size.Width, Size.Height,
+            renderer.DrawBox(WordPosition.X, WordPosition.Y, Size.Width, Size.Height,
                 BackgroundColor, BorderColor);
         }
 

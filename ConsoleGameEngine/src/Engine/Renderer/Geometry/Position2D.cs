@@ -31,16 +31,22 @@ public class Position2D
         return new Position2D(a.X + b.X, a.Y + b.Y);
     }
 
+    public static bool operator ==(Position2D a, Position2D b)
+    {
+        return a.X == b.X && a.Y == b.Y;
+    }
+
+    public static bool operator !=(Position2D a, Position2D b)
+    {
+        return !(a == b);
+    }
+
     public static Position2D operator -(Position2D left, Position2D right)
     {
         return new Position2D(left.X - right.X, left.Y - right.Y);
     }
 
     // =============================METHODS==============================
-    public Position2D Add(Position2D position)
-    {
-        return new Position2D(x + position.X, y + position.Y);
-    }
 
     public static double Distance(Position2D position1, Position2D position2)
     {

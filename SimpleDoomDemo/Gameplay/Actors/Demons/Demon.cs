@@ -38,8 +38,8 @@ public abstract class Demon : ConsoleGraphicsComponent
 
     public void UpdateState(Player player)
     {
-        Position2D playerPos = player.AbsolutePosition;
-        Position2D demonPos = AbsolutePosition; 
+        Position2D playerPos = player.WordPosition;
+        Position2D demonPos = WordPosition; 
         double dist = Position2D.Distance(playerPos, demonPos);
 
         if (dist < AttackRange)
@@ -83,7 +83,7 @@ public abstract class Demon : ConsoleGraphicsComponent
     /// </summary>
     public void UpdateVisibility(Position2D playerPosition, double sightRange)
     {
-        double distance = Position2D.Distance(AbsolutePosition, playerPosition);
+        double distance = Position2D.Distance(WordPosition, playerPosition);
         bool newVisibility = Alive && distance <= sightRange;
         
         Visible = newVisibility;

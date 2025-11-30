@@ -107,7 +107,7 @@ public class GameItem : ConsoleGraphicsComponent
     /// </summary>
     public void UpdateVisibility(Position2D playerPosition, double sightRange)
     {
-        double distance = Position2D.Distance(AbsolutePosition, playerPosition);
+        double distance = Position2D.Distance(WordPosition, playerPosition);
         Visible = Available && distance <= sightRange;
     }
 
@@ -115,7 +115,7 @@ public class GameItem : ConsoleGraphicsComponent
     {
         if (!Visible) return;
 
-        renderer.SetCell(AbsolutePosition.X, AbsolutePosition.Y,
+        renderer.SetCell(WordPosition.X, WordPosition.Y,
             new Cell(_glyph, BackgroundColor, ForegroundColor));
 
         base.Render(renderer);

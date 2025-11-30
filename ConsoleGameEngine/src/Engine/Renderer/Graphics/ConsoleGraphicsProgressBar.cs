@@ -11,7 +11,7 @@ public class ConsoleProgressBar : ConsoleGraphicsComponent
     {
         float startProgress = _progress;
 
-        // Animate progress change
+        // elorehaladas animalasa
         AddAnimation(new Animation(animationDuration, t =>
         {
             _progress = startProgress + (progress - startProgress) * t;
@@ -26,8 +26,8 @@ public class ConsoleProgressBar : ConsoleGraphicsComponent
 
         // Draw filled part
         renderer.FillRect(
-            AbsolutePosition.X,
-            AbsolutePosition.Y,
+            WordPosition.X,
+            WordPosition.Y,
             filledWidth,
             Size.Height,
             '█',
@@ -37,8 +37,8 @@ public class ConsoleProgressBar : ConsoleGraphicsComponent
 
         // Draw empty part
         renderer.FillRect(
-            AbsolutePosition.X + filledWidth,
-            AbsolutePosition.Y,
+            WordPosition.X + filledWidth,
+            WordPosition.Y,
             Size.Width - filledWidth,
             Size.Height,
             '░',

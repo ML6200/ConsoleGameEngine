@@ -97,7 +97,7 @@ public class DoomGameScene : IGameScene
         foreach (var demon in Demons)
         {
             _rootPanel.AddChild(demon);
-            demon.UpdateVisibility(Player.AbsolutePosition, Player.SightRange);
+            demon.UpdateVisibility(Player.WordPosition, Player.SightRange);
         }
 
         // Create and add HUD (positioned at bottom of screen)
@@ -171,7 +171,7 @@ public class DoomGameScene : IGameScene
 
     private void UpdateVisibility()
     {
-        Position2D playerPos = Player.AbsolutePosition;
+        Position2D playerPos = Player.WordPosition;
         double sightRange = Player.SightRange;
 
         lock (_visibilityLock)
@@ -229,7 +229,7 @@ public class DoomGameScene : IGameScene
 
     private void MovePlayerBy(int x, int y)
     {
-        Position2D targetPosition = Player.AbsolutePosition + new Position2D(x, y);
+        Position2D targetPosition = Player.WordPosition + new Position2D(x, y);
         _movementSystem.MovePlayer(targetPosition);
     }
 

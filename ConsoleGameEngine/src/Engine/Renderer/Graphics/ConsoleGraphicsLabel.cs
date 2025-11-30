@@ -23,7 +23,7 @@ public class ConsoleGraphicsLabel : ConsoleGraphicsComponent
     {
         if (!Visible) return;
         
-        renderer.DrawText(AbsolutePosition.X, AbsolutePosition.Y, Text,
+        renderer.DrawText(WordPosition.X, WordPosition.Y, Text,
             BackgroundColor, ForegroundColor);
     }
 }

@@ -43,12 +43,12 @@ public class CombatSystem : IGameSystem
         var attackAnim = AnimationTween.Blink(_game.Player, 0.2, loop: false);
         _game.Player.AddAnimation(attackAnim);
 
-        List<Demon> nearbyDemons = GetDemonsWithinRange(_game.Player.AbsolutePosition, _game.Player.SightRange);
+        List<Demon> nearbyDemons = GetDemonsWithinRange(_game.Player.WordPosition, _game.Player.SightRange);
 
         foreach (Demon demon in nearbyDemons)
         {
             int u = _random.Next(35, 106);
-            int distance = (int)Position2D.Distance(demon.AbsolutePosition, _game.Player.AbsolutePosition);
+            int distance = (int)Position2D.Distance(demon.WordPosition, _game.Player.WordPosition);
             int damage = 2 * u / (1 + distance);
 
             DealDamageToDemon(demon, damage);
@@ -70,7 +70,7 @@ public class CombatSystem : IGameSystem
         var bfgAnim = AnimationTween.Blink(_game.Player, 200, loop: false);
         _game.Player.AddAnimation(bfgAnim);
 
-        List<Demon> nearbyDemons = GetDemonsWithinRange(_game.Player.AbsolutePosition, _game.Player.SightRange);
+        List<Demon> nearbyDemons = GetDemonsWithinRange(_game.Player.WordPosition, _game.Player.SightRange);
 
         foreach (Demon demon in nearbyDemons)
         {
@@ -92,7 +92,7 @@ public class CombatSystem : IGameSystem
         demon.GetAttackDamageRange(out min, out max);
         int u = _random.Next(min, max);
 
-        int distance = (int)Position2D.Distance(demon.AbsolutePosition, _game.Player.AbsolutePosition);
+        int distance = (int)Position2D.Distance(demon.WordPosition, _game.Player.WordPosition);
         int damage = u / (1 + distance);
 
         // Trigger attack animation on demon
@@ -141,7 +141,7 @@ public class CombatSystem : IGameSystem
 
         foreach (Demon demon in _game.Demons)
         {
-            double distance = Position2D.Distance(position, demon.AbsolutePosition);
+            double distance = Position2D.Distance(position, demon.WordPosition);
             if (distance <= range)
             {
                 result.Add(demon);

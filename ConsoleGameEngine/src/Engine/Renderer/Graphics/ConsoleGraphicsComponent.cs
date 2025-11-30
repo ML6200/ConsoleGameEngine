@@ -78,22 +78,16 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
     public ConsoleColor ForegroundColor { get; set; }
     public ConsoleColor BorderColor { get; set; }
 
-    private List<Animation> Animations { get; } = new List<Animation>();
+    private List<Animation> Animations { get; } = new();
     public List<ConsoleGraphicsComponent> Children { get; } = new();
     private IConsoleRenderable Parent { get; set; }
     
     private readonly object _childrenLock = new();
     
     
-    public Dimension2D WorldSize
-    {
-        get
-        {
-            return new Dimension2D(Console.WindowWidth, Console.WindowHeight);
-        }
-    }
-    
-    
+    public Dimension2D WorldSize => new(Console.WindowWidth, Console.WindowHeight);
+
+
     // ====================CONSTRUCTORS====================
     public ConsoleGraphicsComponent(int width, int height, 
         Position2D? relativePosition, 
@@ -123,6 +117,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
     }
     // ====================CONSTRUCTORS_END====================
     
+    // ====================POSITIONING====================
     public Dimension2D Size
     {
         get
@@ -164,14 +159,14 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
      * vagy Transform osztály bevezetésével.
      * 
      */
-    public Position2D? AbsolutePosition
+    public Position2D? WordPosition
     {
         get
         {
-            if (Parent is ConsoleGraphicsComponent { AbsolutePosition: not null } parent)
+            if (Parent is ConsoleGraphicsComponent { WordPosition: not null } parent)
             {
                 if (_relativePosition != null)
-                    return parent.AbsolutePosition + _relativePosition;
+                    return parent.WordPosition + _relativePosition;
             }
             return _relativePosition;
         }
@@ -179,9 +174,9 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
 
     public void SetAbsolutePosition(Position2D absolutePosition)
     {
-        if (Parent is ConsoleGraphicsComponent {AbsolutePosition: not null} parent)
+        if (Parent is ConsoleGraphicsComponent {WordPosition: not null} parent)
         {
-            _relativePosition = absolutePosition - parent.AbsolutePosition;
+            _relativePosition = absolutePosition - parent.WordPosition;
         } else 
         {
             _relativePosition = absolutePosition;
@@ -193,6 +188,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
         get => _relativePosition ?? new Position2D(0, 0);
         set => _relativePosition = value;
     }
+    // ======================END-POSITIONING=======================
 
     // ====================ANIMATION-MANAGEMENT====================
     public void AddAnimation(Animation animation)
@@ -264,9 +260,4 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
         }
     }
     // ============================RENDERING-END========================
-
-    public void Dispose()
-    {
-        Children.Clear();
-    }
 }

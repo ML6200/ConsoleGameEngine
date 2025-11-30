@@ -67,13 +67,6 @@ public class ConsoleRenderManager : IDisposable
         };
         
         graphicsThread.Start();
-
-        windowEventThread = new Thread(() => WindowEventLoop(_cts.Token))
-        {
-            Name = nameof(WindowEventLoop),
-            IsBackground = true,
-        };
-        //windowEventThread.Start();
     }
 
     public void Stop()
@@ -137,19 +130,6 @@ public class ConsoleRenderManager : IDisposable
     public void SetTargetRenderFps(int fps)
     {
         _updatesPerSecond = fps;
-    }
-
-    private void WindowEventLoop(CancellationToken ct)
-    {
-        while (!ct.IsCancellationRequested)
-        {
-            if (IsWindowResized())
-            {
-                
-            }
-            
-            Thread.Sleep(100);
-        }
     }
 
     private bool IsWindowResized()
