@@ -44,7 +44,7 @@ public class GameHud : ConsoleGraphicsPanel
                          $"Ammo: {_player.Ammo}/{_player.MaxAmmo}  " +
                          $"BFG: {_player.BFGCells}/{_player.MaxBFGCells}  " +
                          $"XP: {_player.CombatPoints}  " +
-                         $"Framerate: {_engine.RenderManager.CurrentFps} FPS";
+                         $"Framerate: {Math.Round(_engine.RenderManager.CurrentFps, 2)} FPS";
 
         renderer.DrawText(x, y, hudText, ConsoleColor.White, ConsoleColor.Black);
     }

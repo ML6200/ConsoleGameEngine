@@ -98,7 +98,7 @@ public class ConsoleRenderManager : IDisposable
     private Stopwatch timer = new Stopwatch();
     private void RenderLoop(CancellationToken ct)
     {
-        long targetTicksPerFrame = (long) 10_000_000 / _updatesPerSecond;
+        long targetTicksPerFrame = Stopwatch.Frequency / _updatesPerSecond;
         
         while (!ct.IsCancellationRequested)
         {
@@ -112,12 +112,12 @@ public class ConsoleRenderManager : IDisposable
             else
             {
                 ConsoleWindowComponent root = Volatile.Read(ref _rootComponent);
-                
+
                 _renderer.Clear();
                 root.Render(_renderer);
-                _renderer.Render();   
+                _renderer.Render();
             }
-            
+
             while (targetTicksPerFrame > timer.ElapsedTicks)
             {
                 if (targetTicksPerFrame - timer.ElapsedTicks > 20_000)
@@ -126,11 +126,10 @@ public class ConsoleRenderManager : IDisposable
                 }
             }
 
-            double fps = timer.Elapsed.TotalMilliseconds;
-
-            if (fps > 0)
+            double frameTime = timer.Elapsed.TotalMilliseconds;
+            if (frameTime > 0)
             {
-                CurrentFps = 1000.0D / fps;
+                CurrentFps = 1000.0D / frameTime;
             }
         }
     }

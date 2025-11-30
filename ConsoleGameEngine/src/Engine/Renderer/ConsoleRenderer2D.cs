@@ -333,6 +333,7 @@ public class ConsoleRenderer2D
         consoleBuffer.Append("\x1b[0m");
 
         Console.Write(consoleBuffer.ToString());
+        GC.Collect();
     }
 
     private string GetAnsiColorCode(ConsoleColor fg, ConsoleColor bg)
