@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using ConsoleGameEngine.Engine.Input;
@@ -52,7 +53,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     public bool IsRunning => _isRunning;
     public IGameScene? CurrentScene => _currentScene;
     
-    public double CurrentLogicRate { get; private set; }
+    public double CurrentUpdateRate { get; private set; }
 
 
     public ConsoleEngine(int? windowWidth = null, int? windowHeight = null)
@@ -140,7 +141,8 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
                 _currentScene.OnEnter();
             }
         }
-
+        
+        // minden komponens frissitese
         GetRootPanel().Update(deltaTime);
         _currentScene?.OnUpdate(deltaTime);
         
@@ -168,6 +170,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         _inputManager.Dispose();
     }
     
+    Stopwatch timer = new Stopwatch();
     public void UpdateLoop()
     {
         if (!_isInitialized)
@@ -178,24 +181,29 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
                     "before starting update loop"
                 );
         }
-        double targetFrameTime = 1000.0 / _targetUpdatesPerSecond;
 
         while (_isRunning
                && !_cancellationTokenSource!.Token.IsCancellationRequested)
-        {
-            DateTime frameStart = DateTime.Now;
+        { 
+            long targetTicksPerUpdate = Stopwatch.Frequency / _targetUpdatesPerSecond;
+            
+            timer.Restart();
 
             OnUpdate();
             
-            DateTime frameEnd = DateTime.Now;
-            double frameTime = (frameEnd - frameStart).TotalMilliseconds;
-            double sleepTime = targetFrameTime - frameTime;
-            CurrentLogicRate = frameTime * 1000;
+            while (targetTicksPerUpdate > timer.ElapsedTicks)
+            {
+                if (targetTicksPerUpdate - timer.ElapsedTicks > 20_000)
+                {
+                    Thread.Sleep(1);
+                }
+            }
             
-             if (sleepTime > 0)
-             {
-                 Thread.Sleep((int)sleepTime);
-             }
+            double updateTime = timer.Elapsed.TotalMilliseconds;
+            if (updateTime > 0)
+            {
+                CurrentUpdateRate = 1000.0D / updateTime;
+            }
         }
     }
     

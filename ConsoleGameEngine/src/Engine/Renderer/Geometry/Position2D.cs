@@ -31,8 +31,10 @@ public class Position2D
         return new Position2D(a.X + b.X, a.Y + b.Y);
     }
 
-    public static bool operator ==(Position2D a, Position2D b)
+    public static bool operator ==(Position2D? a, Position2D? b)
     {
+        if (a is null && b is null) return true;
+        if (a is null || b is null) return false;
         return a.X == b.X && a.Y == b.Y;
     }
 
