@@ -12,10 +12,8 @@ public class ConsoleWindowComponent : IConsoleRenderable
     public List<Animation> Animations { get; } = new();
 
     public ConsoleGraphicsComponent ConsoleGraphicsComponent => _consoleGraphicsComponent;
-    public Dimension2D WorldSize
-    {
-        get { return new Dimension2D(Console.WindowWidth, Console.WindowHeight); }
-    }
+    public Dimension2D WorldSize => new(Console.WindowWidth, Console.WindowHeight);
+    public ConsoleCamera Camera {get; set;}
 
     public bool Visible
     {
@@ -26,15 +24,21 @@ public class ConsoleWindowComponent : IConsoleRenderable
     {
         if (!Visible) return;
 
+        if (_consoleGraphicsComponent.WorldPosition != null)
+            _consoleGraphicsComponent.SetAbsolutePosition(
+                Camera.TransformPoint(_consoleGraphicsComponent.WorldPosition));
+
         foreach (var child in _consoleGraphicsComponent.GetChildrenSnapshot())
         {
             child.Render(renderer);
         }
     }
 
-    public ConsoleWindowComponent(ConsoleGraphicsComponent consoleGraphicsComponent)
+    public ConsoleWindowComponent(ConsoleGraphicsComponent consoleGraphicsComponent, ConsoleCamera camera)
     {
         _consoleGraphicsComponent = consoleGraphicsComponent;
         Visible = true;
+
+        Camera = camera;
     }
 }

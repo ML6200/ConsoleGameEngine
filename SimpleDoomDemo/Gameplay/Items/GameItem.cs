@@ -74,7 +74,7 @@ public class GameItem : ConsoleGraphicsComponent
 
     public GameItem(int x, int y, ItemType type)
     {
-        RelativePosition = new Position2D(x, y);
+        RelativePoint = new Point2D(x, y);
         Type = type;
         SetInitialProperties();
     }
@@ -105,9 +105,9 @@ public class GameItem : ConsoleGraphicsComponent
     /// <summary>
     /// Update visibility based on distance from player.
     /// </summary>
-    public void UpdateVisibility(Position2D playerPosition, double sightRange)
+    public void UpdateVisibility(Point2D playerPoint, double sightRange)
     {
-        double distance = Position2D.Distance(WorldPosition, playerPosition);
+        double distance = Point2D.Distance(WorldPosition, playerPoint);
         Visible = Available && distance <= sightRange;
     }
 

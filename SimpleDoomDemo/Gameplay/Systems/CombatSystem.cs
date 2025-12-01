@@ -48,7 +48,7 @@ public class CombatSystem : IGameSystem
         foreach (Demon demon in nearbyDemons)
         {
             int u = _random.Next(35, 106);
-            int distance = (int)Position2D.Distance(demon.WorldPosition, _game.Player.WorldPosition);
+            int distance = (int)Point2D.Distance(demon.WorldPosition, _game.Player.WorldPosition);
             int damage = 2 * u / (1 + distance);
 
             DealDamageToDemon(demon, damage);
@@ -92,7 +92,7 @@ public class CombatSystem : IGameSystem
         demon.GetAttackDamageRange(out min, out max);
         int u = _random.Next(min, max);
 
-        int distance = (int)Position2D.Distance(demon.WorldPosition, _game.Player.WorldPosition);
+        int distance = (int)Point2D.Distance(demon.WorldPosition, _game.Player.WorldPosition);
         int damage = u / (1 + distance);
 
         // Trigger attack animation on demon
@@ -135,13 +135,13 @@ public class CombatSystem : IGameSystem
         }
     }
 
-    private List<Demon> GetDemonsWithinRange(Position2D position, double range)
+    private List<Demon> GetDemonsWithinRange(Point2D point, double range)
     {
         List<Demon> result = new List<Demon>();
 
         foreach (Demon demon in _game.Demons)
         {
-            double distance = Position2D.Distance(position, demon.WorldPosition);
+            double distance = Point2D.Distance(point, demon.WorldPosition);
             if (distance <= range)
             {
                 result.Add(demon);

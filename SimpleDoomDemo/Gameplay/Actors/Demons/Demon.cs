@@ -30,7 +30,7 @@ public abstract class Demon : ConsoleGraphicsComponent
 
     public Demon(int x, int y)
     {
-        RelativePosition = new Position2D(x, y);
+        RelativePoint = new Point2D(x, y);
         Alive = true;
         Visible = true;
     }
@@ -38,9 +38,9 @@ public abstract class Demon : ConsoleGraphicsComponent
 
     public void UpdateState(Player player)
     {
-        Position2D playerPos = player.WorldPosition;
-        Position2D demonPos = WorldPosition; 
-        double dist = Position2D.Distance(playerPos, demonPos);
+        Point2D playerPos = player.WorldPosition;
+        Point2D demonPos = WorldPosition; 
+        double dist = Point2D.Distance(playerPos, demonPos);
 
         if (dist < AttackRange)
         {
@@ -81,9 +81,9 @@ public abstract class Demon : ConsoleGraphicsComponent
     /// Update visibility based on distance from player.
     /// Thread-safe visibility update.
     /// </summary>
-    public void UpdateVisibility(Position2D playerPosition, double sightRange)
+    public void UpdateVisibility(Point2D playerPoint, double sightRange)
     {
-        double distance = Position2D.Distance(WorldPosition, playerPosition);
+        double distance = Point2D.Distance(WorldPosition, playerPoint);
         bool newVisibility = Alive && distance <= sightRange;
         
         Visible = newVisibility;

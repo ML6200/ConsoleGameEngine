@@ -71,7 +71,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
     protected int Width;
     protected int Height;
 
-    private Position2D? _relativePosition;
+    private Point2D? _relativePosition;
     public virtual bool Visible { get; set; } = true;
     
     public ConsoleColor BackgroundColor { get; set; }
@@ -90,7 +90,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
 
     // ====================CONSTRUCTORS====================
     public ConsoleGraphicsComponent(int width, int height, 
-        Position2D? relativePosition, 
+        Point2D? relativePosition, 
         ConsoleColor backgroundColor, 
         ConsoleColor foregroundColor, 
         ConsoleColor borderColor)
@@ -104,7 +104,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
     }
     
     public ConsoleGraphicsComponent(int width, int height, 
-        Position2D? relativePosition)
+        Point2D? relativePosition)
     {
         Width = width;
         Height = height;
@@ -159,7 +159,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
      * vagy Transform osztály bevezetésével.
      * 
      */
-    public Position2D? WorldPosition
+    public Point2D? WorldPosition
     {
         get
         {
@@ -172,20 +172,20 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
         }
     }
 
-    public void SetAbsolutePosition(Position2D absolutePosition)
+    public void SetAbsolutePosition(Point2D absolutePoint)
     {
         if (Parent is ConsoleGraphicsComponent {WorldPosition: not null} parent)
         {
-            _relativePosition = absolutePosition - parent.WorldPosition;
+            _relativePosition = absolutePoint - parent.WorldPosition;
         } else 
         {
-            _relativePosition = absolutePosition;
+            _relativePosition = absolutePoint;
         }
     }
     
-    public Position2D RelativePosition
+    public Point2D RelativePoint
     {
-        get => _relativePosition ?? new Position2D(0, 0);
+        get => _relativePosition ?? new Point2D(0, 0);
         set => _relativePosition = value;
     }
     // ======================END-POSITIONING=======================
@@ -241,7 +241,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
             child.Render(renderer);
         }
     }
-    
+
     public void Update(double deltaTime)
     {
         foreach (var anim in Animations.ToList())

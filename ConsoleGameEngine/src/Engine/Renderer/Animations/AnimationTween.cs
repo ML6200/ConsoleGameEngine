@@ -6,15 +6,15 @@ namespace ConsoleGameEngine.Engine.Renderer.Animations;
 
 public static class AnimationTween
 {
-    public static Animation MoveTo(ConsoleGraphicsComponent target, Position2D end, double duration)
+    public static Animation MoveTo(ConsoleGraphicsComponent target, Point2D end, double duration)
     {
-        Position2D start = target.RelativePosition;
+        Point2D start = target.RelativePoint;
         return new Animation(duration, progress =>
         {
             float t = Easing.EaseOutQuad(progress);
             int x = Lerp(start.X, end.X, t);
             int y = Lerp(start.Y, end.Y, t);
-            target.RelativePosition = new Position2D(x, y);
+            target.RelativePoint = new Point2D(x, y);
         });
     }
 

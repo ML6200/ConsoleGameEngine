@@ -105,7 +105,7 @@ public class DoomGameScene : IGameScene
         int hudHeight = 1;
         _hud = new GameHud(_engine, Player, hudWidth, hudHeight)
         {
-            RelativePosition = new Position2D(0, Console.WindowHeight - 1)
+            RelativePoint = new Point2D(0, Console.WindowHeight - 1)
         };
         _rootPanel.AddChild(_hud);
 
@@ -163,7 +163,7 @@ public class DoomGameScene : IGameScene
         UpdateVisibility();
 
         // Update HUD
-        _hud.UpdateHUD(new Position2D(0, _rootPanel.WorldSize.Height-1));
+        _hud.UpdateHUD(new Point2D(0, _rootPanel.WorldSize.Height-1));
 
         // Cleanup dead entities
         CleanupEntities();
@@ -171,7 +171,7 @@ public class DoomGameScene : IGameScene
 
     private void UpdateVisibility()
     {
-        Position2D playerPos = Player.WorldPosition;
+        Point2D playerPos = Player.WorldPosition;
         double sightRange = Player.SightRange;
 
         lock (_visibilityLock)
@@ -229,8 +229,8 @@ public class DoomGameScene : IGameScene
 
     private void MovePlayerBy(int x, int y)
     {
-        Position2D targetPosition = Player.WorldPosition + new Position2D(x, y);
-        _movementSystem.MovePlayer(targetPosition);
+        Point2D targetPoint = Player.WorldPosition + new Point2D(x, y);
+        _movementSystem.MovePlayer(targetPoint);
     }
 
     private void CleanupEntities()
@@ -317,7 +317,7 @@ public class DoomGameScene : IGameScene
 
                         // PLAYER
                         case 'p':
-                            Player.RelativePosition = new Position2D(j, i - 1);
+                            Player.RelativePoint = new Point2D(j, i - 1);
                             break;
                     }
                 }

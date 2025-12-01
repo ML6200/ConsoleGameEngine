@@ -20,7 +20,7 @@ public class MovementSystem : IGameSystem
     private Dictionary<int, List<object>> _spatialGrid = new();
     private const int GRID_SIZE = 5;
 
-    private int GetGridKey(Position2D pos)
+    private int GetGridKey(Point2D pos)
     {
         int gridX = pos.X / GRID_SIZE;
         int gridY = pos.Y / GRID_SIZE;
@@ -58,8 +58,8 @@ public class MovementSystem : IGameSystem
     
     private void MoveDemonTowardsPlayer(Demon demon)
     {
-        Position2D demonPos = demon.WorldPosition;
-        Position2D playerPos = _game.Player.WorldPosition;
+        Point2D demonPos = demon.WorldPosition;
+        Point2D playerPos = _game.Player.WorldPosition;
 
         // Calculate direction to player
         int dx = playerPos.X - demonPos.X;
@@ -70,7 +70,7 @@ public class MovementSystem : IGameSystem
         int stepY = dy == 0 ? 0 : (dy > 0 ? 1 : -1);
 
         // Try to move directly towards player
-        Position2D targetPos = new Position2D(demonPos.X + stepX, demonPos.Y + stepY);
+        Point2D targetPos = new Point2D(demonPos.X + stepX, demonPos.Y + stepY);
 
         if (TryMoveDemon(demon, targetPos))
             return;
@@ -78,14 +78,14 @@ public class MovementSystem : IGameSystem
         // If diagonal movement failed, try horizontal then vertical
         if (stepX != 0)
         {
-            targetPos = new Position2D(demonPos.X + stepX, demonPos.Y);
+            targetPos = new Point2D(demonPos.X + stepX, demonPos.Y);
             if (TryMoveDemon(demon, targetPos))
                 return;
         }
 
         if (stepY != 0)
         {
-            targetPos = new Position2D(demonPos.X, demonPos.Y + stepY);
+            targetPos = new Point2D(demonPos.X, demonPos.Y + stepY);
             if (TryMoveDemon(demon, targetPos))
                 return;
         }
@@ -94,10 +94,10 @@ public class MovementSystem : IGameSystem
         int randomDir = _random.Next(4);
         switch (randomDir)
         {
-            case 0: targetPos = new Position2D(demonPos.X + 1, demonPos.Y); break;
-            case 1: targetPos = new Position2D(demonPos.X - 1, demonPos.Y); break;
-            case 2: targetPos = new Position2D(demonPos.X, demonPos.Y + 1); break;
-            case 3: targetPos = new Position2D(demonPos.X, demonPos.Y - 1); break;
+            case 0: targetPos = new Point2D(demonPos.X + 1, demonPos.Y); break;
+            case 1: targetPos = new Point2D(demonPos.X - 1, demonPos.Y); break;
+            case 2: targetPos = new Point2D(demonPos.X, demonPos.Y + 1); break;
+            case 3: targetPos = new Point2D(demonPos.X, demonPos.Y - 1); break;
         }
 
         TryMoveDemon(demon, targetPos);
@@ -107,16 +107,16 @@ public class MovementSystem : IGameSystem
     /// Attempts to move a demon to the specified position.
     /// Returns true if movement was successful.
     /// </summary>
-    private bool TryMoveDemon(Demon demon, Position2D targetPosition)
+    private bool TryMoveDemon(Demon demon, Point2D targetPoint)
     {
-        if (!IsPointWithinBounds(targetPosition))
+        if (!IsPointWithinBounds(targetPoint))
             return false;
 
-        double totalFillingRatio = GetTotalFillingRatio(targetPosition) + demon.FillingRatio;
+        double totalFillingRatio = GetTotalFillingRatio(targetPoint) + demon.FillingRatio;
 
         if (totalFillingRatio < 1.0)
         {
-            demon.RelativePosition = targetPosition;
+            demon.RelativePoint = targetPoint;
             return true;
         }
 
@@ -127,37 +127,37 @@ public class MovementSystem : IGameSystem
     /// Attempts to move the player to the specified position.
     /// Returns true if movement was successful.
     /// </summary>
-    public bool MovePlayer(Position2D targetPosition)
+    public bool MovePlayer(Point2D targetPoint)
     {
-        if (!IsPointWithinBounds(targetPosition))
+        if (!IsPointWithinBounds(targetPoint))
             return false;
 
-        double totalFillingRatio = GetTotalFillingRatio(targetPosition) + _game.PlayerFillingRatio;
+        double totalFillingRatio = GetTotalFillingRatio(targetPoint) + _game.PlayerFillingRatio;
 
         if (totalFillingRatio < 1.0)
         {
-            _game.Player.RelativePosition = targetPosition;
+            _game.Player.RelativePoint = targetPoint;
             return true;
         }
 
         return false;
     }
 
-    private double GetTotalFillingRatio(Position2D position)
+    private double GetTotalFillingRatio(Point2D point)
     {
         double sum = 0;
-        int key = GetGridKey(position);
+        int key = GetGridKey(point);
 
         // Only check nearby objects!
         if (_spatialGrid.TryGetValue(key, out var nearbyObjects))
         {
             foreach (var obj in nearbyObjects)
             {
-                Position2D? objPos = obj is GameItem item
+                Point2D? objPos = obj is GameItem item
                     ? item.WorldPosition
                     : ((Demon)obj).WorldPosition;
 
-                if (Position2D.Distance(position, objPos) <= 0)
+                if (Point2D.Distance(point, objPos) <= 0)
                 {
                     sum += obj is GameItem i ? i.FillingRatio : ((Demon)obj).FillingRatio;
                 }
@@ -167,11 +167,11 @@ public class MovementSystem : IGameSystem
         return sum;
     }
 
-    private bool IsPointWithinBounds(Position2D position)
+    private bool IsPointWithinBounds(Point2D point)
     {
-        return position.X < Console.WindowWidth
-               && position.X >= 0
-               && position.Y < Console.WindowHeight - 1
-               && position.Y >= 0;
+        return point.X < Console.WindowWidth
+               && point.X >= 0
+               && point.Y < Console.WindowHeight - 1
+               && point.Y >= 0;
     }
 }

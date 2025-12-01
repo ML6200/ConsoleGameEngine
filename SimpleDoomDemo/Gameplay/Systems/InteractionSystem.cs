@@ -117,13 +117,13 @@ public class InteractionSystem : IGameSystem
         }
     }
 
-    private List<GameItem> GetItemsWithinRange(Position2D position, double range)
+    private List<GameItem> GetItemsWithinRange(Point2D point, double range)
     {
         List<GameItem> result = new List<GameItem>();
 
         foreach (GameItem item in _game.Items)
         {
-            double distance = Position2D.Distance(position, item.WorldPosition);
+            double distance = Point2D.Distance(point, item.WorldPosition);
             if (distance <= range)
             {
                 result.Add(item);

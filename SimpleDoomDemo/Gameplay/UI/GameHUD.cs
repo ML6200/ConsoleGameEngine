@@ -27,9 +27,9 @@ public class GameHud : ConsoleGraphicsPanel
         Size = new Dimension2D(width, height);
     }
 
-    public void UpdateHUD(Position2D absolutePosition)
+    public void UpdateHUD(Point2D absolutePoint)
     {
-        SetAbsolutePosition(absolutePosition);
+        SetAbsolutePosition(absolutePoint);
     }
 
     public override void Render(ConsoleRenderer2D renderer)

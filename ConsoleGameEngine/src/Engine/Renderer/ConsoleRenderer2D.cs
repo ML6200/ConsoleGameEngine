@@ -47,7 +47,6 @@ public class ConsoleRenderer2D
     private int _height;
     
     private Cell[,] _renderBuffer;
-    private Cell[,] _cacheBuffer;
     private bool[,] _dirtyMarks;
     
     private volatile bool _isResizing;
@@ -69,7 +68,6 @@ public class ConsoleRenderer2D
         _width = width;
         _height = height;
         _renderBuffer = new Cell[_width, _height];
-        _cacheBuffer = new Cell[_width, _height];
         _dirtyMarks = new bool[_width, _height];
         
         Thread.MemoryBarrier();
@@ -96,7 +94,6 @@ public class ConsoleRenderer2D
         Console.Clear();
         
         _renderBuffer = new Cell[_width, _height];
-        _cacheBuffer = new Cell[_width, _height];
         _dirtyMarks = new bool[_width, _height];
 
         Clear();
@@ -120,7 +117,6 @@ public class ConsoleRenderer2D
             for (int j = 0; j < _width; j++)
             {
                 _renderBuffer[j, i] = Cell.Empty;
-                //_cacheBuffer[j, i] = new Cell();
                 _dirtyMarks[j, i] = true; 
             }
         }
@@ -130,13 +126,11 @@ public class ConsoleRenderer2D
     {
         if (_isResizing)  return;
         
-        if (IsValidCoordinate(x, y))
+        if (IsValidCoordinate(x, y) 
+            && !_renderBuffer[x, y].Equals(cell))
         {
-            if (!_renderBuffer[x, y].Equals(cell))
-            {
-                _renderBuffer[x, y] = cell;
-                _dirtyMarks[x, y] = true;
-            }
+            _renderBuffer[x, y] = cell;
+            _dirtyMarks[x, y] = true;
         }
     }
 
@@ -306,7 +300,6 @@ public class ConsoleRenderer2D
         if(_isResizing) return;
         
         StringBuilder consoleBuffer = new StringBuilder();
-        
         for (int y = 0; y < _height; y++)
         {
             for (int x = 0; x < _width; x++)
@@ -324,7 +317,6 @@ public class ConsoleRenderer2D
                     }
 
                     consoleBuffer.Append(cell.Character);
-                    //_cacheBuffer[x, y] = cell;
                     _dirtyMarks[x, y] = false;
                 }
             }

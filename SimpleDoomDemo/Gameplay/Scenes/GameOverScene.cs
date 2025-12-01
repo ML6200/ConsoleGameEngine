@@ -52,7 +52,7 @@ public class GameOverScene : IGameScene
         // Create game over panel
         _gameOverPanel = new GameOverPanel(_player, _playerDied, _levelComplete, _interrupted)
         {
-            RelativePosition = new Position2D(0, 0),
+            RelativePoint = new Point2D(0, 0),
             Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight),
             Visible = true
         };

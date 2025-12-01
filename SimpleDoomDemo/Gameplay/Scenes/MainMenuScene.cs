@@ -6,9 +6,6 @@ using ConsoleGameEngine.Engine.Renderer.Graphics;
 
 namespace SimpleDoomDemo.Gameplay.Scenes;
 
-/// <summary>
-/// Main menu scene with play/quit buttons.
-/// </summary>
 public class MainMenuScene : IGameScene
 {
     private ConsoleEngine _engine;
@@ -38,7 +35,7 @@ public class MainMenuScene : IGameScene
         // Create Play button
         _playButton = new ConsoleGraphicsButton("PLAY GAME")
         {
-            RelativePosition = new Position2D(centerX - 10, centerY - 3),
+            RelativePoint = new Point2D(centerX - 10, centerY - 3),
             Size = new Dimension2D(20, 3),
             NormalBgColor = ConsoleColor.DarkGreen,
             FocusedBgColor = ConsoleColor.Green,
@@ -52,7 +49,7 @@ public class MainMenuScene : IGameScene
         // Create Quit button
         _quitButton = new ConsoleGraphicsButton("QUIT")
         {
-            RelativePosition = new Position2D(centerX - 10, centerY + 2),
+            RelativePoint = new Point2D(centerX - 10, centerY + 2),
             Size = new Dimension2D(20, 3),
             NormalBgColor = ConsoleColor.DarkRed,
             FocusedBgColor = ConsoleColor.Red,
