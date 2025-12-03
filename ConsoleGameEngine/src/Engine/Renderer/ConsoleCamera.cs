@@ -1,3 +1,4 @@
+using System.Numerics;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer;
@@ -21,7 +22,7 @@ namespace ConsoleGameEngine.Engine.Renderer;
  */
 public class ConsoleCamera
 {
-    public Point2D CameraStartStartPoint { get; set; }
+    public Point2D CameraStartPoint { get; set; }
     public Point2D CameraEndPoint { get; private set; }
     public Dimension2D CameraSize { get; set; }
     public Dimension2D WorldSize { get; private set; }
@@ -29,7 +30,7 @@ public class ConsoleCamera
     public ConsoleCamera(Dimension2D worldSize, Point2D cameraStartPoint, Dimension2D cameraSize)
     {
         WorldSize = worldSize;
-        CameraStartStartPoint = cameraStartPoint;
+        CameraStartPoint = cameraStartPoint;
         CameraSize = cameraSize;
        
         int endX = cameraStartPoint.X + cameraSize.Width;
@@ -40,8 +41,8 @@ public class ConsoleCamera
     public Point2D TransformPoint(Point2D sourcePoint)
     {
         return 
-            new Point2D(sourcePoint.X - CameraStartStartPoint.X, 
-                    sourcePoint.Y - CameraStartStartPoint.Y)
-                .Clamp(CameraStartStartPoint, CameraEndPoint);
+            new Point2D(sourcePoint.X - CameraStartPoint.X, 
+                    sourcePoint.Y - CameraStartPoint.Y)
+                .Clamp(new Point2D(0, 0), CameraSize);
     }
 }

@@ -75,7 +75,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         
         Camera = new ConsoleCamera(
             new Dimension2D(width, height), 
-            new Point2D(5, 5), 
+            new Point2D(width / 2, height / 2), 
             new Dimension2D(10, 10));
         
         _rootComponent = new ConsoleWindowComponent(rootPane, Camera);

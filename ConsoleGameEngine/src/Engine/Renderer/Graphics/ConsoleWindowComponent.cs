@@ -25,8 +25,8 @@ public class ConsoleWindowComponent : IConsoleRenderable
         if (!Visible) return;
 
         if (_consoleGraphicsComponent.WorldPosition != null)
-            _consoleGraphicsComponent.SetAbsolutePosition(
-                Camera.TransformPoint(_consoleGraphicsComponent.WorldPosition));
+            _consoleGraphicsComponent.WorldPosition =
+                Camera.TransformPoint(_consoleGraphicsComponent.WorldPosition);
 
         foreach (var child in _consoleGraphicsComponent.GetChildrenSnapshot())
         {

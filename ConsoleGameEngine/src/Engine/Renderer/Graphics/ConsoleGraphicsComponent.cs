@@ -170,6 +170,10 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
             }
             return _relativePosition;
         }
+        set
+        {
+            SetAbsolutePosition(value);
+        }
     }
 
     public void SetAbsolutePosition(Point2D absolutePoint)
