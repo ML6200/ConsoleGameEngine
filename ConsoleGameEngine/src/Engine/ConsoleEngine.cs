@@ -237,7 +237,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         _isRunning = false;
         _cancellationTokenSource?.Cancel();
 
-        // Wait for update thread to finish
+        // Keves timeout a befejezesig
         if (_updateThread != null && _updateThread.IsAlive)
         {
             _updateThread.Join(1000);
