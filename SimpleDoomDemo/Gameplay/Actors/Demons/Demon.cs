@@ -30,7 +30,7 @@ public abstract class Demon : ConsoleGraphicsComponent
 
     public Demon(int x, int y)
     {
-        RelativePoint = new Point2D(x, y);
+        RelativePosition = new Point2D(x, y);
         Alive = true;
         Visible = true;
     }

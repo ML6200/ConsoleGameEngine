@@ -76,6 +76,13 @@ public class Point2D
          
         return new Point2D(_x, _y);
     }
+
+    public static void Clamp(int min, int max, out int value)
+    {
+        value = 0;
+        value = Math.Max(min, value);
+        value = Math.Min(max, value);
+    }
     
     public Point2D Clamp(Point2D minPoint, Dimension2D maxDimension)
     {

@@ -116,7 +116,7 @@ public class MovementSystem : IGameSystem
 
         if (totalFillingRatio < 1.0)
         {
-            demon.RelativePoint = targetPoint;
+            demon.RelativePosition = targetPoint;
             return true;
         }
 
@@ -136,7 +136,7 @@ public class MovementSystem : IGameSystem
 
         if (totalFillingRatio < 1.0)
         {
-            _game.Player.RelativePoint = targetPoint;
+            _game.Player.RelativePosition = targetPoint;
             return true;
         }
 

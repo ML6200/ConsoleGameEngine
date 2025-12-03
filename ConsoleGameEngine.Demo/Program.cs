@@ -218,25 +218,25 @@ class SimpleScene : IGameScene
     {
         _engine = consoleEngine;
         
-        var root = consoleEngine.GetRootPanel();
+        var root = consoleEngine.RootPanel();
         
         var title = new ConsoleGraphicsLabel
         {
-            RelativePoint = new Point2D(30, 2),
+            RelativePosition = new Point2D(30, 2),
             Text = "SIMPLE DOOM ENGINE",
             ForegroundColor = ConsoleColor.Red
         };
         
         panel = new ConsoleGraphicsPanel
         {
-            RelativePoint = new Point2D(10, 5),
+            RelativePosition = new Point2D(10, 5),
             Size = new Dimension2D(60, 15),
             BackgroundColor = ConsoleColor.DarkBlue,
             BorderColor = ConsoleColor.Cyan
         };
         var text = new ConsoleGraphicsLabel
         {
-            RelativePoint = new Point2D(0, 0),
+            RelativePosition = new Point2D(0, 0),
             Text = "Sprite",
             ForegroundColor = ConsoleColor.White,
             BackgroundColor = ConsoleColor.DarkGray,
@@ -245,7 +245,7 @@ class SimpleScene : IGameScene
 
         spritePanel = new ConsoleGraphicsPanel
         {
-            RelativePoint = new Point2D(20, 10),
+            RelativePosition = new Point2D(20, 10),
             Size = new Dimension2D(9, 5),
             BackgroundColor = ConsoleColor.DarkGray,
             BorderColor = ConsoleColor.Black
@@ -253,7 +253,7 @@ class SimpleScene : IGameScene
 
         var text2 = new ConsoleGraphicsLabel
         {
-            RelativePoint = new Point2D(0, 0),
+            RelativePosition = new Point2D(0, 0),
             Text = "Sprite",
             ForegroundColor = ConsoleColor.White,
             BackgroundColor = ConsoleColor.DarkGray,
@@ -262,7 +262,7 @@ class SimpleScene : IGameScene
 
         spritePanel2 = new ConsoleGraphicsPanel
         {
-            RelativePoint = new Point2D(5, 10),
+            RelativePosition = new Point2D(5, 10),
             Size = new Dimension2D(9, 5),
             BackgroundColor = ConsoleColor.DarkGray,
             BorderColor = ConsoleColor.Black
@@ -270,7 +270,7 @@ class SimpleScene : IGameScene
         
         var info = new ConsoleGraphicsLabel
         {
-            RelativePoint = new Point2D(12, 6),
+            RelativePosition = new Point2D(12, 6),
             Text = "Press ESC to exit",
             ForegroundColor = ConsoleColor.White
         };
@@ -278,7 +278,7 @@ class SimpleScene : IGameScene
 
         var label = new ConsoleGraphicsLabel
         {
-            RelativePoint = new Point2D(0, 0),
+            RelativePosition = new Point2D(0, 0),
             Text = "Hello World!",
             ForegroundColor = ConsoleColor.Green,
             Visible = false
@@ -287,13 +287,13 @@ class SimpleScene : IGameScene
         var startButton = new ConsoleGraphicsButton
         {
             Text = "Start",
-            RelativePoint = new Point2D(30, 10),
+            RelativePosition = new Point2D(30, 10),
             Size = new Dimension2D(9, 3),
         };
         
         var button = new ConsoleGraphicsButton("Click")
         {
-            RelativePoint = new Point2D(50, 10),
+            RelativePosition = new Point2D(50, 10),
             Size = new Dimension2D(0, 1),
             HasBorder = false
         };
@@ -320,7 +320,7 @@ class SimpleScene : IGameScene
         
         button.OnClick += (s, e) =>
         {
-            var originalY = button.RelativePoint.Y;
+            var originalY = button.RelativePosition.Y;
 
 
             button.AddAnimation(
@@ -365,7 +365,7 @@ class SimpleScene : IGameScene
 
     public void OnUpdate(double deltaTime)
     {
-        spritePanel2.RelativePoint.X += 1;
+        spritePanel2.RelativePosition.X += 1;
     }
     
     private void OnKeyPressed(object? sender, KeyEventArgs e)
@@ -374,19 +374,19 @@ class SimpleScene : IGameScene
         switch (e.Key)
         {
             case ConsoleKey.UpArrow:
-                spritePanel.RelativePoint.Y -= 1;
+                spritePanel.RelativePosition.Y -= 1;
                 break;
 
             case ConsoleKey.DownArrow:
-               spritePanel.RelativePoint.Y += 1;
+               spritePanel.RelativePosition.Y += 1;
                 break;
             
             case ConsoleKey.LeftArrow:
-                spritePanel.RelativePoint.X += -1;
+                spritePanel.RelativePosition.X += -1;
                 break;
             
             case ConsoleKey.RightArrow:
-                spritePanel.RelativePoint.X += 1;
+                spritePanel.RelativePosition.X += 1;
                 break;
             case ConsoleKey.E:
                 spritePanel.Visible = !spritePanel.Visible;
@@ -421,12 +421,12 @@ class SimpleScene : IGameScene
           _engine = engine;
 
           // Get root panel
-          var root = engine.GetRootPanel();
+          var root = engine.RootPanel();
 
           // Create title
           _titleLabel = new ConsoleGraphicsLabel
           {
-              RelativePoint = new Point2D(30, 5),
+              RelativePosition = new Point2D(30, 5),
               Text = "=== CONSOLE GAME ===",
               ForegroundColor = ConsoleColor.Cyan
           };
@@ -434,7 +434,7 @@ class SimpleScene : IGameScene
           // Create instructions
           _instructionLabel = new ConsoleGraphicsLabel
           {
-              RelativePoint = new Point2D(25, 10),
+              RelativePosition = new Point2D(25, 10),
               Text = "Press SPACE to start | ESC to quit",
               ForegroundColor = ConsoleColor.White
           };
@@ -500,7 +500,7 @@ class SimpleScene : IGameScene
       public void Initialize(ConsoleEngine engine)
       {
           _engine = engine;
-          var root = engine.GetRootPanel();
+          var root = engine.RootPanel();
 
           // Initial positions
           _playerPoint = new Point2D(10, 15);
@@ -509,7 +509,7 @@ class SimpleScene : IGameScene
           // Create player
           _playerLabel = new ConsoleGraphicsLabel
           {
-              RelativePoint = _playerPoint,
+              RelativePosition = _playerPoint,
               Text = "@",
               ForegroundColor = ConsoleColor.Green
           };
@@ -517,7 +517,7 @@ class SimpleScene : IGameScene
           // Create enemy
           _enemyLabel = new ConsoleGraphicsLabel
           {
-              RelativePoint = _enemyPoint,
+              RelativePosition = _enemyPoint,
               Text = "X",
               ForegroundColor = ConsoleColor.Red
           };
@@ -525,7 +525,7 @@ class SimpleScene : IGameScene
           // Create score display
           _scoreLabel = new ConsoleGraphicsLabel
           {
-              RelativePoint = new Point2D(2, 1),
+              RelativePosition = new Point2D(2, 1),
               Text = "Score: 0",
               ForegroundColor = ConsoleColor.Yellow
           };
@@ -533,7 +533,7 @@ class SimpleScene : IGameScene
           // Create game area panel
           var gamePanel = new ConsoleGraphicsPanel
           {
-              RelativePoint = new Point2D(5, 5),
+              RelativePosition = new Point2D(5, 5),
               Size = new Dimension2D(70, 20),
               HasBorder = true,
               BorderColor = ConsoleColor.DarkGray
@@ -563,7 +563,7 @@ class SimpleScene : IGameScene
                   _enemyPoint.X - (int)(_enemySpeed * deltaTime),
                   _enemyPoint.Y
               );
-              _enemyLabel!.RelativePoint = _enemyPoint;
+              _enemyLabel!.RelativePosition = _enemyPoint;
           }
 
           // Check collision
@@ -589,18 +589,18 @@ class SimpleScene : IGameScene
           {
               case ConsoleKey.UpArrow:
                   _playerPoint = new Point2D(_playerPoint.X, _playerPoint.Y - 1);
-                  _playerLabel!.RelativePoint = _playerPoint;
+                  _playerLabel!.RelativePosition = _playerPoint;
                   break;
 
               case ConsoleKey.DownArrow:
                   _playerPoint = new Point2D(_playerPoint.X, _playerPoint.Y + 1);
-                  _playerLabel!.RelativePoint = _playerPoint;
+                  _playerLabel!.RelativePosition = _playerPoint;
                   break;
 
               case ConsoleKey.Spacebar:
                   // Shoot! Reset enemy and gain points
                   _enemyPoint = new Point2D(70, _playerPoint.Y);
-                  _enemyLabel!.RelativePoint = _enemyPoint;
+                  _enemyLabel!.RelativePosition = _enemyPoint;
                   _score += 10;
                   UpdateScore();
                   break;
@@ -634,12 +634,12 @@ class SimpleScene : IGameScene
       public void Initialize(ConsoleEngine engine)
       {
           _engine = engine;
-          var root = engine.GetRootPanel();
+          var root = engine.RootPanel();
 
           // Game over panel
           var panel = new ConsoleGraphicsPanel
           {
-              RelativePoint = new Point2D(20, 10),
+              RelativePosition = new Point2D(20, 10),
               Size = new Dimension2D(40, 10),
               HasBorder = true,
               BorderColor = ConsoleColor.Red,
@@ -651,21 +651,21 @@ class SimpleScene : IGameScene
 
           var gameOverLabel = new ConsoleGraphicsLabel
           {
-              RelativePoint = new Point2D(w/2-5, h/2 -5),
+              RelativePosition = new Point2D(w/2-5, h/2 -5),
               Text = "GAME OVER",
               ForegroundColor = ConsoleColor.White
           };
 
           var scoreLabel = new ConsoleGraphicsLabel
           {
-              RelativePoint = new Point2D(3, h/2 -3),
+              RelativePosition = new Point2D(3, h/2 -3),
               Text = $"Final Score: {_finalScore}",
               ForegroundColor = ConsoleColor.Yellow
           };
 
           var restartLabel = new ConsoleGraphicsLabel   
           {
-              RelativePoint = new Point2D(3, h/2),
+              RelativePosition = new Point2D(3, h/2),
               Text = "Press R to restart | ESC to menu",
               ForegroundColor = ConsoleColor.Gray
           };

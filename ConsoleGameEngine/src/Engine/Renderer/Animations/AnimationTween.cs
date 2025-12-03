@@ -8,13 +8,13 @@ public static class AnimationTween
 {
     public static Animation MoveTo(ConsoleGraphicsComponent target, Point2D end, double duration)
     {
-        Point2D start = target.RelativePoint;
+        Point2D start = target.RelativePosition;
         return new Animation(duration, progress =>
         {
             float t = Easing.EaseOutQuad(progress);
             int x = Lerp(start.X, end.X, t);
             int y = Lerp(start.Y, end.Y, t);
-            target.RelativePoint = new Point2D(x, y);
+            target.RelativePosition = new Point2D(x, y);
         });
     }
 

@@ -38,11 +38,8 @@ public class ConsoleCamera
         CameraEndPoint = new Point2D(endX, endY);
     }
 
-    public Point2D TransformPoint(Point2D sourcePoint)
+    public void TransformPoint(Point2D sourcePoint, out Point2D destinationPoint)
     {
-        return 
-            new Point2D(sourcePoint.X - CameraStartPoint.X, 
-                    sourcePoint.Y - CameraStartPoint.Y)
-                .Clamp(new Point2D(0, 0), CameraSize);
+        destinationPoint = new Point2D(sourcePoint.X, sourcePoint.Y);
     }
 }

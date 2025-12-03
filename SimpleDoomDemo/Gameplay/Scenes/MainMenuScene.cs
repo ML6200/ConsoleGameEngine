@@ -22,7 +22,7 @@ public class MainMenuScene : IGameScene
     public void Initialize(ConsoleEngine consoleEngine)
     {
         _engine = consoleEngine;
-        _rootPanel = _engine.GetRootPanel();
+        _rootPanel = _engine.RootPanel();
     }
 
     public void OnEnter()
@@ -35,7 +35,7 @@ public class MainMenuScene : IGameScene
         // Create Play button
         _playButton = new ConsoleGraphicsButton("PLAY GAME")
         {
-            RelativePoint = new Point2D(centerX - 10, centerY - 3),
+            RelativePosition = new Point2D(centerX - 10, centerY - 3),
             Size = new Dimension2D(20, 3),
             NormalBgColor = ConsoleColor.DarkGreen,
             FocusedBgColor = ConsoleColor.Green,
@@ -49,7 +49,7 @@ public class MainMenuScene : IGameScene
         // Create Quit button
         _quitButton = new ConsoleGraphicsButton("QUIT")
         {
-            RelativePoint = new Point2D(centerX - 10, centerY + 2),
+            RelativePosition = new Point2D(centerX - 10, centerY + 2),
             Size = new Dimension2D(20, 3),
             NormalBgColor = ConsoleColor.DarkRed,
             FocusedBgColor = ConsoleColor.Red,

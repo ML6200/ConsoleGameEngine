@@ -1,12 +1,21 @@
 using System;
+using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
 public class ConsoleGraphicsPanel : ConsoleGraphicsComponent
 {
+    public ConsoleGraphicsPanel(int width, int height, Point2D? relativePosition) : base(width, height, relativePosition)
+    {
+    }
+
+    public ConsoleGraphicsPanel()
+    {
+    }
+
     public bool HasBorder { get; set; } = true;
 
-    public override void Render(ConsoleRenderer2D renderer)
+    public override void Compute(ConsoleRenderer2D renderer)
     {
         if (!Visible) return;
 
@@ -21,6 +30,6 @@ public class ConsoleGraphicsPanel : ConsoleGraphicsComponent
 
         var childrenSnapshot = GetChildrenSnapshot();
         foreach (var child in childrenSnapshot)
-            child.Render(renderer);
+            child.Compute(renderer);
     }
 }

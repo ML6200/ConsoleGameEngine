@@ -16,13 +16,13 @@ public class Mancubus : Demon
         _speed = 70;
     }
 
-    public override void Render(ConsoleRenderer2D consoleRenderer2D)
+    public override void Compute(ConsoleRenderer2D consoleRenderer2D)
     {
         if (!Visible) return;
         consoleRenderer2D.SetCell(WorldPosition.X,
             WorldPosition.Y,
             new Cell('O', ConsoleColor.Black, ConsoleColor.DarkRed));
-        base.Render(consoleRenderer2D);
+        base.Compute(consoleRenderer2D);
     }
 
     public override int GetAttackDamageRange(out int min, out int max)

@@ -13,32 +13,25 @@ public class ConsoleWindowComponent : IConsoleRenderable
 
     public ConsoleGraphicsComponent ConsoleGraphicsComponent => _consoleGraphicsComponent;
     public Dimension2D WorldSize => new(Console.WindowWidth, Console.WindowHeight);
-    public ConsoleCamera Camera {get; set;}
 
     public bool Visible
     {
         get; set;
     }
 
-    public void Render(ConsoleRenderer2D renderer)
+    public void Compute(ConsoleRenderer2D renderer)
     {
         if (!Visible) return;
-
-        if (_consoleGraphicsComponent.WorldPosition != null)
-            _consoleGraphicsComponent.WorldPosition =
-                Camera.TransformPoint(_consoleGraphicsComponent.WorldPosition);
-
+        
         foreach (var child in _consoleGraphicsComponent.GetChildrenSnapshot())
         {
-            child.Render(renderer);
+            child.Compute(renderer);
         }
     }
 
-    public ConsoleWindowComponent(ConsoleGraphicsComponent consoleGraphicsComponent, ConsoleCamera camera)
+    public ConsoleWindowComponent(ConsoleGraphicsComponent consoleGraphicsComponent)
     {
         _consoleGraphicsComponent = consoleGraphicsComponent;
         Visible = true;
-
-        Camera = camera;
     }
 }

@@ -34,7 +34,7 @@ public class GameOverScene : IGameScene
     public void Initialize(ConsoleEngine consoleEngine)
     {
         _engine = consoleEngine;
-        _rootPanel = _engine.GetRootPanel();
+        _rootPanel = _engine.RootPanel();
     }
 
     public void OnEnter()
@@ -52,7 +52,7 @@ public class GameOverScene : IGameScene
         // Create game over panel
         _gameOverPanel = new GameOverPanel(_player, _playerDied, _levelComplete, _interrupted)
         {
-            RelativePoint = new Point2D(0, 0),
+            RelativePosition = new Point2D(0, 0),
             Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight),
             Visible = true
         };
@@ -107,11 +107,11 @@ public class GameOverPanel : ConsoleGraphicsPanel
         HasBorder = false;
     }
 
-    public override void Render(ConsoleRenderer2D renderer)
+    public override void Compute(ConsoleRenderer2D renderer)
     {
         if (!Visible) return;
 
-        base.Render(renderer);
+        base.Compute(renderer);
 
         int centerX = Console.WindowWidth / 2;
         int centerY = Console.WindowHeight / 2;

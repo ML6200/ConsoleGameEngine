@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using ConsoleGameEngine.Engine.Input;
+using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 
 namespace ConsoleGameEngine.Engine.Renderer;
@@ -87,14 +88,14 @@ public class ConsoleRenderManager : IDisposable
         }
     }
     
-    private Stopwatch timer = new Stopwatch();
+    private readonly Stopwatch _timer = new Stopwatch();
     private void RenderLoop(CancellationToken ct)
     {
         long targetTicksPerFrame = Stopwatch.Frequency / _updatesPerSecond;
         
         while (!ct.IsCancellationRequested)
         {
-            timer.Restart();
+            _timer.Restart();
             
             if (IsWindowResized())
             {
@@ -104,21 +105,20 @@ public class ConsoleRenderManager : IDisposable
             else
             {
                 ConsoleWindowComponent root = Volatile.Read(ref _rootComponent);
-
-                _renderer.Clear();
-                root.Render(_renderer);
+                _renderer.FlushBuffer();
+                root.Compute(_renderer);
                 _renderer.Render();
             }
 
-            while (targetTicksPerFrame > timer.ElapsedTicks)
+            while (targetTicksPerFrame > _timer.ElapsedTicks)
             {
-                if (targetTicksPerFrame - timer.ElapsedTicks > 20_000)
+                if (targetTicksPerFrame - _timer.ElapsedTicks > 20_000)
                 {
                     Thread.Sleep(1);
                 }
             }
 
-            double frameTime = timer.Elapsed.TotalMilliseconds;
+            double frameTime = _timer.Elapsed.TotalMilliseconds;
             if (frameTime > 0)
             {
                 CurrentFps = 1000.0D / frameTime;
@@ -133,8 +133,8 @@ public class ConsoleRenderManager : IDisposable
 
     private bool IsWindowResized()
     {
-        return _renderer.Width != Console.WindowWidth 
-               || _renderer.Height != Console.WindowHeight;
+        return _renderer.ScreenWidth != Console.WindowWidth 
+               || _renderer.ScreenHeight != Console.WindowHeight;
     }
     
     public void Dispose()

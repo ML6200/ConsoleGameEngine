@@ -67,18 +67,13 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
 
         ConsoleGraphicsComponent rootPane = new ConsoleGraphicsPanel()
         {
-            RelativePoint = new Point2D(0, 0),
+            RelativePosition = new Point2D(0, 0),
             Size = new Dimension2D(width, height),
             HasBorder = false,
             Visible = true
         };
         
-        Camera = new ConsoleCamera(
-            new Dimension2D(width, height), 
-            new Point2D(width / 2, height / 2), 
-            new Dimension2D(10, 10));
-        
-        _rootComponent = new ConsoleWindowComponent(rootPane, Camera);
+        _rootComponent = new ConsoleWindowComponent(rootPane);
         _renderManager = new ConsoleRenderManager(_renderer, _rootComponent, _targetUpdatesPerSecond);
     }
     
@@ -147,9 +142,8 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
                 _currentScene.OnEnter();
             }
         }
-        
         // minden komponens frissitese
-        GetRootPanel().Update(deltaTime);
+        RootPanel().Update(deltaTime);
         _currentScene?.OnUpdate(deltaTime);
         
     }
@@ -213,7 +207,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         }
     }
     
-    public ConsoleGraphicsPanel GetRootPanel()
+    public ConsoleGraphicsPanel RootPanel()
     {
         return (ConsoleGraphicsPanel)_rootComponent.ConsoleGraphicsComponent;
     }

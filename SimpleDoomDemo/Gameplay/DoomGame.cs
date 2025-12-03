@@ -26,6 +26,7 @@ public class DoomGameScene : IGameScene
     // ============================= ENGINE ==============================
     private ConsoleEngine _engine;
     private ConsoleGraphicsPanel _rootPanel;
+    private ConsoleGraphicsPanel _viewPort;
     private InputManager _input;
 
     // ============================= UI ==============================
@@ -73,8 +74,12 @@ public class DoomGameScene : IGameScene
     public void Initialize(ConsoleEngine consoleEngine)
     {
         _engine = consoleEngine;
-        _rootPanel = _engine.GetRootPanel();
+        _rootPanel = _engine.RootPanel();
+        _viewPort = new ConsoleGraphicsPanel(10, 10, new Point2D(0, 0));
         _input = _engine.Input;
+        _engine.RootPanel().AddChild(_viewPort);
+
+        _viewPort.HasBorder = false;
 
         // Subscribe to input events
         _input.OnKeyPressed += OnKeyPressed;
@@ -87,7 +92,7 @@ public class DoomGameScene : IGameScene
     public void OnEnter()
     {
         // Add all entities to root panel as children
-        _rootPanel.AddChild(Player);
+        _viewPort.AddChild(Player);
 
         foreach (var item in Items)
         {
@@ -105,7 +110,7 @@ public class DoomGameScene : IGameScene
         int hudHeight = 1;
         _hud = new GameHud(_engine, Player, hudWidth, hudHeight)
         {
-            RelativePoint = new Point2D(0, Console.WindowHeight - 1)
+            RelativePosition = new Point2D(0, Console.WindowHeight - 1)
         };
         _rootPanel.AddChild(_hud);
 
@@ -161,9 +166,8 @@ public class DoomGameScene : IGameScene
 
         // Update visibility (fog of war)
         UpdateVisibility();
-
         // Update HUD
-        _hud.UpdateHUD(new Point2D(0, _rootPanel.WorldSize.Height-1));
+        _hud.UpdateHUD(new Point2D(0, _rootPanel.WorldSize.Height - 1));
 
         // Cleanup dead entities
         CleanupEntities();
@@ -231,6 +235,7 @@ public class DoomGameScene : IGameScene
     {
         Point2D targetPoint = Player.WorldPosition + new Point2D(x, y);
         _movementSystem.MovePlayer(targetPoint);
+        
     }
 
     private void CleanupEntities()
@@ -317,7 +322,7 @@ public class DoomGameScene : IGameScene
 
                         // PLAYER
                         case 'p':
-                            Player.RelativePoint = new Point2D(j, i - 1);
+                            Player.RelativePosition = new Point2D(j, i - 1);
                             break;
                     }
                 }

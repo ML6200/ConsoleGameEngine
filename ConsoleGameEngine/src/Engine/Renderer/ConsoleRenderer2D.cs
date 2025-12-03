@@ -43,48 +43,47 @@ namespace ConsoleGameEngine.Engine.Renderer;
 public class ConsoleRenderer2D
 {
     private readonly object _bufferLock = new object();
-    private int _width;
-    private int _height;
+    private int _screenWidth;
+    private int _screenHeight;
     
     private Cell[,] _renderBuffer;
     private bool[,] _dirtyMarks;
     
     private volatile bool _isResizing;
 
-    public int Width
+    public int ScreenWidth
     {
-        get => _width;
-        set => _width = value;
+        get => _screenWidth;
     }
 
-    public int Height
+    public int ScreenHeight
     {
-        get => _height;
+        get => _screenHeight;
     }
 
     public void SetDimension(int width, int height)
     {
         _isResizing = true;
-        _width = width;
-        _height = height;
-        _renderBuffer = new Cell[_width, _height];
-        _dirtyMarks = new bool[_width, _height];
+        _screenWidth = width;
+        _screenHeight = height;
+        _renderBuffer = new Cell[_screenWidth, _screenHeight];
+        _dirtyMarks = new bool[_screenWidth, _screenHeight];
         
-        Thread.MemoryBarrier();
+        Thread.MemoryBarrier(); // priorizaljuk a meretezest
         _isResizing = false;
     }
 
-    public ConsoleRenderer2D(int width, int height)
+    public ConsoleRenderer2D(int screenWidth, int screenHeight)
     {
-        _width = width;
-        _height = height;
+        _screenWidth = screenWidth;
+        _screenHeight = screenHeight;
         InitRenderer();
     }
 
     public ConsoleRenderer2D(Dimension2D dimension)
     {
-        _width = dimension.Width;
-        _height = dimension.Height;
+        _screenWidth = dimension.Width;
+        _screenHeight = dimension.Height;
         InitRenderer();
     }
 
@@ -93,28 +92,26 @@ public class ConsoleRenderer2D
         Console.CursorVisible = false;
         Console.Clear();
         
-        _renderBuffer = new Cell[_width, _height];
-        _dirtyMarks = new bool[_width, _height];
+        _renderBuffer = new Cell[_screenWidth, _screenHeight];
+        _dirtyMarks = new bool[_screenWidth, _screenHeight];
 
-        Clear();
+        FlushBuffer();
     }
-
-
-    // Kezdesnek megteszi, de később érdemes külön osztályt bevezetni
-    // a koordinátáknak és clampelni
+    
+    
     private bool IsValidCoordinate(int x, int y)
     {
-        return x >= 0 && x < _width && y >= 0 && y < _height;
+        return x >= 0 && x < _screenWidth && y >= 0 && y < _screenHeight;
     }
 
-    public void Clear()
+    public void FlushBuffer()
     {
         if (_isResizing) return;
         
         
-        for (int i = 0; i < _height; i++)
+        for (int i = 0; i < _screenHeight; i++)
         {
-            for (int j = 0; j < _width; j++)
+            for (int j = 0; j < _screenWidth; j++)
             {
                 _renderBuffer[j, i] = Cell.Empty;
                 _dirtyMarks[j, i] = true; 
@@ -292,17 +289,37 @@ public class ConsoleRenderer2D
         }   
     }
     
+    
+    /*
+     *     Camera-|
+     * Components-->RenderManager->Renderer
+     * WindowSize-|
+     * 
+     * RenderManager:
+     *  -kiszamitja kepkockankent a komponensek pozicioit & ertekeit
+     *  -rendereli az elemeket
+     *
+     * Renderer:
+     *  -puffer torles
+     *  -alapveto elemek pufferelese
+     *  -render
+     *
+     * renderBuffer:kepernyomeretX, kepernyomeretY
+     *
+     * 
+     */
     private ConsoleColor _lastFg = ConsoleColor.White;
     private ConsoleColor _lastBg = ConsoleColor.Black;
-
+    private StringBuilder consoleBuffer = new StringBuilder();
     public void Render()
     {
         if(_isResizing) return;
         
-        StringBuilder consoleBuffer = new StringBuilder();
-        for (int y = 0; y < _height; y++)
+        //Console.SetCursorPosition(0, 0);
+        consoleBuffer.Clear();
+        for (int y = 0; y < _screenHeight; y++)
         {
-            for (int x = 0; x < _width; x++)
+            for (int x = 0; x < _screenWidth; x++)
             {
                 if (_dirtyMarks[x, y])
                 {
@@ -321,11 +338,9 @@ public class ConsoleRenderer2D
                 }
             }
         }
-
+        
         consoleBuffer.Append("\x1b[0m");
-
         Console.Write(consoleBuffer.ToString());
-        GC.Collect();
     }
 
     private string GetAnsiColorCode(ConsoleColor fg, ConsoleColor bg)

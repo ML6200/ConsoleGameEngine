@@ -18,7 +18,7 @@ public class ConsoleProgressBar : ConsoleGraphicsComponent
         }));
     }
 
-    public override void Render(ConsoleRenderer2D renderer)
+    public override void Compute(ConsoleRenderer2D renderer)
     {
         if (!Visible) return;
 

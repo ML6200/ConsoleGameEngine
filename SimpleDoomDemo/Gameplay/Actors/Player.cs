@@ -125,7 +125,7 @@ public class Player : ConsoleGraphicsComponent
     }
     
 
-    public override void Render(ConsoleRenderer2D renderer)
+    public override void Compute(ConsoleRenderer2D renderer)
     {
         if (!_alive)
         {
@@ -136,6 +136,6 @@ public class Player : ConsoleGraphicsComponent
         renderer.SetCell(WorldPosition.X, WorldPosition.Y,
             new Cell('0', ConsoleColor.Black, ConsoleColor.Green));
 
-        base.Render(renderer);
+        base.Compute(renderer);
     }
 }

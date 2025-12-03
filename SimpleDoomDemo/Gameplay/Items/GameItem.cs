@@ -74,7 +74,7 @@ public class GameItem : ConsoleGraphicsComponent
 
     public GameItem(int x, int y, ItemType type)
     {
-        RelativePoint = new Point2D(x, y);
+        RelativePosition = new Point2D(x, y);
         Type = type;
         SetInitialProperties();
     }
@@ -111,13 +111,13 @@ public class GameItem : ConsoleGraphicsComponent
         Visible = Available && distance <= sightRange;
     }
 
-    public override void Render(ConsoleRenderer2D renderer)
+    public override void Compute(ConsoleRenderer2D renderer)
     {
         if (!Visible) return;
 
         renderer.SetCell(WorldPosition.X, WorldPosition.Y,
             new Cell(_glyph, BackgroundColor, ForegroundColor));
 
-        base.Render(renderer);
+        base.Compute(renderer);
     }
 }

@@ -64,7 +64,7 @@ public class ConsoleGraphicsButton : ConsoleGraphicsComponent, IFocusable
         Size = new Dimension2D(newWidth, newHeight);
     }
 
-    public override void Render(ConsoleRenderer2D renderer)
+    public override void Compute(ConsoleRenderer2D renderer)
     {
         if (!Visible) return;
         
@@ -112,6 +112,6 @@ public class ConsoleGraphicsButton : ConsoleGraphicsComponent, IFocusable
 
         renderer.DrawText(textX, textY, Text, bgColor, ForegroundColor);
 
-        base.Render(renderer);
+        base.Compute(renderer);
     }
 }

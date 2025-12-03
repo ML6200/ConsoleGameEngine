@@ -187,7 +187,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
         }
     }
     
-    public Point2D RelativePoint
+    public Point2D RelativePosition
     {
         get => _relativePosition ?? new Point2D(0, 0);
         set => _relativePosition = value;
@@ -235,14 +235,14 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
     // ============================PARENTING-END====================
 
     // ============================RENDERING========================
-    public virtual void Render(ConsoleRenderer2D renderer)
+    public virtual void Compute(ConsoleRenderer2D renderer)
     {
         if (!Visible) return;
         
         var childrenSnapshot = Children.ToList();
         foreach (var child in childrenSnapshot)
         {
-            child.Render(renderer);
+            child.Compute(renderer);
         }
     }
 
