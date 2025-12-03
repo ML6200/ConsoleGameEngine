@@ -9,8 +9,8 @@ namespace ConsoleGameEngine.Engine.Renderer;
 
 public class ConsoleRenderManager : IDisposable
 {
+    private readonly Lock _graphicsLock = new();
     private Thread _graphicsThread;
-    private readonly object _graphicsLock = new();
     private CancellationTokenSource _cts;
     private ConsoleRenderer2D _renderer;
     private ConsoleWindowComponent _rootComponent;

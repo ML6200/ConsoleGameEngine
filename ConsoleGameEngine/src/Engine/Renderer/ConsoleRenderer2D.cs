@@ -42,7 +42,7 @@ namespace ConsoleGameEngine.Engine.Renderer;
 
 public class ConsoleRenderer2D
 {
-    private readonly object _bufferLock = new object();
+    private readonly object _bufferLock = new();
     private int _screenWidth;
     private int _screenHeight;
     
@@ -310,7 +310,7 @@ public class ConsoleRenderer2D
      */
     private ConsoleColor _lastFg = ConsoleColor.White;
     private ConsoleColor _lastBg = ConsoleColor.Black;
-    private StringBuilder consoleBuffer = new StringBuilder();
+    private StringBuilder consoleBuffer = new();
     public void Render()
     {
         if(_isResizing) return;

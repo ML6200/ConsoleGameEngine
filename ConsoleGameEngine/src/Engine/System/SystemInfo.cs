@@ -11,7 +11,7 @@ public class SystemInfo
             return OperatingSystem.IsWindows();
         }
         
-        public static bool IsMacOs()
+        public static bool IsMacOsX()
         {
             return OperatingSystem.IsMacOS();
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using ConsoleGameEngine.Engine.System;
 using NAudio.Wave;
 
 namespace SimpleDoomEngine.Engine;
@@ -15,7 +16,7 @@ public static class AudioPlayer
     {
         try
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            if (SystemInfo.OS.IsMacOsX())
             {
                 Process.Start(new ProcessStartInfo
                 {
@@ -25,7 +26,7 @@ public static class AudioPlayer
                     UseShellExecute = false
                 });
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            else if (SystemInfo.OS.IsWindows())
             {
                 Mp3FileReader mp = new Mp3FileReader(filePath);
                 WaveOutEvent soundOut = new WaveOutEvent();
@@ -43,7 +44,7 @@ public static class AudioPlayer
         StopMusic();
         try
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            if (SystemInfo.OS.IsMacOsX())
             {
                 _musicProcess = Process.Start(new ProcessStartInfo
                 {
@@ -53,7 +54,7 @@ public static class AudioPlayer
                     UseShellExecute = false
                 });
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            else if (SystemInfo.OS.IsWindows())
             {
                 mp3FileReader = new Mp3FileReader(filePath);
                 outputDevice = new WaveOutEvent();
@@ -69,7 +70,7 @@ public static class AudioPlayer
     {
         try
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            if (SystemInfo.OS.IsMacOsX())
             {
                 if (_musicProcess != null)
                 {
@@ -86,7 +87,7 @@ public static class AudioPlayer
                     {
                     }
                 }
-            } else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            } else if (SystemInfo.OS.IsWindows())
             {
                 if (outputDevice != null)
                     outputDevice.Stop();
@@ -94,7 +95,7 @@ public static class AudioPlayer
         }
         catch (Exception e)
         {
-            Console.WriteLine("Error stopping music: " + e.Message);
+            throw new ("Error stopping music: " + e.Message);
         }
     }
 }
