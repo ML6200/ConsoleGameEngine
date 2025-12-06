@@ -301,7 +301,7 @@ public class ConsoleRenderer2D
      *  -buffering each element
      *  -render
      *
-     * renderBuffer:kepernyomeretX, kepernyomeretY
+     * renderBuffer:screenWidth, ScreenHeight
      *
      * 
      */
