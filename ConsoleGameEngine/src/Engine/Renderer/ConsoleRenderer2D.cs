@@ -47,7 +47,6 @@ public class ConsoleRenderer2D
     private int _screenHeight;
     
     private Cell[,] _renderBuffer;
-    private bool[,] _dirtyMarks;
     
     private volatile bool _isResizing;
 
@@ -67,7 +66,6 @@ public class ConsoleRenderer2D
         _screenWidth = width;
         _screenHeight = height;
         _renderBuffer = new Cell[_screenWidth, _screenHeight];
-        _dirtyMarks = new bool[_screenWidth, _screenHeight];
         
         Thread.MemoryBarrier(); // priorizaljuk a meretezest
         _isResizing = false;
@@ -93,7 +91,6 @@ public class ConsoleRenderer2D
         Console.Clear();
         
         _renderBuffer = new Cell[_screenWidth, _screenHeight];
-        _dirtyMarks = new bool[_screenWidth, _screenHeight];
 
         FlushBuffer();
     }
@@ -108,13 +105,11 @@ public class ConsoleRenderer2D
     {
         if (_isResizing) return;
         
-        
         for (int i = 0; i < _screenHeight; i++)
         {
             for (int j = 0; j < _screenWidth; j++)
             {
                 _renderBuffer[j, i] = Cell.Empty;
-                _dirtyMarks[j, i] = true; 
             }
         }
     }
@@ -127,7 +122,6 @@ public class ConsoleRenderer2D
             && !_renderBuffer[x, y].Equals(cell))
         {
             _renderBuffer[x, y] = cell;
-            _dirtyMarks[x, y] = true;
         }
     }
 
@@ -296,12 +290,15 @@ public class ConsoleRenderer2D
      * WindowSize-|
      * 
      * RenderManager:
-     *  -kiszamitja kepkockankent a komponensek pozicioit & ertekeit
-     *  -rendereli az elemeket
+     *  -Clears the buffer each frame
+     *  -calculates each component's position(and value) cell-by-cell
+     *  -renders the components using THIS
+     *
+     * IMPORTANT: Keeping the order is obligatory,
+     * we must clear the render buffer!!!
      *
      * Renderer:
-     *  -puffer torles
-     *  -alapveto elemek pufferelese
+     *  -buffering each element
      *  -render
      *
      * renderBuffer:kepernyomeretX, kepernyomeretY
@@ -315,27 +312,22 @@ public class ConsoleRenderer2D
     {
         if(_isResizing) return;
         
-        //Console.SetCursorPosition(0, 0);
         consoleBuffer.Clear();
         for (int y = 0; y < _screenHeight; y++)
         {
             for (int x = 0; x < _screenWidth; x++)
             {
-                if (_dirtyMarks[x, y])
+                Cell cell = _renderBuffer[x, y];
+                consoleBuffer.Append("\x1b[" + (y + 1) + ";" + (x + 1) + "H");
+
+                if (cell.ForegroundColor != _lastFg || cell.BackgroundColor != _lastBg)
                 {
-                    Cell cell = _renderBuffer[x, y];
-                    consoleBuffer.Append("\x1b[" + (y + 1) + ";" + (x + 1) + "H");
-
-                    if (cell.ForegroundColor != _lastFg || cell.BackgroundColor != _lastBg)
-                    {
-                        consoleBuffer.Append(GetAnsiColorCode(cell.ForegroundColor, cell.BackgroundColor));
-                        _lastFg = cell.ForegroundColor;
-                        _lastBg = cell.BackgroundColor;
-                    }
-
-                    consoleBuffer.Append(cell.Character);
-                    _dirtyMarks[x, y] = false;
+                    consoleBuffer.Append(GetAnsiColorCode(cell.ForegroundColor, cell.BackgroundColor));
+                    _lastFg = cell.ForegroundColor;
+                    _lastBg = cell.BackgroundColor;
                 }
+
+                consoleBuffer.Append(cell.Character);
             }
         }
         
