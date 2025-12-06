@@ -10,7 +10,7 @@ namespace SimpleDoomDemo.Gameplay.UI;
 /// <summary>
 /// Heads-Up Display showing player stats in a single line.
 /// </summary>
-public class GameHud : ConsoleGraphicsPanel
+public class GameHud : ConsoleUiPanel
 {
     private readonly Player _player;
     private readonly ConsoleEngine _engine;

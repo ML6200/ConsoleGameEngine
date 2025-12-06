@@ -4,7 +4,7 @@ using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public class ConsoleGraphicsButton : ConsoleGraphicsComponent, IFocusable
+public class ConsoleUiButton : ConsoleGraphicsComponent, IFocusable
 {
     private string _text;
     
@@ -27,12 +27,12 @@ public class ConsoleGraphicsButton : ConsoleGraphicsComponent, IFocusable
 
     public ConsoleColor NormalBgColor { get; set; } = ConsoleColor.DarkGray;
     public ConsoleColor FocusedBgColor { get; set; } = ConsoleColor.Cyan;
-    public ConsoleGraphicsButton(string text)
+    public ConsoleUiButton(string text)
     {
         Text = text;
     }
 
-    public ConsoleGraphicsButton()
+    public ConsoleUiButton()
     {
     }
 

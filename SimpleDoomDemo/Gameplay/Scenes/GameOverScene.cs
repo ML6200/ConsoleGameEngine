@@ -16,7 +16,7 @@ namespace SimpleDoomDemo.Gameplay.Scenes;
 public class GameOverScene : IGameScene
 {
     private ConsoleEngine _engine;
-    private ConsoleGraphicsPanel _rootPanel;
+    private ConsoleUiPanel _rootPanel;
     private readonly Player _player;
     private readonly bool _playerDied;
     private readonly bool _levelComplete;
@@ -88,7 +88,7 @@ public class GameOverScene : IGameScene
 /// <summary>
 /// Custom panel for rendering game over screen.
 /// </summary>
-public class GameOverPanel : ConsoleGraphicsPanel
+public class GameOverPanel : ConsoleUiPanel
 {
     private readonly Player _player;
     private readonly bool _playerDied;

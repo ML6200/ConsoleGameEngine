@@ -4,15 +4,15 @@ using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public class ConsoleGraphicsLabel : ConsoleGraphicsComponent
+public class ConsoleUiLabel : ConsoleGraphicsComponent
 {
     public string Text { get; set; } = "";
 
-    public ConsoleGraphicsLabel()
+    public ConsoleUiLabel()
     {
     }
 
-    public ConsoleGraphicsLabel(string text)
+    public ConsoleUiLabel(string text)
     {
         Text = text;
         Width = text.Length;

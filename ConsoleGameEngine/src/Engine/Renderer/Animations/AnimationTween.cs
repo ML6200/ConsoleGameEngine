@@ -34,7 +34,7 @@ public static class AnimationTween
         });
     }
 
-    public static Animation FadeColor(ConsoleGraphicsButton button, ConsoleColor from, ConsoleColor to, double duration)
+    public static Animation FadeColor(ConsoleUiButton button, ConsoleColor from, ConsoleColor to, double duration)
     {
         return new Animation(duration, progress =>
         {

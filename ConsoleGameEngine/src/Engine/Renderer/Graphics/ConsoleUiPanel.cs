@@ -3,13 +3,13 @@ using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public class ConsoleGraphicsPanel : ConsoleGraphicsComponent
+public class ConsoleUiPanel : ConsoleGraphicsComponent
 {
-    public ConsoleGraphicsPanel(int width, int height, Point2D? relativePosition) : base(width, height, relativePosition)
+    public ConsoleUiPanel(int width, int height, Point2D? relativePosition) : base(width, height, relativePosition)
     {
     }
 
-    public ConsoleGraphicsPanel()
+    public ConsoleUiPanel()
     {
     }
 

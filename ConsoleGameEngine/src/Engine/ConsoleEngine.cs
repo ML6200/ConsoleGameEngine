@@ -65,7 +65,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         int height = windowHeight ?? Console.WindowHeight;
         _renderer = new ConsoleRenderer2D(width, height);
 
-        ConsoleGraphicsComponent rootPane = new ConsoleGraphicsPanel()
+        ConsoleGraphicsComponent rootPane = new ConsoleUiPanel()
         {
             RelativePosition = new Point2D(0, 0),
             Size = new Dimension2D(width, height),
@@ -207,9 +207,9 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         }
     }
     
-    public ConsoleGraphicsPanel RootPanel()
+    public ConsoleUiPanel RootPanel()
     {
-        return (ConsoleGraphicsPanel)_rootComponent.ConsoleGraphicsComponent;
+        return (ConsoleUiPanel)_rootComponent.ConsoleGraphicsComponent;
     }
     
     public void SetInitialScene(IGameScene scene)
