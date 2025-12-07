@@ -34,7 +34,6 @@ public class MainMenuScene : IGameScene
         {
             RelativePosition = new Point2D(0, 0),
             Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight),
-            BackgroundColor = ConsoleColor.Blue,
             HasBorder = false
         };
         _engine.RootPanel().AddChild(_menuPanel);
