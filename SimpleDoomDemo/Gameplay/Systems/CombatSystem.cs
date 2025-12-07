@@ -39,7 +39,7 @@ public class CombatSystem : IGameSystem
         foreach (Demon demon in nearbyDemons)
         {
             int u = _random.Next(35, 106);
-            int distance = (int)Point2D.Distance(demon.WorldPosition, _game.Player.WorldPosition);
+            int distance = (int) Point2D.Distance(demon.WorldPosition, _game.Player.WorldPosition);
             int damage = 2 * u / (1 + distance);
 
             DealDamageToDemon(demon, damage);
@@ -76,7 +76,7 @@ public class CombatSystem : IGameSystem
         demon.GetAttackDamageRange(out min, out max);
         int u = _random.Next(min, max);
 
-        int distance = (int)Point2D.Distance(demon.WorldPosition, _game.Player.WorldPosition);
+        int distance = (int) Point2D.Distance(demon.WorldPosition, _game.Player.WorldPosition);
         int damage = u / (1 + distance);
 
         // Trigger attack animation on demon

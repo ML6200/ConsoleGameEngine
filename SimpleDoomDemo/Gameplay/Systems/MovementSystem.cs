@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Threading;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
 using SimpleDoomEngine.Gameplay.Actors;
@@ -10,113 +12,45 @@ namespace SimpleDoomDemo.Gameplay.Systems;
 public class MovementSystem : IGameSystem
 {
     private readonly DoomGameScene _game;
-    private readonly Random _random = new Random();
+    private readonly Random _random = new();
 
     public MovementSystem(DoomGameScene game)
     {
         _game = game;
     }
-    
-    private Dictionary<int, List<object>> _spatialGrid = new();
-    private const int GRID_SIZE = 5;
-
-    private int GetGridKey(Point2D pos)
-    {
-        int gridX = pos.X / GRID_SIZE;
-        int gridY = pos.Y / GRID_SIZE;
-        return (gridY << 16) | gridX;
-    }
 
     public void Update(double deltaTime)
     {
-        _spatialGrid.Clear();
-
-        foreach (var item in _game.Items)
-        {
-            int key = GetGridKey(item.WorldPosition);
-            if (!_spatialGrid.ContainsKey(key))
-                _spatialGrid[key] = new List<object>();
-            _spatialGrid[key].Add(item);
-        }
-
-        foreach (var demon in _game.Demons)
-        {
-            int key = GetGridKey(demon.WorldPosition);
-            if (!_spatialGrid.ContainsKey(key))
-                _spatialGrid[key] = new List<object>();
-            _spatialGrid[key].Add(demon);
-        }
-        
         foreach (var demon in _game.Demons)
         {
             if (demon.State == DemonState.Move)
             {
-                MoveDemonTowardsPlayer(demon);
+                MoveDemon(demon, deltaTime);
             }
         }
     }
     
-    private void MoveDemonTowardsPlayer(Demon demon)
+    private void MoveDemon(Demon demon, double deltaTime)
     {
-        Point2D demonPos = demon.WorldPosition;
-        Point2D playerPos = _game.Player.WorldPosition;
-
-        // Calculate direction to player
-        int dx = playerPos.X - demonPos.X;
-        int dy = playerPos.Y - demonPos.Y;
-
-        // Normalize to unit steps (-1, 0, or 1)
-        int stepX = dx == 0 ? 0 : (dx > 0 ? 1 : -1);
-        int stepY = dy == 0 ? 0 : (dy > 0 ? 1 : -1);
-
-        // Try to move directly towards player
-        Point2D targetPos = new Point2D(demonPos.X + stepX, demonPos.Y + stepY);
-
-        if (TryMoveDemon(demon, targetPos))
+        int rndX = _random.Next(-1, 2);
+        int rndY = _random.Next(-1, 2);
+        Point2D targetPos = new Point2D(demon.WorldPosition.X + rndX, demon.WorldPosition.Y + rndY);
+        
+        // probability calculation
+        double pMove = (demon.Speed / 100.0) * deltaTime;
+        double rndMove = _random.NextDouble();
+        
+        if (!IsPointWithinBounds(targetPos))
             return;
 
-        // If diagonal movement failed, try horizontal then vertical
-        if (stepX != 0)
+        double totalFillingRatio = GetTotalFillingRatio(targetPos) + demon.FillingRatio;
+        if (rndMove < pMove)
         {
-            targetPos = new Point2D(demonPos.X + stepX, demonPos.Y);
-            if (TryMoveDemon(demon, targetPos))
-                return;
+            if (totalFillingRatio < 1.0)
+            {
+                demon.WorldPosition = targetPos;
+            }
         }
-
-        if (stepY != 0)
-        {
-            targetPos = new Point2D(demonPos.X, demonPos.Y + stepY);
-            if (TryMoveDemon(demon, targetPos))
-                return;
-        }
-
-        // If all else fails, try random adjacent movement
-        int randomDir = _random.Next(4);
-        switch (randomDir)
-        {
-            case 0: targetPos = new Point2D(demonPos.X + 1, demonPos.Y); break;
-            case 1: targetPos = new Point2D(demonPos.X - 1, demonPos.Y); break;
-            case 2: targetPos = new Point2D(demonPos.X, demonPos.Y + 1); break;
-            case 3: targetPos = new Point2D(demonPos.X, demonPos.Y - 1); break;
-        }
-
-        TryMoveDemon(demon, targetPos);
-    }
-    
-    private bool TryMoveDemon(Demon demon, Point2D targetPoint)
-    {
-        if (!IsPointWithinBounds(targetPoint))
-            return false;
-
-        double totalFillingRatio = GetTotalFillingRatio(targetPoint) + demon.FillingRatio;
-
-        if (totalFillingRatio < 1.0)
-        {
-            demon.RelativePosition = targetPoint;
-            return true;
-        }
-
-        return false;
     }
     
     public bool MovePlayer(Point2D targetPoint)
@@ -135,29 +69,61 @@ public class MovementSystem : IGameSystem
         return false;
     }
 
-    private double GetTotalFillingRatio(Point2D point)
+    public double GetTotalFillingRatio(Point2D position)
     {
+        List<GameItem> items = GetGameItemsWithinDistance(position, 0);
+        List<Demon> dems = GetDemonsWithinDistance(position, 0);
+        
         double sum = 0;
-        int key = GetGridKey(point);
-
-        // Only check nearby objects!
-        if (_spatialGrid.TryGetValue(key, out var nearbyObjects))
+        
+        foreach (var t in items)
         {
-            foreach (var obj in nearbyObjects)
-            {
-                Point2D? objPos = obj is GameItem item
-                    ? item.WorldPosition
-                    : ((Demon)obj).WorldPosition;
-
-                if (Point2D.Distance(point, objPos) <= 0)
-                {
-                    sum += obj is GameItem i ? i.FillingRatio : ((Demon)obj).FillingRatio;
-                }
-            }
+            sum += t.FillingRatio;
         }
-
+        
+        for (int i = 0; i < dems.Count; i++)
+        {
+            sum += dems[i].FillingRatio;
+        }
+        
         return sum;
     }
+    
+    public List<Demon> GetDemonsWithinDistance(Point2D position, double distanceTreshold)
+    {
+        List<Demon> closeItems = new List<Demon>();
+
+        for (int i = 0; i < _game.Demons.Count; i++)
+        {
+            double distance = Point2D.Distance(position, _game.Demons[i].WorldPosition);
+
+            if (distance <= distanceTreshold)
+            {
+                closeItems.Add(_game.Demons[i]);
+            }
+        }
+        
+        return closeItems;
+    }
+    
+    public List<GameItem> GetGameItemsWithinDistance(Point2D position, double distanceTreshold)
+    {
+        List<GameItem> closeItems = new List<GameItem>();
+
+        for (int i = 0; i < _game.Items.Count; i++)
+        {
+            double distance = Point2D.Distance(position, _game.Items[i].WorldPosition);
+
+            if (distance <= distanceTreshold)
+            {
+                closeItems.Add(_game.Items[i]);
+            }
+        }
+        
+        return closeItems;
+    }
+
+
 
     private bool IsPointWithinBounds(Point2D point)
     {
