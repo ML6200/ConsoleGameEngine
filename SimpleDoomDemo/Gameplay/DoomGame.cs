@@ -17,10 +17,6 @@ using GameOverScene = SimpleDoomDemo.Gameplay.Scenes.GameOverScene;
 
 namespace SimpleDoomDemo.Gameplay;
 
-/// <summary>
-/// Main game scene using Entity-Component-System architecture.
-/// Integrates with ConsoleEngine for automatic update/render loop.
-/// </summary>
 public class DoomGameScene : IGameScene
 {
     // ============================= ENGINE ==============================
@@ -139,27 +135,12 @@ public class DoomGameScene : IGameScene
             _engine.Camera.SetCameraPosition(new Point2D(cameraX, cameraY));
         }
 
-        // Don't update game logic if game over was triggered
         if (_gameOverHandled)
         {
             return;
         }
-
-        // Accumulate time for logic updates (run at 500ms intervals)
-        //_logicAccumulator += deltaTime;
-
-        /*
-        if (_logicAccumulator >= LOGIC_UPDATE_INTERVAL)
-        {
-            long deltaTimeMs = (long)(_logicAccumulator * 1000);
-            UpdateGameLogic(deltaTimeMs);
-            _logicAccumulator = 0;
-        }
-        */
         UpdateGameLogic(deltaTime);
-
-        // Component animations update automatically via engine
-        // No need to manually call Update() on components
+        
     }
 
     public void OnExit()
