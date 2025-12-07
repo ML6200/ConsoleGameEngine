@@ -38,8 +38,27 @@ public class ConsoleCamera
         CameraEndPoint = new Point2D(endX, endY);
     }
 
-    public void TransformPoint(Point2D sourcePoint, out Point2D destinationPoint)
+    public Point2D? TransformPoint(Point2D worldPoint)
     {
-        destinationPoint = new Point2D(sourcePoint.X, sourcePoint.Y);
+        int screenX = worldPoint.X - CameraSize.Width;
+        int screenY = worldPoint.Y - CameraSize.Height;
+
+        if (screenX < 0 || screenY < 0 || 
+            screenX > CameraSize.Width || 
+            screenY > CameraSize.Height)
+        {
+            return null;
+        }
+        
+        return new Point2D(screenX, screenY);
+    }
+
+    public void SetCameraPosition(Point2D cameraPosition)
+    {
+        Point2D target = cameraPosition.Clamp(0, WorldSize.Width - CameraSize.Width, 
+            0,
+            WorldSize.Height - CameraSize.Height);
+        
+        CameraStartPoint = target;
     }
 }
