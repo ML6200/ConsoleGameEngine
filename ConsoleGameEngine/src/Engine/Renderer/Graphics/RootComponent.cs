@@ -19,11 +19,11 @@ public class RootComponent : IRenderable
         get; set;
     }
 
-    public void Compute(ConsoleRenderer2D renderer)
+    public void Compute(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
         if (!Visible) return;
 
-        _graphicsComponent.Compute(renderer);
+        _graphicsComponent.Compute(renderer, camera);
     }
 
     public RootComponent(GraphicsComponent graphicsComponent)

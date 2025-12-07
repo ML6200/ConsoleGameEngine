@@ -16,16 +16,16 @@ public class Mancubus : Demon
         _speed = 70;
     }
 
-    public override void Compute(ConsoleRenderer2D consoleRenderer2D)
+    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
-        if (!Visible) return;
-
         if (WorldPosition == null) return;
 
-        consoleRenderer2D.SetCell(WorldPosition.X,
-            WorldPosition.Y,
+        // Transform world coordinates to screen coordinates
+        Point2D? screenPos = camera.TransformPoint(WorldPosition);
+        if (screenPos == null) return; // Off-screen culling
+
+        renderer.SetCell(screenPos.X, screenPos.Y,
             new Cell('O', ConsoleColor.Black, ConsoleColor.DarkRed));
-        base.Compute(consoleRenderer2D);
     }
 
     public override int GetAttackDamageRange(out int min, out int max)

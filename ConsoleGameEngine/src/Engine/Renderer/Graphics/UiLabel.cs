@@ -19,13 +19,15 @@ public class UiLabel : GraphicsComponent
         Height = 1;
     }
 
-    public override void Compute(ConsoleRenderer2D renderer)
+    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
-        if (!Visible) return;
-
         if (WorldPosition == null) return;
 
-        renderer.DrawText(WorldPosition.X, WorldPosition.Y, Text,
+        // Transform world coordinates to screen coordinates
+        Point2D? screenPos = camera.TransformPoint(WorldPosition);
+        if (screenPos == null) return; // Off-screen culling
+
+        renderer.DrawText(screenPos.X, screenPos.Y, Text,
             BackgroundColor, ForegroundColor);
     }
 }

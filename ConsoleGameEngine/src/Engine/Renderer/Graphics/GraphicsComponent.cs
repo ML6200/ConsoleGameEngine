@@ -235,15 +235,21 @@ public abstract class GraphicsComponent : IRenderable
     // ============================PARENTING-END====================
 
     // ============================RENDERING========================
-    public virtual void Compute(ConsoleRenderer2D renderer)
+    public void Compute(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
         if (!Visible) return;
+        
+        RenderSelf(renderer, camera);
         
         var childrenSnapshot = Children.ToList();
         foreach (var child in childrenSnapshot)
         {
-            child.Compute(renderer);
+            child.Compute(renderer,  camera);
         }
+    }
+
+    protected virtual void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    {
     }
 
     public void Update(double deltaTime)

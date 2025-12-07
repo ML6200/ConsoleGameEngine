@@ -13,6 +13,7 @@ public class ConsoleRenderManager : IDisposable
     private Thread _graphicsThread;
     private CancellationTokenSource _cts;
     private ConsoleRenderer2D _renderer;
+    private ConsoleCamera _camera;
     private RootComponent _rootComponent;
     private int _updatesPerSecond;
     
@@ -21,9 +22,11 @@ public class ConsoleRenderManager : IDisposable
     
     public event EventHandler OnWindowResized;
 
-    public ConsoleRenderManager(ConsoleRenderer2D renderer, RootComponent rootComponent, int updatesPerSecond)
+    public ConsoleRenderManager(ConsoleRenderer2D renderer, ConsoleCamera camera, 
+        RootComponent rootComponent, int updatesPerSecond)
     {
         _renderer = renderer;
+        _camera = camera;
         //_renderer.InitRenderer();
         _rootComponent = rootComponent;
         _updatesPerSecond = updatesPerSecond;
@@ -111,7 +114,7 @@ public class ConsoleRenderManager : IDisposable
             {
                 RootComponent root = Volatile.Read(ref _rootComponent);
                 _renderer.FlushBuffer();
-                root.Compute(_renderer);
+                root.Compute(_renderer, _camera);
                 _renderer.Render();
             }
 

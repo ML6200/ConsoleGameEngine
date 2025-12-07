@@ -64,19 +64,21 @@ public class UiButton : GraphicsComponent, IFocusable
         Size = new Dimension2D(newWidth, newHeight);
     }
 
-    public override void Compute(ConsoleRenderer2D renderer)
+    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
-        if (!Visible) return;
-
         if (WorldPosition == null) return;
 
+        // Transform world coordinates to screen coordinates
+        Point2D? screenPos = camera.TransformPoint(WorldPosition);
+        if (screenPos == null) return; // Off-screen culling
+
         var bgColor = IsFocused ? FocusedBgColor : NormalBgColor;
-        
+
         if (HasBorder)
         {
             renderer.FillRect(
-                WorldPosition.X,
-                WorldPosition.Y,
+                screenPos.X,
+                screenPos.Y,
                 Size.Width,
                 Size.Height,
                 ' ',
@@ -86,8 +88,8 @@ public class UiButton : GraphicsComponent, IFocusable
 
             // Szegely
             renderer.DrawBox(
-                WorldPosition.X,
-                WorldPosition.Y,
+                screenPos.X,
+                screenPos.Y,
                 Size.Width,
                 Size.Height,
                 bgColor,
@@ -97,8 +99,8 @@ public class UiButton : GraphicsComponent, IFocusable
         else
         {
             renderer.FillRect(
-                WorldPosition.X,
-                WorldPosition.Y,
+                screenPos.X,
+                screenPos.Y,
                 Size.Width,
                 Size.Height,
                 ' ',
@@ -109,11 +111,9 @@ public class UiButton : GraphicsComponent, IFocusable
 
         // Szoveg
         int padding = HasBorder ? (Size.Width-Text.Length) / 2 : 1;
-        int textX = WorldPosition.X + padding;
-        int textY = WorldPosition.Y + Size.Height / 2;
+        int textX = screenPos.X + padding;
+        int textY = screenPos.Y + Size.Height / 2;
 
         renderer.DrawText(textX, textY, Text, bgColor, ForegroundColor);
-
-        base.Compute(renderer);
     }
 }

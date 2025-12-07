@@ -111,15 +111,15 @@ public class GameItem : GraphicsComponent
         Visible = Available && distance <= sightRange;
     }
 
-    public override void Compute(ConsoleRenderer2D renderer)
+    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
-        if (!Visible) return;
-
         if (WorldPosition == null) return;
 
-        renderer.SetCell(WorldPosition.X, WorldPosition.Y,
-            new Cell(_glyph, BackgroundColor, ForegroundColor));
+        // Transform world coordinates to screen coordinates
+        Point2D? screenPos = camera.TransformPoint(WorldPosition);
+        if (screenPos == null) return; // Off-screen culling
 
-        base.Compute(renderer);
+        renderer.SetCell(screenPos.X, screenPos.Y,
+            new Cell(_glyph, BackgroundColor, ForegroundColor));
     }
 }

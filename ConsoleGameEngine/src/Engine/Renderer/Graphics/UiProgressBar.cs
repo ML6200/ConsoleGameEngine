@@ -18,18 +18,20 @@ public class ProgressBar : GraphicsComponent
         }));
     }
 
-    public override void Compute(ConsoleRenderer2D renderer)
+    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
-        if (!Visible) return;
-
         if (WorldPosition == null) return;
+
+        // Transform world coordinates to screen coordinates
+        var screenPos = camera.TransformPoint(WorldPosition);
+        if (screenPos == null) return; // Off-screen culling
 
         int filledWidth = (int)(Size.Width * _progress);
 
         // Draw filled part
         renderer.FillRect(
-            WorldPosition.X,
-            WorldPosition.Y,
+            screenPos.X,
+            screenPos.Y,
             filledWidth,
             Size.Height,
             '█',
@@ -39,8 +41,8 @@ public class ProgressBar : GraphicsComponent
 
         // Draw empty part
         renderer.FillRect(
-            WorldPosition.X + filledWidth,
-            WorldPosition.Y,
+            screenPos.X + filledWidth,
+            screenPos.Y,
             Size.Width - filledWidth,
             Size.Height,
             '░',

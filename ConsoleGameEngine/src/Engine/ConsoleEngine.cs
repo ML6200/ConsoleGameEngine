@@ -72,9 +72,17 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
             HasBorder = false,
             Visible = true
         };
-        
+
         _rootComponent = new RootComponent(rootPane);
-        _renderManager = new ConsoleRenderManager(_renderer, _rootComponent, _targetUpdatesPerSecond);
+
+        // Initialize camera after _rootComponent is created
+        Camera = new ConsoleCamera(
+            new Dimension2D(width, height),  // World size matches screen for now
+            new Point2D(0, 0),
+            new Dimension2D(width, height)   // Camera size matches screen
+        );
+
+        _renderManager = new ConsoleRenderManager(_renderer, Camera, _rootComponent, _targetUpdatesPerSecond);
     }
     
     public void Initialize()

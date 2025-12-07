@@ -80,6 +80,12 @@ public class DoomGameScene : IGameScene
         _engine.RootPanel().AddChild(_viewPort);
 
         _viewPort.HasBorder = false;
+        
+        int worldWidth = Console.WindowWidth * 3;
+        int worldHeight = Console.WindowHeight * 3;
+        
+        _engine.Camera.CameraSize = new Dimension2D(worldWidth, worldHeight);
+        _engine.Camera.SetCameraPosition(new Point2D(0, 0));
 
         // Subscribe to input events
         _input.OnKeyPressed += OnKeyPressed;
@@ -126,6 +132,13 @@ public class DoomGameScene : IGameScene
             _gameOverHandled = true;
             HandleGameOver();
             return;
+        }
+        
+        if (Player.WorldPosition != null)
+        {
+            int cameraX = Player.WorldPosition.X - _engine.Camera.CameraSize.Width / 2;
+            int cameraY = Player.WorldPosition.Y - _engine.Camera.CameraSize.Height / 2;
+            _engine.Camera.SetCameraPosition(new Point2D(cameraX, cameraY));
         }
 
         // Don't update game logic if game over was triggered

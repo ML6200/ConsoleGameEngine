@@ -109,12 +109,11 @@ public class GameOverPanel : UiPanel
         HasBorder = false;
     }
 
-    public override void Compute(ConsoleRenderer2D renderer)
+    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
-        if (!Visible) return;
-
         if (WorldPosition == null) return;
 
+        // Full screen UI overlay - don't use camera transformation
         int centerX = WorldSize.Width / 2;
         int centerY = WorldSize.Height / 2;
 

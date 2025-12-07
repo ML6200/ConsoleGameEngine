@@ -125,7 +125,7 @@ public class Player : GraphicsComponent
     }
     
 
-    public override void Compute(ConsoleRenderer2D renderer)
+    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
         if (!_alive)
         {
@@ -135,9 +135,11 @@ public class Player : GraphicsComponent
 
         if (WorldPosition == null) return;
 
-        renderer.SetCell(WorldPosition.X, WorldPosition.Y,
-            new Cell('0', ConsoleColor.Black, ConsoleColor.Green));
+        // Transform world coordinates to screen coordinates
+        Point2D? screenPos = camera.TransformPoint(WorldPosition);
+        if (screenPos == null) return; // Off-screen culling
 
-        base.Compute(renderer);
+        renderer.SetCell(screenPos.X, screenPos.Y,
+            new Cell('0', ConsoleColor.Black, ConsoleColor.Green));
     }
 }

@@ -32,13 +32,12 @@ public class GameHud : UiPanel
         SetAbsolutePosition(absolutePoint);
     }
 
-    public override void Compute(ConsoleRenderer2D renderer)
+    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
-        if (!Visible) return;
-
         if (WorldPosition == null) return;
 
-        // Render all stats in one line
+        // HUD should always be visible (don't use camera transformation for UI)
+        // Render directly at world position (which should be screen position for UI)
         int x = WorldPosition.X;
         int y = WorldPosition.Y;
 

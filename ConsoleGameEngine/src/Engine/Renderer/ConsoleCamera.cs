@@ -40,16 +40,18 @@ public class ConsoleCamera
 
     public Point2D? TransformPoint(Point2D worldPoint)
     {
-        int screenX = worldPoint.X - CameraSize.Width;
-        int screenY = worldPoint.Y - CameraSize.Height;
+        // Transform from world space to screen space
+        int screenX = worldPoint.X - CameraStartPoint.X;
+        int screenY = worldPoint.Y - CameraStartPoint.Y;
 
-        if (screenX < 0 || screenY < 0 || 
-            screenX > CameraSize.Width || 
-            screenY > CameraSize.Height)
+        // Check if point is within camera viewport (culling)
+        if (screenX < 0 || screenY < 0 ||
+            screenX >= CameraSize.Width ||
+            screenY >= CameraSize.Height)
         {
             return null;
         }
-        
+
         return new Point2D(screenX, screenY);
     }
 
