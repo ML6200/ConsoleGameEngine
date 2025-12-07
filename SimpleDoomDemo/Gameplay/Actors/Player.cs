@@ -6,7 +6,7 @@ using SimpleDoomEngine.Engine;
 
 namespace SimpleDoomEngine.Gameplay.Actors;
 
-public class Player : ConsoleGraphicsComponent
+public class Player : GraphicsComponent
 {
     // =============================FIELDS_PRIVATE==============================
     private int _health;

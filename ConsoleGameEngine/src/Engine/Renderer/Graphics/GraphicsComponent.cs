@@ -66,7 +66,7 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
  *
  */
 
-public abstract class ConsoleGraphicsComponent : IConsoleRenderable
+public abstract class GraphicsComponent : IRenderable
 {
     protected int Width;
     protected int Height;
@@ -79,8 +79,8 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
     public ConsoleColor BorderColor { get; set; }
 
     private List<Animation> Animations { get; } = new();
-    public List<ConsoleGraphicsComponent> Children { get; } = new();
-    private IConsoleRenderable Parent { get; set; }
+    public List<GraphicsComponent> Children { get; } = new();
+    private IRenderable Parent { get; set; }
     
     private readonly object _childrenLock = new();
     
@@ -89,7 +89,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
 
 
     // ====================CONSTRUCTORS====================
-    public ConsoleGraphicsComponent(int width, int height, 
+    public GraphicsComponent(int width, int height, 
         Point2D? relativePosition, 
         ConsoleColor backgroundColor, 
         ConsoleColor foregroundColor, 
@@ -103,7 +103,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
         BorderColor = borderColor;
     }
     
-    public ConsoleGraphicsComponent(int width, int height, 
+    public GraphicsComponent(int width, int height, 
         Point2D? relativePosition)
     {
         Width = width;
@@ -111,7 +111,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
         _relativePosition = relativePosition;
     }
 
-    public ConsoleGraphicsComponent()
+    public GraphicsComponent()
     {
         
     }
@@ -163,7 +163,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
     {
         get
         {
-            if (Parent is ConsoleGraphicsComponent { WorldPosition: not null } parent)
+            if (Parent is GraphicsComponent { WorldPosition: not null } parent)
             {
                 if (_relativePosition != null)
                     return parent.WorldPosition + _relativePosition;
@@ -178,7 +178,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
 
     public void SetAbsolutePosition(Point2D absolutePoint)
     {
-        if (Parent is ConsoleGraphicsComponent {WorldPosition: not null} parent)
+        if (Parent is GraphicsComponent {WorldPosition: not null} parent)
         {
             _relativePosition = absolutePoint - parent.WorldPosition;
         } else 
@@ -208,7 +208,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
     
     
     // ============================PARENTING===========================
-    public void AddChild(ConsoleGraphicsComponent child)
+    public void AddChild(GraphicsComponent child)
     {
         lock (_childrenLock)
         {
@@ -217,7 +217,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
         }
     }
 
-    public void RemoveChild(ConsoleGraphicsComponent child)
+    public void RemoveChild(GraphicsComponent child)
     {
         lock (_childrenLock)
         {
@@ -225,7 +225,7 @@ public abstract class ConsoleGraphicsComponent : IConsoleRenderable
         }
     }
 
-    public List<ConsoleGraphicsComponent> GetChildrenSnapshot()
+    public List<GraphicsComponent> GetChildrenSnapshot()
     {
         lock (_childrenLock)
         {

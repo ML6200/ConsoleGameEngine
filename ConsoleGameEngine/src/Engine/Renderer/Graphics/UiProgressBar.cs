@@ -3,7 +3,7 @@ using ConsoleGameEngine.Engine.Renderer.Animations;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public class ConsoleProgressBar : ConsoleGraphicsComponent
+public class ProgressBar : GraphicsComponent
 {
     private float _progress = 0;
 

@@ -2,7 +2,7 @@ using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public interface IConsoleRenderable
+public interface IRenderable
 {
     Dimension2D WorldSize { get; }
     bool Visible { get; set; }

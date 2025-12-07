@@ -6,12 +6,12 @@ using ConsoleGameEngine.Engine.Renderer.Animations;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public class ConsoleWindowComponent : IConsoleRenderable
+public class RootComponent : IRenderable
 {
-    private readonly ConsoleGraphicsComponent _consoleGraphicsComponent;
+    private readonly GraphicsComponent _graphicsComponent;
     public List<Animation> Animations { get; } = new();
 
-    public ConsoleGraphicsComponent ConsoleGraphicsComponent => _consoleGraphicsComponent;
+    public GraphicsComponent GraphicsComponent => _graphicsComponent;
     public Dimension2D WorldSize => new(Console.WindowWidth, Console.WindowHeight);
 
     public bool Visible
@@ -23,15 +23,15 @@ public class ConsoleWindowComponent : IConsoleRenderable
     {
         if (!Visible) return;
         
-        foreach (var child in _consoleGraphicsComponent.GetChildrenSnapshot())
+        foreach (var child in _graphicsComponent.GetChildrenSnapshot())
         {
             child.Compute(renderer);
         }
     }
 
-    public ConsoleWindowComponent(ConsoleGraphicsComponent consoleGraphicsComponent)
+    public RootComponent(GraphicsComponent graphicsComponent)
     {
-        _consoleGraphicsComponent = consoleGraphicsComponent;
+        _graphicsComponent = graphicsComponent;
         Visible = true;
     }
 }

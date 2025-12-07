@@ -6,7 +6,7 @@ namespace ConsoleGameEngine.Engine.Renderer.Animations;
 
 public static class AnimationTween
 {
-    public static Animation MoveTo(ConsoleGraphicsComponent target, Point2D end, double duration)
+    public static Animation MoveTo(GraphicsComponent target, Point2D end, double duration)
     {
         Point2D start = target.RelativePosition;
         return new Animation(duration, progress =>
@@ -18,7 +18,7 @@ public static class AnimationTween
         });
     }
 
-    public static Animation Blink(ConsoleGraphicsComponent target, double interval, bool loop = true)
+    public static Animation Blink(GraphicsComponent target, double interval, bool loop = true)
     {
         bool visible = target.Visible;
         return new Animation(interval, progress =>
@@ -34,7 +34,7 @@ public static class AnimationTween
         });
     }
 
-    public static Animation FadeColor(ConsoleUiButton button, ConsoleColor from, ConsoleColor to, double duration)
+    public static Animation FadeColor(UiButton button, ConsoleColor from, ConsoleColor to, double duration)
     {
         return new Animation(duration, progress =>
         {

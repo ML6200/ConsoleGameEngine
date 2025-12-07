@@ -16,7 +16,7 @@ namespace SimpleDoomDemo.Gameplay.Scenes;
 public class GameOverScene : IGameScene
 {
     private ConsoleEngine _engine;
-    private ConsoleUiPanel _rootPanel;
+    private UiPanel _rootPanel;
     private readonly Player _player;
     private readonly bool _playerDied;
     private readonly bool _levelComplete;
@@ -88,7 +88,7 @@ public class GameOverScene : IGameScene
 /// <summary>
 /// Custom panel for rendering game over screen.
 /// </summary>
-public class GameOverPanel : ConsoleUiPanel
+public class GameOverPanel : UiPanel
 {
     private readonly Player _player;
     private readonly bool _playerDied;
@@ -111,16 +111,19 @@ public class GameOverPanel : ConsoleUiPanel
     {
         if (!Visible) return;
 
-        base.Compute(renderer);
-
         int centerX = Console.WindowWidth / 2;
         int centerY = Console.WindowHeight / 2;
-
+        
+        ConsoleColor color = ConsoleColor.Red;
+        renderer.FillRect(0, 0,  WorldSize.Width, WorldSize.Height, '\0', ConsoleColor.Red,  ConsoleColor.Black);
+        base.Compute(renderer);
+        /*
         // Draw title message
         if (_playerDied)
         {
-            renderer.FillRect(0, 0,  Console.WindowWidth, Console.WindowHeight, ' ', ConsoleColor.DarkRed);
-            renderer.DrawText(centerX - 5, centerY - 5, "YOU DIED!", ConsoleColor.Red, ConsoleColor.Black);
+            color = ConsoleColor.DarkRed;
+            renderer.FillRect(0, 0,  WorldSize.Width, WorldSize.Height, ' ', color);
+            renderer.DrawText(centerX - 5, centerY - 5, "YOU DIED!", color, ConsoleColor.Black);
         }
         else if (_interrupted)
         {
@@ -129,20 +132,22 @@ public class GameOverPanel : ConsoleUiPanel
         }
         else if (_levelComplete)
         {
-            renderer.DrawText(centerX - 8, centerY - 5, "LEVEL COMPLETE!", ConsoleColor.Green, ConsoleColor.Black);
+            renderer.DrawText(centerX - 8, centerY - 5, "LEVEL COMPLETE!", ConsoleColor.DarkRed, ConsoleColor.Black);
         }
 
         // Draw separator
-        renderer.DrawText(centerX - 10, centerY - 2, "═══════════════════", ConsoleColor.White, ConsoleColor.Black);
+        renderer.DrawText(centerX - 10, centerY - 2, "═══════════════════", color, ConsoleColor.Black);
 
         // Draw stats
-        renderer.DrawText(centerX - 10, centerY, $"Final XP: {_player.CombatPoints}", ConsoleColor.Cyan, ConsoleColor.Black);
-        renderer.DrawText(centerX - 10, centerY + 1, $"Demons Killed: {_player.CombatPoints / 2}", ConsoleColor.Green, ConsoleColor.Black);
+        renderer.DrawText(centerX - 10, centerY, $"Final XP: {_player.CombatPoints}", color, ConsoleColor.Black);
+        renderer.DrawText(centerX - 10, centerY + 1, $"Demons Killed: {_player.CombatPoints / 2}", color, ConsoleColor.Black);
 
         // Draw bottom separator
-        renderer.DrawText(centerX - 10, centerY + 3, "═══════════════════", ConsoleColor.White, ConsoleColor.Black);
+        renderer.DrawText(centerX - 10, centerY + 3, "═══════════════════", color, ConsoleColor.Black);
 
         // Draw exit prompt
-        renderer.DrawText(centerX - 12, centerY + 5, "Press any key to exit...", ConsoleColor.DarkGray, ConsoleColor.Black);
+        renderer.DrawText(centerX - 12, centerY + 5, "Press any key to exit...", color, ConsoleColor.Black);
+        //base.Compute(renderer);
+        */
     }
 }

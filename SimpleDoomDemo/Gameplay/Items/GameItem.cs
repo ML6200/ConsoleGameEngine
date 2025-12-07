@@ -5,7 +5,7 @@ using ConsoleGameEngine.Engine.Renderer.Graphics;
 
 namespace SimpleDoomEngine.Gameplay.Items;
 
-public class GameItem : ConsoleGraphicsComponent
+public class GameItem : GraphicsComponent
 {
     // =============================FIELDS_PUBLIC==============================
     public ItemType Type { get; }

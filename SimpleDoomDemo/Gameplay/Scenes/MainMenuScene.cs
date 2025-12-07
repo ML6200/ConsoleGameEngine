@@ -9,9 +9,9 @@ namespace SimpleDoomDemo.Gameplay.Scenes;
 public class MainMenuScene : IGameScene
 {
     private ConsoleEngine _engine;
-    private ConsoleUiPanel _rootPanel;
-    private ConsoleUiButton _playButton;
-    private ConsoleUiButton _quitButton;
+    private UiPanel _rootPanel;
+    private UiButton _playButton;
+    private UiButton _quitButton;
     private string _mapPath;
 
     public MainMenuScene(string mapPath)
@@ -33,7 +33,7 @@ public class MainMenuScene : IGameScene
         // Title is not needed - buttons are self-explanatory
 
         // Create Play button
-        _playButton = new ConsoleUiButton("PLAY GAME")
+        _playButton = new UiButton("PLAY GAME")
         {
             RelativePosition = new Point2D(centerX - 10, centerY - 3),
             Size = new Dimension2D(20, 3),
@@ -47,7 +47,7 @@ public class MainMenuScene : IGameScene
         _rootPanel.AddChild(_playButton);
 
         // Create Quit button
-        _quitButton = new ConsoleUiButton("QUIT")
+        _quitButton = new UiButton("QUIT")
         {
             RelativePosition = new Point2D(centerX - 10, centerY + 2),
             Size = new Dimension2D(20, 3),

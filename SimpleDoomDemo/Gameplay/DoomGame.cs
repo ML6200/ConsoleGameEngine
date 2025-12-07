@@ -25,8 +25,8 @@ public class DoomGameScene : IGameScene
 {
     // ============================= ENGINE ==============================
     private ConsoleEngine _engine;
-    private ConsoleUiPanel _rootPanel;
-    private ConsoleUiPanel _viewPort;
+    private UiPanel _rootPanel;
+    private UiPanel _viewPort;
     private InputManager _input;
 
     // ============================= UI ==============================
@@ -75,7 +75,7 @@ public class DoomGameScene : IGameScene
     {
         _engine = consoleEngine;
         _rootPanel = _engine.RootPanel();
-        _viewPort = new ConsoleUiPanel(10, 10, new Point2D(0, 0));
+        _viewPort = new UiPanel(10, 10, new Point2D(0, 0));
         _input = _engine.Input;
         _engine.RootPanel().AddChild(_viewPort);
 

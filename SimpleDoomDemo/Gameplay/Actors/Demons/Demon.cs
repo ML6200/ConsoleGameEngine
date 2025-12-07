@@ -7,7 +7,7 @@ using SimpleDoomEngine.Gameplay.Actors;
 namespace SimpleDoomDemo.Gameplay.Actors.Demons;
 
 
-public abstract class Demon : ConsoleGraphicsComponent
+public abstract class Demon : GraphicsComponent
 {
     // =========================FIELDS_PRIVATE==============================
     protected int _speed;

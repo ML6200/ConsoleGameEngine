@@ -13,7 +13,7 @@ public class ConsoleRenderManager : IDisposable
     private Thread _graphicsThread;
     private CancellationTokenSource _cts;
     private ConsoleRenderer2D _renderer;
-    private ConsoleWindowComponent _rootComponent;
+    private RootComponent _rootComponent;
     private int _updatesPerSecond;
     
     public double CurrentFps {get; private set; }
@@ -21,7 +21,7 @@ public class ConsoleRenderManager : IDisposable
     
     public event EventHandler OnWindowResized;
 
-    public ConsoleRenderManager(ConsoleRenderer2D renderer, ConsoleWindowComponent rootComponent, int updatesPerSecond)
+    public ConsoleRenderManager(ConsoleRenderer2D renderer, RootComponent rootComponent, int updatesPerSecond)
     {
         _renderer = renderer;
         //_renderer.InitRenderer();
@@ -80,7 +80,7 @@ public class ConsoleRenderManager : IDisposable
         }
     }
 
-    public void SetRootComponent(ConsoleWindowComponent rootComponent)
+    public void SetRootComponent(RootComponent rootComponent)
     {
         lock (_graphicsLock)
         {
@@ -104,7 +104,7 @@ public class ConsoleRenderManager : IDisposable
             }
             else
             {
-                ConsoleWindowComponent root = Volatile.Read(ref _rootComponent);
+                RootComponent root = Volatile.Read(ref _rootComponent);
                 _renderer.FlushBuffer();
                 root.Compute(_renderer);
                 _renderer.Render();
