@@ -22,16 +22,13 @@ public class ProgressBar : GraphicsComponent
     {
         if (WorldPosition == null) return;
 
-        // Transform world coordinates to screen coordinates
-        var screenPos = camera.TransformPoint(WorldPosition);
-        if (screenPos == null) return; // Off-screen culling
-
+        // UI progress bars render directly at world position (no camera transformation)
         int filledWidth = (int)(Size.Width * _progress);
 
         // Draw filled part
         renderer.FillRect(
-            screenPos.X,
-            screenPos.Y,
+            WorldPosition.X,
+            WorldPosition.Y,
             filledWidth,
             Size.Height,
             '█',
@@ -41,8 +38,8 @@ public class ProgressBar : GraphicsComponent
 
         // Draw empty part
         renderer.FillRect(
-            screenPos.X + filledWidth,
-            screenPos.Y,
+            WorldPosition.X + filledWidth,
+            WorldPosition.Y,
             Size.Width - filledWidth,
             Size.Height,
             '░',

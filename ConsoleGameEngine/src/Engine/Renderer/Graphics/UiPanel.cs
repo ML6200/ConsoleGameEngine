@@ -19,18 +19,14 @@ public class UiPanel : GraphicsComponent
     {
         if (WorldPosition == null) return;
 
-        // Transform world coordinates to screen coordinates using camera
-        Point2D? screenPos = camera.TransformPoint(WorldPosition);
-
-        // Culling: if off-screen, don't render
-        if (screenPos == null) return;
-
-        renderer.FillRect(screenPos.X, screenPos.Y, Size.Width, Size.Height,
+        // UI panels render directly at world position (no camera transformation)
+        // This makes them fixed on screen, perfect for menus, HUDs, etc.
+        renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height,
             ' ', BackgroundColor, ForegroundColor);
 
         if (HasBorder)
         {
-            renderer.DrawBox(screenPos.X, screenPos.Y, Size.Width, Size.Height,
+            renderer.DrawBox(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height,
                 BackgroundColor, BorderColor);
         }
 

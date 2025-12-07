@@ -23,11 +23,8 @@ public class UiLabel : GraphicsComponent
     {
         if (WorldPosition == null) return;
 
-        // Transform world coordinates to screen coordinates
-        Point2D? screenPos = camera.TransformPoint(WorldPosition);
-        if (screenPos == null) return; // Off-screen culling
-
-        renderer.DrawText(screenPos.X, screenPos.Y, Text,
+        // UI labels render directly at world position (no camera transformation)
+        renderer.DrawText(WorldPosition.X, WorldPosition.Y, Text,
             BackgroundColor, ForegroundColor);
     }
 }

@@ -25,7 +25,7 @@ public class ConsoleCamera
     public Point2D CameraStartPoint { get; set; }
     public Point2D CameraEndPoint { get; private set; }
     public Dimension2D CameraSize { get; set; }
-    public Dimension2D WorldSize { get; private set; }
+    public Dimension2D WorldSize { get; set; }
 
     public ConsoleCamera(Dimension2D worldSize, Point2D cameraStartPoint, Dimension2D cameraSize)
     {

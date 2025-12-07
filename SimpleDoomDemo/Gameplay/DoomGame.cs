@@ -26,7 +26,6 @@ public class DoomGameScene : IGameScene
     // ============================= ENGINE ==============================
     private ConsoleEngine _engine;
     private UiPanel _rootPanel;
-    private UiPanel _viewPort;
     private InputManager _input;
 
     // ============================= UI ==============================
@@ -75,16 +74,15 @@ public class DoomGameScene : IGameScene
     {
         _engine = consoleEngine;
         _rootPanel = _engine.RootPanel();
-        _viewPort = new UiPanel(10, 10, new Point2D(0, 0));
         _input = _engine.Input;
-        _engine.RootPanel().AddChild(_viewPort);
 
-        _viewPort.HasBorder = false;
-        
+        // Setup world size and camera
         int worldWidth = Console.WindowWidth * 3;
         int worldHeight = Console.WindowHeight * 3;
-        
-        _engine.Camera.CameraSize = new Dimension2D(worldWidth, worldHeight);
+
+        // Camera size should be the viewport (screen), NOT the world!
+        _engine.Camera.WorldSize = new Dimension2D(worldWidth, worldHeight);
+        _engine.Camera.CameraSize = new Dimension2D(Console.WindowWidth, Console.WindowHeight);
         _engine.Camera.SetCameraPosition(new Point2D(0, 0));
 
         // Subscribe to input events
@@ -97,8 +95,8 @@ public class DoomGameScene : IGameScene
 
     public void OnEnter()
     {
-        // Add all entities to root panel as children
-        _viewPort.AddChild(Player);
+        // Add all game entities to root panel (they will use camera transformation)
+        _rootPanel.AddChild(Player);
 
         foreach (var item in Items)
         {
@@ -169,8 +167,8 @@ public class DoomGameScene : IGameScene
         AudioPlayer.StopMusic();
         _input.OnKeyPressed -= OnKeyPressed!;
 
-        // Clean up all UI components from the root panel
-        _viewPort.RemoveChild(Player);
+        // Clean up all game entities from the root panel
+        _rootPanel.RemoveChild(Player);
 
         foreach (var item in Items)
         {
@@ -186,8 +184,6 @@ public class DoomGameScene : IGameScene
         {
             _rootPanel.RemoveChild(_hud);
         }
-
-        _rootPanel.RemoveChild(_viewPort);
     }
 
     private void UpdateGameLogic(double deltaTime)
@@ -355,7 +351,7 @@ public class DoomGameScene : IGameScene
 
                         // PLAYER
                         case 'p':
-                            Player.RelativePosition = new Point2D(j, i - 1);
+                            Player.WorldPosition = new Point2D(j, i - 1);
                             break;
                     }
                 }
