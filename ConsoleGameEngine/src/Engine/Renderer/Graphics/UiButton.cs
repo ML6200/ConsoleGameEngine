@@ -67,7 +67,9 @@ public class UiButton : GraphicsComponent, IFocusable
     public override void Compute(ConsoleRenderer2D renderer)
     {
         if (!Visible) return;
-        
+
+        if (WorldPosition == null) return;
+
         var bgColor = IsFocused ? FocusedBgColor : NormalBgColor;
         
         if (HasBorder)

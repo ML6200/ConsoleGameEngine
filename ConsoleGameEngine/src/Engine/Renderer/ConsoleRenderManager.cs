@@ -100,6 +100,11 @@ public class ConsoleRenderManager : IDisposable
             if (IsWindowResized())
             {
                 _renderer.SetDimension(Console.WindowWidth, Console.WindowHeight);
+
+                // Update root panel size to match new window size
+                RootComponent root = Volatile.Read(ref _rootComponent);
+                root.GraphicsComponent.Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight);
+
                 OnWindowResized?.Invoke(this, EventArgs.Empty);
             }
             else

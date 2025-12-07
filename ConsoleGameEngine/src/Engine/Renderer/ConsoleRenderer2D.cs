@@ -265,22 +265,18 @@ public class ConsoleRenderer2D
         ConsoleColor fg = ConsoleColor.White)
     {
         if (_isResizing) return;
-        
+
         for (int dy = 0; dy < height; dy++)
         {
             for (int dx = 0; dx < width; dx++)
             {
                 if (IsValidCoordinate(x + dx, y + dy))
                 {
-                    Cell cell = 
-                        new Cell(_renderBuffer[x + dx, y + dy].Character, 
-                            bg,
-                            fg
-                        );
+                    Cell cell = new Cell(character, bg, fg);
                     SetCell(x + dx, y + dy, cell);
                 }
             }
-        }   
+        }
     }
     
     

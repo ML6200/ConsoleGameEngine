@@ -22,6 +22,8 @@ public class ProgressBar : GraphicsComponent
     {
         if (!Visible) return;
 
+        if (WorldPosition == null) return;
+
         int filledWidth = (int)(Size.Width * _progress);
 
         // Draw filled part

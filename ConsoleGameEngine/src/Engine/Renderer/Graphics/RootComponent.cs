@@ -22,11 +22,8 @@ public class RootComponent : IRenderable
     public void Compute(ConsoleRenderer2D renderer)
     {
         if (!Visible) return;
-        
-        foreach (var child in _graphicsComponent.GetChildrenSnapshot())
-        {
-            child.Compute(renderer);
-        }
+
+        _graphicsComponent.Compute(renderer);
     }
 
     public RootComponent(GraphicsComponent graphicsComponent)

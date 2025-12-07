@@ -19,9 +19,11 @@ public class UiPanel : GraphicsComponent
     {
         if (!Visible) return;
 
+        if (WorldPosition == null) return;
+
         renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height,
             ' ', BackgroundColor, ForegroundColor);
-        
+
         if (HasBorder)
         {
             renderer.DrawBox(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height,

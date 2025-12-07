@@ -9,7 +9,7 @@ namespace SimpleDoomDemo.Gameplay.Scenes;
 public class MainMenuScene : IGameScene
 {
     private ConsoleEngine _engine;
-    private UiPanel _rootPanel;
+    private UiPanel _menuPanel;
     private UiButton _playButton;
     private UiButton _quitButton;
     private string _mapPath;
@@ -22,13 +22,22 @@ public class MainMenuScene : IGameScene
     public void Initialize(ConsoleEngine consoleEngine)
     {
         _engine = consoleEngine;
-        _rootPanel = _engine.RootPanel();
     }
 
     public void OnEnter()
     {
         int centerX = Console.WindowWidth / 2;
         int centerY = Console.WindowHeight / 2;
+
+        // Create menu panel with blue background
+        _menuPanel = new UiPanel()
+        {
+            RelativePosition = new Point2D(0, 0),
+            Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight),
+            BackgroundColor = ConsoleColor.Blue,
+            HasBorder = false
+        };
+        _engine.RootPanel().AddChild(_menuPanel);
 
         // Title is not needed - buttons are self-explanatory
 
@@ -44,7 +53,7 @@ public class MainMenuScene : IGameScene
             HasBorder = true
         };
         _playButton.OnClick += OnPlayClicked;
-        _rootPanel.AddChild(_playButton);
+        _menuPanel.AddChild(_playButton);
 
         // Create Quit button
         _quitButton = new UiButton("QUIT")
@@ -58,7 +67,7 @@ public class MainMenuScene : IGameScene
             HasBorder = true
         };
         _quitButton.OnClick += OnQuitClicked;
-        _rootPanel.AddChild(_quitButton);
+        _menuPanel.AddChild(_quitButton);
 
         // Subscribe to input for navigation
         _engine.Input.OnKeyPressed += OnKeyPressed;
@@ -73,9 +82,12 @@ public class MainMenuScene : IGameScene
     {
         _engine.Input.OnKeyPressed -= OnKeyPressed;
 
-        // Clean up buttons
-        _rootPanel.RemoveChild(_playButton);
-        _rootPanel.RemoveChild(_quitButton);
+        // Clean up buttons from menu panel
+        _menuPanel.RemoveChild(_playButton);
+        _menuPanel.RemoveChild(_quitButton);
+
+        // Remove menu panel from root
+        _engine.RootPanel().RemoveChild(_menuPanel);
     }
 
     private void OnKeyPressed(object sender, KeyEventArgs e)

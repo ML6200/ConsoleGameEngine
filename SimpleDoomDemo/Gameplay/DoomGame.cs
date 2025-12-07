@@ -155,6 +155,26 @@ public class DoomGameScene : IGameScene
     {
         AudioPlayer.StopMusic();
         _input.OnKeyPressed -= OnKeyPressed!;
+
+        // Clean up all UI components from the root panel
+        _viewPort.RemoveChild(Player);
+
+        foreach (var item in Items)
+        {
+            _rootPanel.RemoveChild(item);
+        }
+
+        foreach (var demon in Demons)
+        {
+            _rootPanel.RemoveChild(demon);
+        }
+
+        if (_hud != null)
+        {
+            _rootPanel.RemoveChild(_hud);
+        }
+
+        _rootPanel.RemoveChild(_viewPort);
     }
 
     private void UpdateGameLogic(double deltaTime)
