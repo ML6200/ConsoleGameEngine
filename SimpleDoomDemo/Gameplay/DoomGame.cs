@@ -73,12 +73,11 @@ public class DoomGameScene : IGameScene
         _input = _engine.Input;
 
         // Setup world size and camera
-        int worldWidth = Console.WindowWidth * 3;
-        int worldHeight = Console.WindowHeight * 3;
-
-        // Camera size should be the viewport (screen), NOT the world!
+        int worldWidth = _engine.RootPanel().ScreenSize.Width * 3;
+        int worldHeight =_engine.RootPanel().ScreenSize.Height * 3;
+        
         _engine.Camera.WorldSize = new Dimension2D(worldWidth, worldHeight);
-        _engine.Camera.CameraSize = new Dimension2D(Console.WindowWidth, Console.WindowHeight);
+        
         _engine.Camera.SetCameraPosition(new Point2D(0, 0));
 
         // Subscribe to input events
@@ -139,6 +138,7 @@ public class DoomGameScene : IGameScene
         {
             return;
         }
+        
         UpdateGameLogic(deltaTime);
         
     }
@@ -177,7 +177,7 @@ public class DoomGameScene : IGameScene
         // Update visibility (fog of war)
         UpdateVisibility();
         // Update HUD
-        _hud.UpdateHUD(new Point2D(0, _rootPanel.WorldSize.Height - 1));
+        _hud.UpdateHUD(new Point2D(0, _rootPanel.ScreenSize.Height - 1));
 
         // Cleanup dead entities
         CleanupEntities();

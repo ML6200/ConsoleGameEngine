@@ -12,7 +12,7 @@ public class RootComponent : IRenderable
     public List<Animation> Animations { get; } = new();
 
     public GraphicsComponent GraphicsComponent => _graphicsComponent;
-    public Dimension2D WorldSize => new(Console.WindowWidth, Console.WindowHeight);
+    public Dimension2D ScreenSize => new(Console.WindowWidth, Console.WindowHeight);
 
     public bool Visible
     {

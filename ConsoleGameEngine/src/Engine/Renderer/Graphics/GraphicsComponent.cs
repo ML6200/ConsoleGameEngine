@@ -85,7 +85,7 @@ public abstract class GraphicsComponent : IRenderable
     private readonly object _childrenLock = new();
     
     
-    public Dimension2D WorldSize => new(Console.WindowWidth, Console.WindowHeight);
+    public Dimension2D ScreenSize => new(Console.WindowWidth, Console.WindowHeight);
 
 
     // ====================CONSTRUCTORS====================

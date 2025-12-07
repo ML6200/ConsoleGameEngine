@@ -114,8 +114,8 @@ public class GameOverPanel : UiPanel
         if (WorldPosition == null) return;
 
         // Full screen UI overlay - don't use camera transformation
-        int centerX = WorldSize.Width / 2;
-        int centerY = WorldSize.Height / 2;
+        int centerX = ScreenSize.Width / 2;
+        int centerY = ScreenSize.Height / 2;
 
         ConsoleColor color;
 
