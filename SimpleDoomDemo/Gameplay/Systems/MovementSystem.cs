@@ -102,11 +102,7 @@ public class MovementSystem : IGameSystem
 
         TryMoveDemon(demon, targetPos);
     }
-
-    /// <summary>
-    /// Attempts to move a demon to the specified position.
-    /// Returns true if movement was successful.
-    /// </summary>
+    
     private bool TryMoveDemon(Demon demon, Point2D targetPoint)
     {
         if (!IsPointWithinBounds(targetPoint))
@@ -122,11 +118,7 @@ public class MovementSystem : IGameSystem
 
         return false;
     }
-
-    /// <summary>
-    /// Attempts to move the player to the specified position.
-    /// Returns true if movement was successful.
-    /// </summary>
+    
     public bool MovePlayer(Point2D targetPoint)
     {
         if (!IsPointWithinBounds(targetPoint))

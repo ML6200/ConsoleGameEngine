@@ -8,10 +8,6 @@ using SimpleDoomEngine.Gameplay.Actors;
 
 namespace SimpleDoomDemo.Gameplay.Systems;
 
-/// <summary>
-/// Handles all combat logic including player attacks, demon attacks,
-/// damage calculations, and combat animations.
-/// </summary>
 public class CombatSystem : IGameSystem
 {
     private readonly DoomGameScene _game;
@@ -24,13 +20,9 @@ public class CombatSystem : IGameSystem
 
     public void Update(double deltaTime)
     {
-        // Combat updates happen on-demand (when player/demon attacks)
-        // No continuous updates needed here
+        
     }
-
-    /// <summary>
-    /// Player performs shotgun attack with animation.
-    /// </summary>
+    
     public void PlayerAttack()
     {
         if (_game.Player.Ammo <= 0)
@@ -38,8 +30,7 @@ public class CombatSystem : IGameSystem
 
         _game.Player.Shoot();
         _game.PlaySoundEffect(SoundEffectType.Shotgun);
-
-        // Trigger attack animation on player
+        
         var attackAnim = AnimationTween.Blink(_game.Player, 0.2, loop: false);
         _game.Player.AddAnimation(attackAnim);
 
@@ -54,10 +45,7 @@ public class CombatSystem : IGameSystem
             DealDamageToDemon(demon, damage);
         }
     }
-
-    /// <summary>
-    /// Player performs BFG attack with animation.
-    /// </summary>
+    
     public void PlayerBFGAttack()
     {
         if (_game.Player.BFGCells <= 0)
@@ -65,8 +53,7 @@ public class CombatSystem : IGameSystem
 
         _game.Player.ShootBFG();
         _game.PlaySoundEffect(SoundEffectType.BFG);
-
-        // Trigger BFG animation (longer blink)
+        
         var bfgAnim = AnimationTween.Blink(_game.Player, 200, loop: false);
         _game.Player.AddAnimation(bfgAnim);
 
@@ -82,10 +69,7 @@ public class CombatSystem : IGameSystem
             demon.AddAnimation(explosionAnim);
         }
     }
-
-    /// <summary>
-    /// Demon attacks player with animation.
-    /// </summary>
+    
     public void DemonAttack(Demon demon)
     {
         int min, max;
@@ -109,14 +93,12 @@ public class CombatSystem : IGameSystem
         if (!demon.Alive)
         {
             _game.Player.AddCombatPoints(demon.GetCombatPoints());
-
-            // Death animation - fade out or blink rapidly
+            
             var deathAnim = AnimationTween.Blink(demon, 0.2, loop: false);
             demon.AddAnimation(deathAnim);
         }
         else
         {
-            // Hit animation
             var hitAnim = AnimationTween.Blink(demon, 0.2, loop: false);
             demon.AddAnimation(hitAnim);
         }
@@ -129,7 +111,6 @@ public class CombatSystem : IGameSystem
 
         if (_game.Player.Alive)
         {
-            // Pain animation
             var painAnim = AnimationTween.Blink(_game.Player, 0.3, loop: false);
             _game.Player.AddAnimation(painAnim);
         }
