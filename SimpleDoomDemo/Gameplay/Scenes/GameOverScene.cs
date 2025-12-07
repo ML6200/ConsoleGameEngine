@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer;
@@ -102,8 +103,9 @@ public class GameOverPanel : UiPanel
         _levelComplete = levelComplete;
         _interrupted = interrupted;
 
-        BackgroundColor = ConsoleColor.Black;
+        BackgroundColor = ConsoleColor.Red;
         ForegroundColor = ConsoleColor.White;
+        
         HasBorder = false;
     }
 
@@ -113,26 +115,32 @@ public class GameOverPanel : UiPanel
 
         int centerX = Console.WindowWidth / 2;
         int centerY = Console.WindowHeight / 2;
-        
-        ConsoleColor color = ConsoleColor.Red;
-        renderer.FillRect(0, 0,  WorldSize.Width, WorldSize.Height, '\0', ConsoleColor.Red,  ConsoleColor.Black);
-        base.Compute(renderer);
-        /*
-        // Draw title message
+
+        ConsoleColor color;
+
+        // Fill entire screen based on game over reason
         if (_playerDied)
         {
             color = ConsoleColor.DarkRed;
-            renderer.FillRect(0, 0,  WorldSize.Width, WorldSize.Height, ' ', color);
+            renderer.FillRect(0, 0, WorldSize.Width, WorldSize.Height, ' ', color, ConsoleColor.White);
             renderer.DrawText(centerX - 5, centerY - 5, "YOU DIED!", color, ConsoleColor.Black);
         }
         else if (_interrupted)
         {
-            renderer.FillRect(0, 0,  Console.WindowWidth, Console.WindowHeight, ' ', ConsoleColor.Yellow);
-            renderer.DrawText(centerX - 3, centerY - 5, "EXITED", ConsoleColor.Yellow, ConsoleColor.Black);
+            color = ConsoleColor.Yellow;
+            renderer.FillRect(0, 0, WorldSize.Width, WorldSize.Height, ' ', color, ConsoleColor.Black);
+            renderer.DrawText(centerX - 3, centerY - 5, "EXITED", color, ConsoleColor.Black);
         }
         else if (_levelComplete)
         {
-            renderer.DrawText(centerX - 8, centerY - 5, "LEVEL COMPLETE!", ConsoleColor.DarkRed, ConsoleColor.Black);
+            color = ConsoleColor.DarkGreen;
+            renderer.FillRect(0, 0, WorldSize.Width, WorldSize.Height, ' ', color, ConsoleColor.White);
+            renderer.DrawText(centerX - 8, centerY - 5, "LEVEL COMPLETE!", color, ConsoleColor.Black);
+        }
+        else
+        {
+            color = ConsoleColor.Red;
+            renderer.FillRect(0, 0, WorldSize.Width, WorldSize.Height, ' ', color, ConsoleColor.White);
         }
 
         // Draw separator
@@ -147,7 +155,5 @@ public class GameOverPanel : UiPanel
 
         // Draw exit prompt
         renderer.DrawText(centerX - 12, centerY + 5, "Press any key to exit...", color, ConsoleColor.Black);
-        //base.Compute(renderer);
-        */
     }
 }

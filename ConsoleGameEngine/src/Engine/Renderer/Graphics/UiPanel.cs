@@ -20,7 +20,7 @@ public class UiPanel : GraphicsComponent
         if (!Visible) return;
 
         renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height,
-            ' ', BackgroundColor, ConsoleColor.White);
+            ' ', BackgroundColor, ForegroundColor);
         
         if (HasBorder)
         {
