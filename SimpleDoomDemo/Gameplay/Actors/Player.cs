@@ -133,6 +133,8 @@ public class Player : GraphicsComponent
             return;
         }
 
+        if (WorldPosition == null) return;
+
         renderer.SetCell(WorldPosition.X, WorldPosition.Y,
             new Cell('0', ConsoleColor.Black, ConsoleColor.Green));
 

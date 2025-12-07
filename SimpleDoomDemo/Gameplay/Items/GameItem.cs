@@ -115,6 +115,8 @@ public class GameItem : GraphicsComponent
     {
         if (!Visible) return;
 
+        if (WorldPosition == null) return;
+
         renderer.SetCell(WorldPosition.X, WorldPosition.Y,
             new Cell(_glyph, BackgroundColor, ForegroundColor));
 

@@ -113,8 +113,10 @@ public class GameOverPanel : UiPanel
     {
         if (!Visible) return;
 
-        int centerX = Console.WindowWidth / 2;
-        int centerY = Console.WindowHeight / 2;
+        if (WorldPosition == null) return;
+
+        int centerX = WorldSize.Width / 2;
+        int centerY = WorldSize.Height / 2;
 
         ConsoleColor color;
 
@@ -122,25 +124,25 @@ public class GameOverPanel : UiPanel
         if (_playerDied)
         {
             color = ConsoleColor.DarkRed;
-            renderer.FillRect(0, 0, WorldSize.Width, WorldSize.Height, ' ', color, ConsoleColor.White);
+            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color, ConsoleColor.White);
             renderer.DrawText(centerX - 5, centerY - 5, "YOU DIED!", color, ConsoleColor.Black);
         }
         else if (_interrupted)
         {
             color = ConsoleColor.Yellow;
-            renderer.FillRect(0, 0, WorldSize.Width, WorldSize.Height, ' ', color, ConsoleColor.Black);
+            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color, ConsoleColor.Black);
             renderer.DrawText(centerX - 3, centerY - 5, "EXITED", color, ConsoleColor.Black);
         }
         else if (_levelComplete)
         {
             color = ConsoleColor.DarkGreen;
-            renderer.FillRect(0, 0, WorldSize.Width, WorldSize.Height, ' ', color, ConsoleColor.White);
+            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color, ConsoleColor.White);
             renderer.DrawText(centerX - 8, centerY - 5, "LEVEL COMPLETE!", color, ConsoleColor.Black);
         }
         else
         {
             color = ConsoleColor.Red;
-            renderer.FillRect(0, 0, WorldSize.Width, WorldSize.Height, ' ', color, ConsoleColor.White);
+            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color, ConsoleColor.White);
         }
 
         // Draw separator

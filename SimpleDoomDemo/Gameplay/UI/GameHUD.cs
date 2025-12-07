@@ -36,6 +36,8 @@ public class GameHud : UiPanel
     {
         if (!Visible) return;
 
+        if (WorldPosition == null) return;
+
         // Render all stats in one line
         int x = WorldPosition.X;
         int y = WorldPosition.Y;
