@@ -39,13 +39,13 @@ public abstract class Demon : GraphicsComponent
     public void UpdateState(Player player)
     {
         Point2D playerPos = player.WorldPosition;
-        Point2D demonPos = WorldPosition; 
+        Point2D demonPos = WorldPosition;
         double dist = Point2D.Distance(playerPos, demonPos);
 
         if (dist < AttackRange)
         {
             State = DemonState.Attack;
-        } 
+        }
         else if (dist < SightRange)
         {
             State = DemonState.Move;
@@ -85,7 +85,7 @@ public abstract class Demon : GraphicsComponent
     {
         double distance = Point2D.Distance(WorldPosition, playerPoint);
         bool newVisibility = Alive && distance <= sightRange;
-        
+
         Visible = newVisibility;
     }
 }

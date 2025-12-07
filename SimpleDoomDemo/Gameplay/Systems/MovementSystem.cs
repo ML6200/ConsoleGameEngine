@@ -35,11 +35,11 @@ public class MovementSystem : IGameSystem
         int rndX = _random.Next(-1, 2);
         int rndY = _random.Next(-1, 2);
         Point2D targetPos = new Point2D(demon.WorldPosition.X + rndX, demon.WorldPosition.Y + rndY);
-        
+
         // probability calculation
         double pMove = (demon.Speed / 100.0) * deltaTime;
         double rndMove = _random.NextDouble();
-        
+
         if (!IsPointWithinBounds(targetPos))
             return;
 
@@ -102,7 +102,7 @@ public class MovementSystem : IGameSystem
                 closeItems.Add(_game.Demons[i]);
             }
         }
-        
+
         return closeItems;
     }
     
@@ -119,7 +119,7 @@ public class MovementSystem : IGameSystem
                 closeItems.Add(_game.Items[i]);
             }
         }
-        
+
         return closeItems;
     }
 

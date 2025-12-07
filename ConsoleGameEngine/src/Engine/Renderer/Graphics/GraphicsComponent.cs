@@ -71,7 +71,7 @@ public abstract class GraphicsComponent : IRenderable
     protected int Width;
     protected int Height;
 
-    private Point2D? _relativePosition;
+    private Point2D _relativePosition = new Point2D(0, 0);
     public virtual bool Visible { get; set; } = true;
     
     public ConsoleColor BackgroundColor { get; set; }
@@ -89,31 +89,31 @@ public abstract class GraphicsComponent : IRenderable
 
 
     // ====================CONSTRUCTORS====================
-    public GraphicsComponent(int width, int height, 
-        Point2D? relativePosition, 
-        ConsoleColor backgroundColor, 
-        ConsoleColor foregroundColor, 
+    public GraphicsComponent(int width, int height,
+        Point2D? relativePosition,
+        ConsoleColor backgroundColor,
+        ConsoleColor foregroundColor,
         ConsoleColor borderColor)
     {
         Width = width;
         Height = height;
-        _relativePosition = relativePosition;
+        _relativePosition = relativePosition ?? new Point2D(0, 0);
         BackgroundColor = backgroundColor;
         ForegroundColor = foregroundColor;
         BorderColor = borderColor;
     }
-    
-    public GraphicsComponent(int width, int height, 
+
+    public GraphicsComponent(int width, int height,
         Point2D? relativePosition)
     {
         Width = width;
         Height = height;
-        _relativePosition = relativePosition;
+        _relativePosition = relativePosition ?? new Point2D(0, 0);
     }
 
     public GraphicsComponent()
     {
-        
+        // _relativePosition already initialized to (0, 0) via field initializer
     }
     // ====================CONSTRUCTORS_END====================
     
@@ -159,14 +159,13 @@ public abstract class GraphicsComponent : IRenderable
      * vagy Transform osztály bevezetésével.
      * 
      */
-    public Point2D? WorldPosition
+    public Point2D WorldPosition
     {
         get
         {
-            if (Parent is GraphicsComponent { WorldPosition: not null } parent)
+            if (Parent is GraphicsComponent parent)
             {
-                if (_relativePosition != null)
-                    return parent.WorldPosition + _relativePosition;
+                return parent.WorldPosition + _relativePosition;
             }
             return _relativePosition;
         }
@@ -178,18 +177,19 @@ public abstract class GraphicsComponent : IRenderable
 
     public void SetAbsolutePosition(Point2D absolutePoint)
     {
-        if (Parent is GraphicsComponent {WorldPosition: not null} parent)
+        if (Parent is GraphicsComponent parent)
         {
             _relativePosition = absolutePoint - parent.WorldPosition;
-        } else 
+        }
+        else
         {
             _relativePosition = absolutePoint;
         }
     }
-    
+
     public Point2D RelativePosition
     {
-        get => _relativePosition ?? new Point2D(0, 0);
+        get => _relativePosition;
         set => _relativePosition = value;
     }
     // ======================END-POSITIONING=======================

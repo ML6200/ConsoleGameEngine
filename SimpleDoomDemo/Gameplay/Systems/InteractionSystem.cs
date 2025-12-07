@@ -61,7 +61,7 @@ public class InteractionSystem : IGameSystem
                     _game.Player.PickUpAmmo(5);
                     item.Interact();
                     _game.PlaySoundEffect(SoundEffectType.ItemPickup);
-                    
+
                     var pickupAnim = AnimationTween.Blink(item, 0.3, loop: false);
                     item.AddAnimation(pickupAnim);
                     break;
@@ -110,7 +110,7 @@ public class InteractionSystem : IGameSystem
                 {
                     var damageAnim = AnimationTween.Blink(demon, 0.3, loop: false);
                     demon.AddAnimation(damageAnim);
-                    
+
                     demon.TakeDamage(5);
                 }
             }

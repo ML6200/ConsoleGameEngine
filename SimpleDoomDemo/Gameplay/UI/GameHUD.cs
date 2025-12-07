@@ -34,8 +34,6 @@ public class GameHud : UiPanel
 
     protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
-        if (WorldPosition == null) return;
-
         // HUD should always be visible (don't use camera transformation for UI)
         // Render directly at world position (which should be screen position for UI)
         int x = WorldPosition.X;

@@ -111,8 +111,6 @@ public class GameOverPanel : UiPanel
 
     protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
-        if (WorldPosition == null) return;
-
         // Full screen UI overlay - don't use camera transformation
         int centerX = ScreenSize.Width / 2;
         int centerY = ScreenSize.Height / 2;

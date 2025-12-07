@@ -133,8 +133,6 @@ public class Player : GraphicsComponent
             return;
         }
 
-        if (WorldPosition == null) return;
-
         // Transform world coordinates to screen coordinates
         Point2D? screenPos = camera.TransformPoint(WorldPosition);
         if (screenPos == null) return; // Off-screen culling

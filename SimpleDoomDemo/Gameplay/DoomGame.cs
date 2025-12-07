@@ -127,12 +127,9 @@ public class DoomGameScene : IGameScene
             return;
         }
         
-        if (Player.WorldPosition != null)
-        {
-            int cameraX = Player.WorldPosition.X - _engine.Camera.CameraSize.Width / 2;
-            int cameraY = Player.WorldPosition.Y - _engine.Camera.CameraSize.Height / 2;
-            _engine.Camera.SetCameraPosition(new Point2D(cameraX, cameraY));
-        }
+        int cameraX = Player.WorldPosition.X - _engine.Camera.CameraSize.Width / 2;
+        int cameraY = Player.WorldPosition.Y - _engine.Camera.CameraSize.Height / 2;
+        _engine.Camera.SetCameraPosition(new Point2D(cameraX, cameraY));
 
         if (_gameOverHandled)
         {
@@ -245,7 +242,6 @@ public class DoomGameScene : IGameScene
     {
         Point2D targetPoint = Player.WorldPosition + new Point2D(x, y);
         _movementSystem.MovePlayer(targetPoint);
-        
     }
 
     private void CleanupEntities()

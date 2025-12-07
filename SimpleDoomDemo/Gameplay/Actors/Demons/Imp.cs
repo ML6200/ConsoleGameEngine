@@ -17,8 +17,6 @@ public class Imp : Demon
     
     protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
-        if (WorldPosition == null) return;
-
         // Transform world coordinates to screen coordinates
         Point2D? screenPos = camera.TransformPoint(WorldPosition);
         if (screenPos == null) return; // Off-screen culling

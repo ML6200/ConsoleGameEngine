@@ -4,14 +4,13 @@ using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
 using SimpleDoomEngine;
-using SimpleDoomEngine.Gameplay.Actors;
 
 namespace SimpleDoomDemo.Gameplay.Systems;
 
 public class CombatSystem : IGameSystem
 {
     private readonly DoomGameScene _game;
-    private readonly Random _random = new Random();
+    private readonly Random _random = new();
 
     public CombatSystem(DoomGameScene game)
     {
@@ -30,7 +29,7 @@ public class CombatSystem : IGameSystem
 
         _game.Player.Shoot();
         _game.PlaySoundEffect(SoundEffectType.Shotgun);
-        
+
         var attackAnim = AnimationTween.Blink(_game.Player, 0.2, loop: false);
         _game.Player.AddAnimation(attackAnim);
 
