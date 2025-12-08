@@ -57,6 +57,9 @@ public class GameOverScene : IGameScene
             Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight),
             Visible = true
         };
+        if (_interrupted) _rootPanel.BackgroundColor = ConsoleColor.DarkBlue;
+        if (_playerDied) _rootPanel.BackgroundColor = ConsoleColor.DarkRed;
+        if (_levelComplete) _rootPanel.BackgroundColor = ConsoleColor.DarkGreen;
         _rootPanel.AddChild(_gameOverPanel);
 
         // Subscribe to input
@@ -121,38 +124,38 @@ public class GameOverPanel : UiPanel
         if (_playerDied)
         {
             color = ConsoleColor.DarkRed;
-            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color, ConsoleColor.White);
-            renderer.DrawText(centerX - 5, centerY - 5, "YOU DIED!", color, ConsoleColor.Black);
+            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color);
+            renderer.DrawText(centerX - 5, centerY - 5, "YOU DIED!", color);
         }
         else if (_interrupted)
         {
             color = ConsoleColor.Yellow;
-            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color, ConsoleColor.Black);
-            renderer.DrawText(centerX - 3, centerY - 5, "EXITED", color, ConsoleColor.Black);
+            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color);
+            renderer.DrawText(centerX - 3, centerY - 5, "EXITED", color);
         }
         else if (_levelComplete)
         {
             color = ConsoleColor.DarkGreen;
-            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color, ConsoleColor.White);
-            renderer.DrawText(centerX - 8, centerY - 5, "LEVEL COMPLETE!", color, ConsoleColor.Black);
+            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color);
+            renderer.DrawText(centerX - 8, centerY - 5, "LEVEL COMPLETE!", color);
         }
         else
         {
             color = ConsoleColor.Red;
-            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color, ConsoleColor.White);
+            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color);
         }
 
         // Draw separator
-        renderer.DrawText(centerX - 10, centerY - 2, "═══════════════════", color, ConsoleColor.Black);
+        renderer.DrawText(centerX - 10, centerY - 2, "═══════════════════", color);
 
         // Draw stats
-        renderer.DrawText(centerX - 10, centerY, $"Final XP: {_player.CombatPoints}", color, ConsoleColor.Black);
-        renderer.DrawText(centerX - 10, centerY + 1, $"Demons Killed: {_player.CombatPoints / 2}", color, ConsoleColor.Black);
+        renderer.DrawText(centerX - 10, centerY, $"Final XP: {_player.CombatPoints}", color);
+        renderer.DrawText(centerX - 10, centerY + 1, $"Demons Killed: {_player.CombatPoints / 2}", color);
 
         // Draw bottom separator
-        renderer.DrawText(centerX - 10, centerY + 3, "═══════════════════", color, ConsoleColor.Black);
+        renderer.DrawText(centerX - 10, centerY + 3, "═══════════════════", color);
 
         // Draw exit prompt
-        renderer.DrawText(centerX - 12, centerY + 5, "Press any key to exit...", color, ConsoleColor.Black);
+        renderer.DrawText(centerX - 12, centerY + 5, "Press any key to exit...", color);
     }
 }

@@ -156,5 +156,6 @@ public class MainMenuScene : IGameScene
     private void OnQuitClicked(object sender, EventArgs e)
     {
         _engine.Stop();
+        _engine.Dispose();
     }
 }
