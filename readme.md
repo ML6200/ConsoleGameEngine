@@ -129,6 +129,9 @@ The project includes one main demonstration:
 - World-to-screen coordinate transformation
 - Viewport culling for large worlds
 - Camera following and tracking
+- More advanced audio system
+- Custom map editor
+- Settings management
 
 ## Development
 
