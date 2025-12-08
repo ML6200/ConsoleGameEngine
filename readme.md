@@ -136,9 +136,9 @@ The project includes one main demonstration:
 ## Development
 
 ### Running the Doom demo
-'''
+```bash
 dotnet run --project SimpleDoomDemo/SimpleDoomDemo.csproj
-'''
+```
 
 ### Project Configuration
 
