@@ -79,6 +79,7 @@ public class Player : GraphicsComponent
     // =============================METHODS==============================
     public Player(int x, int y)
     {
+        WorldPosition = new Point2D(x, y);
         _health = 100;
         _sightRange = 8;
         _ammo = 10;
