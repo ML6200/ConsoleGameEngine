@@ -34,7 +34,7 @@ public class Mapper
     public enum DcmEntity
     {
         Ammo = 0, BfgCell = 1, Door = 2, LevelExit = 3, 
-        Wall = 4, ToxicWaste = 5, Medkit = 6,
+        Wall = 4, ToxicWaste = 5, MedKit = 6,
         
         Zombieman = 7, Mancubus = 8, Imp = 9,
         
@@ -58,7 +58,7 @@ public class Mapper
                     if (line.StartsWith("#")) continue;
                     
                     string[] columns = line.Split(";");
-                    if (columns.Length != 3) throw new Exception("Invalid map file format");
+                    if (columns.Length != 4) throw new Exception("Invalid map file format");
 
                     Point2D pos = new Point2D(int.Parse(columns[0]), int.Parse(columns[1]));
                     DcmType type = ParseDcmfType(columns[2]);
@@ -141,6 +141,7 @@ public class Mapper
     {
         int val = (int) entity;
         if (val < 7) return DcmType.GameItem;
+        if (val < 10) return DcmType.Demon;
         if (val == 10) return DcmType.Player;
         
         return DcmType.Unknown;
@@ -153,14 +154,14 @@ public class Mapper
             case "A": return DcmEntity.Ammo;
             case "B": return DcmEntity.BfgCell;
             case "D": return DcmEntity.Door;
-            case "L": return DcmEntity.LevelExit;
+            case "E": return DcmEntity.LevelExit;
             case "W": return DcmEntity.Wall;
             case "T": return DcmEntity.ToxicWaste;
-            case "M": return DcmEntity.Medkit;
-            case "Z": return DcmEntity.Zombieman;
-            case "Ma": return DcmEntity.Mancubus;
-            case "I": return DcmEntity.Imp;
-            case "P": return DcmEntity.Player;
+            case "M": return DcmEntity.MedKit;
+            case "z": return DcmEntity.Zombieman;
+            case "m": return DcmEntity.Mancubus;
+            case "i": return DcmEntity.Imp;
+            case "p": return DcmEntity.Player;
         }
 
         return DcmEntity.Unknown;
@@ -171,14 +172,14 @@ public class Mapper
         DcmEntity.Ammo => "A",
         DcmEntity.BfgCell => "B",
         DcmEntity.Door => "D",
-        DcmEntity.LevelExit => "L",
+        DcmEntity.LevelExit => "E",
         DcmEntity.Wall => "W",
         DcmEntity.ToxicWaste => "T",
-        DcmEntity.Medkit => "M",
-        DcmEntity.Zombieman => "Z",
-        DcmEntity.Mancubus => "Ma",
-        DcmEntity.Imp => "I",
-        DcmEntity.Player => "P",
+        DcmEntity.MedKit => "M",
+        DcmEntity.Zombieman => "z",
+        DcmEntity.Mancubus => "m",
+        DcmEntity.Imp => "i",
+        DcmEntity.Player => "p",
         _ => "?"
     };
     
@@ -230,7 +231,7 @@ public class Mapper
 
         foreach (var item in _dcmList)
         {
-            if (item.Type == DcmType.Demon)
+            if (item.Type == DcmType.Player)
             {
                 if (item.Value != null)
                     return (Player) item.Value;
@@ -274,12 +275,15 @@ public class Mapper
                 string line = lines[i];
                 for (int j = 0; j < x; j++)
                 {
-                    int posX = j;
-                    int posY = i - 1;
-                    
-                    DcmEntity item = ParseDcmEntity(line[j].ToString());
-                    DcmType itemType = ParseDcmTypeFromEntity(item);
-                    AddObject(new Point2D(posX, posY), itemType, item);
+                    if (line[j] != '_')
+                    {
+                        int posX = j;
+                        int posY = i - 1;
+
+                        DcmEntity item = ParseDcmEntity(line[j].ToString());
+                        DcmType itemType = ParseDcmTypeFromEntity(item);
+                        AddObject(new Point2D(posX, posY), itemType, item);
+                    }
                 }
             }
         }

@@ -86,6 +86,9 @@ public class MainMenuScene : IGameScene
             FocusedBgColor = ConsoleColor.DarkGray,
             ForegroundColor = ConsoleColor.White,
         };
+
+        inputField.Visible = false;
+        
         _menuPanel.AddChild(inputField);
         _quitButton.OnClick += OnQuitClicked;
         _menuPanel.AddChild(_quitButton);
