@@ -107,14 +107,13 @@ public interface IGameScene
 
 ## Examples
 
-The project includes two demo applications:
+The project includes one main demonstration:
 
-1. **ConsoleGameEngine.Demo**: Basic engine features demonstration
-2. **SimpleDoomDemo**: A Doom-like game showcasing:
+1. **SimpleDoomDemo**: A Doom-like game showcasing:
    - Entity-Component-System (ECS) architecture
    - Multiple game systems (Movement, Combat, AI, Interaction)
-   - Visibility/fog-of-war mechanics
-   - Advanced gameplay features
+   - Visibility/fog-of-war mechanics (hiding unnecessary entities)
+   - Advanced gameplay features (still in developmnet)
 
 ## Current Status
 
@@ -124,7 +123,6 @@ The project includes two demo applications:
 - ANSI color support
 - Input handling
 - Scene management
-- Dirty-cell rendering optimization
 
 ### In Development
 - Camera viewport system (placeholder exists, implementation in progress)
@@ -134,16 +132,13 @@ The project includes two demo applications:
 
 ## Development
 
-### Running Tests
-
-```bash
-dotnet test ConsoleGameEngine.Tests/ConsoleGameEngine.Tests.csproj
-```
+### Running the Doom demo
+dotnet run --project SimpleDoomDemo/SimpleDoomDemo.csproj
 
 ### Project Configuration
 
 - **Target Framework**: .NET 9.0
-- **Unsafe Blocks**: Enabled for performance-critical rendering code
+- **Unsafe Blocks**: Enabled for future optimizations
 - **Implicit Usings**: Disabled for explicit namespace control
 - **Nullable**: Enabled for better null-safety
 
