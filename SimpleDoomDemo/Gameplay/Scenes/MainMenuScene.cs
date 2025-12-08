@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
-using SimpleDoomDemo.Gameplay.Actors.Demons;
-using SimpleDoomEngine.Gameplay.Actors;
-using SimpleDoomEngine.Gameplay.Items;
 
 namespace SimpleDoomDemo.Gameplay.Scenes;
 
@@ -58,7 +54,7 @@ public class MainMenuScene : IGameScene
         _playButton.OnClick += OnPlayClicked;
         _menuPanel.AddChild(_playButton);
         
-        _settingsButton = new UiButton("⚙ SETTINGS")
+        _settingsButton = new UiButton("⚙ Map Editor")
         {
             RelativePosition = new Point2D(centerX - 10, centerY + 1),
             Size = new Dimension2D(20, 3),
@@ -66,6 +62,7 @@ public class MainMenuScene : IGameScene
             BackgroundColor = ConsoleColor.Blue,
             ForegroundColor = ConsoleColor.White,
         };
+        _settingsButton.OnClick += EditMap;
         _menuPanel.AddChild(_settingsButton);
 
         // Create Quit button
@@ -78,7 +75,9 @@ public class MainMenuScene : IGameScene
             BackgroundColor = ConsoleColor.DarkRed,
             ForegroundColor = ConsoleColor.White,
         };
-
+        _quitButton.OnClick += OnQuitClicked;
+        _menuPanel.AddChild(_quitButton);
+        
         UiInputField inputField = new UiInputField(_engine.Input)
         {
             RelativePosition = new Point2D(centerX - 10, centerY + 10),
@@ -90,14 +89,17 @@ public class MainMenuScene : IGameScene
         inputField.Visible = false;
         
         _menuPanel.AddChild(inputField);
-        _quitButton.OnClick += OnQuitClicked;
-        _menuPanel.AddChild(_quitButton);
 
         // Subscribe to input for navigation
         _engine.RenderManager.FocusManager.Register(_playButton);
         _engine.RenderManager.FocusManager.Register(_settingsButton);
         _engine.RenderManager.FocusManager.Register(_quitButton);
         _engine.RenderManager.FocusManager.Register(inputField);
+    }
+
+    private void EditMap(object? sender, EventArgs e)
+    {
+        //_engine.LoadScene();
     }
 
     public void OnUpdate(double deltaTime)

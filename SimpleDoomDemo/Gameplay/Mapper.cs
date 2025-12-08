@@ -18,6 +18,15 @@ public class Mapper
      * 12;21;GI;A
      */
 
+    public Mapper(string path)
+    {
+        LoadFromDcmfFile(path);
+    }
+
+    public Mapper()
+    {
+    }
+    
     public record struct DcmFormat
     {
         public Point2D Position;
@@ -42,8 +51,8 @@ public class Mapper
         Unknown = 11
     }
 
-    private List<DcmFormat> _dcmList = new();
-    
+    public List<DcmFormat> _dcmList = new();
+
     public void LoadFromDcmfFile(string path)
     {
         if (FileUtil.FileHasExtension(path, "dcmf"))
@@ -69,8 +78,6 @@ public class Mapper
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
             }
             finally
             {

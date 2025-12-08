@@ -11,6 +11,8 @@ class Program
 {
     static void Main(string[] args)
     {
+        string DEFAULT_MAP_PATH = Path.Combine("assets", "maps", "pmp_arena.txt");
+        
         // Create the ConsoleEngine
         Console.OutputEncoding = Encoding.UTF8;
         ConsoleEngine engine = new ConsoleEngine();
@@ -21,7 +23,7 @@ class Program
         // Determine map path
         string mapPath = args.Length > 0
             ? args[0]
-            : Path.Combine("assets", "maps", "pmp_arena.txt");
+            : DEFAULT_MAP_PATH;
 
         // Start with main menu
         var menuScene = new MainMenuScene(mapPath);
