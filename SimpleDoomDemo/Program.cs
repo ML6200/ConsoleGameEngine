@@ -14,8 +14,8 @@ class Program
         // Create the ConsoleEngine
         Console.OutputEncoding = Encoding.UTF8;
         ConsoleEngine engine = new ConsoleEngine();
-        engine.TargetUpdatesPerSecond = 40;  // Game logic updates at 60 FPS
-        engine.TargetRenderFPS = 100;         // Rendering at 40 FPS
+        engine.TargetUpdatesPerSecond = 40;  // Game logic updates at 40 FPS
+        engine.TargetRenderFPS = 100;       // Rendering at 60 FPS
         engine.Initialize();
 
         // Determine map path
