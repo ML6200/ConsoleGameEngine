@@ -127,8 +127,6 @@ public class MovementSystem : IGameSystem
 
     private bool IsPointWithinBounds(Point2D point)
     {
-        
-
         return point.X >= 0 && point.X < _game.WorldSize.Width
                && point.Y >= 0 && point.Y < _game.WorldSize.Height;
     }

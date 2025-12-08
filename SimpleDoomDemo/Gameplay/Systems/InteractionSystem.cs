@@ -73,7 +73,7 @@ public class InteractionSystem : IGameSystem
                         item.Interact();
                         _game.PlaySoundEffect(SoundEffectType.ItemPickup);
 
-                        var cellPickupAnim = AnimationTween.Blink(item, 0.3, loop: false);
+                        var cellPickupAnim = AnimationTween.Blink(item, 0.4, loop: false);
                         item.AddAnimation(cellPickupAnim);
                     }
                     break;
@@ -88,7 +88,7 @@ public class InteractionSystem : IGameSystem
                     break;
 
                 case ItemType.TOXICWASTE:
-                    _game.Player.TakeDamage(5);
+                    _game.Player.TakeDamage(1);
                     _game.PlaySoundEffect(SoundEffectType.Pain);
 
                     var toxicAnim = AnimationTween.Blink(_game.Player, 0.5, false);

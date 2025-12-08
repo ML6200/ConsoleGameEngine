@@ -12,6 +12,7 @@ public class MainMenuScene : IGameScene
     private UiPanel _menuPanel;
     private UiButton _playButton;
     private UiButton _quitButton;
+    private UiButton _settingsButton;
     private string _mapPath;
 
     public MainMenuScene(string mapPath)
@@ -26,14 +27,14 @@ public class MainMenuScene : IGameScene
 
     public void OnEnter()
     {
-        int centerX = Console.WindowWidth / 2;
-        int centerY = Console.WindowHeight / 2;
+        int centerX = _engine.RootPanel().ScreenSize.Width / 2;
+        int centerY = _engine.RootPanel().ScreenSize.Height / 2;
 
         // Create menu panel with blue background
         _menuPanel = new UiPanel()
         {
             RelativePosition = new Point2D(0, 0),
-            Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight),
+            Size = new Dimension2D(_engine.RootPanel().ScreenSize.Width, _engine.RootPanel().ScreenSize.Height),
             HasBorder = false
         };
         _engine.RootPanel().AddChild(_menuPanel);
@@ -53,11 +54,22 @@ public class MainMenuScene : IGameScene
         };
         _playButton.OnClick += OnPlayClicked;
         _menuPanel.AddChild(_playButton);
+        
+        _settingsButton = new UiButton("SETTINGS")
+        {
+            RelativePosition = new Point2D(centerX - 10, centerY + 1),
+            Size = new Dimension2D(20, 3),
+            FocusedBgColor = ConsoleColor.DarkBlue,
+            BackgroundColor = ConsoleColor.Blue,
+            ForegroundColor = ConsoleColor.White,
+            HasBorder = true
+        };
+        _menuPanel.AddChild(_settingsButton);
 
         // Create Quit button
         _quitButton = new UiButton("QUIT")
         {
-            RelativePosition = new Point2D(centerX - 10, centerY + 2),
+            RelativePosition = new Point2D(centerX - 10, centerY + 5),
             Size = new Dimension2D(20, 3),
             NormalBgColor = ConsoleColor.DarkRed,
             FocusedBgColor = ConsoleColor.Red,
@@ -69,7 +81,9 @@ public class MainMenuScene : IGameScene
         _menuPanel.AddChild(_quitButton);
 
         // Subscribe to input for navigation
-        _engine.Input.OnKeyPressed += OnKeyPressed;
+        _engine.RenderManager.FocusManager.Register(_playButton);
+        _engine.RenderManager.FocusManager.Register(_settingsButton);
+        _engine.RenderManager.FocusManager.Register(_quitButton);
     }
 
     public void OnUpdate(double deltaTime)

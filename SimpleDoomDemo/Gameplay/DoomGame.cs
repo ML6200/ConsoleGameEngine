@@ -80,7 +80,7 @@ public class DoomGameScene : IGameScene
         WorldSize = new Dimension2D(worldWidth, worldHeight);
         _engine.Camera.WorldSize = WorldSize;
 
-        _engine.Camera.SetCameraPosition(new Point2D(0, 0));
+        _engine.Camera.SetCameraPosition(new Point2D(worldWidth / 2, worldHeight / 2));
 
         // Subscribe to input events
         _input.OnKeyPressed += OnKeyPressed;

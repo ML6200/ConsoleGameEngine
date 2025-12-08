@@ -42,7 +42,7 @@ public class ConsoleRenderManager : IDisposable
 
     private void HandleFocusInput(object? sender, KeyEventArgs e)
     {
-        if (e.Key == ConsoleKey.Tab)
+        if (e.Key == ConsoleKey.Tab || e.Key == ConsoleKey.DownArrow)
         {
             if (e.Shift)
             {
@@ -51,6 +51,16 @@ public class ConsoleRenderManager : IDisposable
             else
             {
                 FocusManager.FocusNext();
+            }
+        } else if (e.Key == ConsoleKey.UpArrow)
+        {
+            if (e.Shift)
+            {
+                FocusManager.FocusNext();
+            }
+            else 
+            {
+                FocusManager.FocusPrevious();
             }
         }
     }
