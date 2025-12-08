@@ -138,6 +138,6 @@ public class Player : GraphicsComponent
         if (screenPos == null) return; // Off-screen culling
 
         renderer.SetCell(screenPos.X, screenPos.Y,
-            new Cell('0', ConsoleColor.Black, ConsoleColor.Green));
+            new Cell('●', ConsoleColor.Black, ConsoleColor.Green));
     }
 }

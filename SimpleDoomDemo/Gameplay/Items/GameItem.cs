@@ -23,15 +23,13 @@ public class GameItem : GraphicsComponent
         {
             case ItemType.AMMO:
                 FillingRatio = 0.0;
-                BackgroundColor = ConsoleColor.Red;
                 ForegroundColor = ConsoleColor.Yellow;
-                _glyph = 'A';
+                _glyph = '⁍';
                 break;
 
             case ItemType.BFGCELL:
                 FillingRatio = 0.0;
-                BackgroundColor = ConsoleColor.Green;
-                ForegroundColor = ConsoleColor.White;
+                ForegroundColor = ConsoleColor.Green;
                 _glyph = 'B';
                 break;
 
@@ -58,9 +56,8 @@ public class GameItem : GraphicsComponent
 
             case ItemType.TOXICWASTE:
                 FillingRatio = 0.0;
-                BackgroundColor = ConsoleColor.Green;
-                ForegroundColor = ConsoleColor.DarkGray;
-                _glyph = ':';
+                ForegroundColor = ConsoleColor.Green;
+                _glyph = '☣';
                 break;
 
             case ItemType.WALL:

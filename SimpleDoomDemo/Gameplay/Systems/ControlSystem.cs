@@ -8,12 +8,12 @@ namespace SimpleDoomDemo.Gameplay.Systems;
 /// Handles AI behavior for demons including state updates and decision making.
 /// Demons can be in Idle, Move, or Attack states based on distance to player.
 /// </summary>
-public class AISystem : IGameSystem
+public class ControlSystem : IGameSystem
 {
     private readonly DoomGameScene _game;
     private readonly CombatSystem _combatSystem;
 
-    public AISystem(DoomGameScene game, CombatSystem combatSystem)
+    public ControlSystem(DoomGameScene game, CombatSystem combatSystem)
     {
         _game = game;
         _combatSystem = combatSystem;

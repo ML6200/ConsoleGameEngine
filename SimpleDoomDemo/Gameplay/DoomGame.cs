@@ -36,7 +36,7 @@ public class DoomGameScene : IGameScene
     private MovementSystem _movementSystem;
     private CombatSystem _combatSystem;
     private InteractionSystem _interactionSystem;
-    private AISystem _aiSystem;
+    private ControlSystem _controlSystem;
 
     // ============================= GAME STATE ==============================
     public bool Interrupted { get; set; }
@@ -64,7 +64,7 @@ public class DoomGameScene : IGameScene
         _movementSystem = new MovementSystem(this);
         _combatSystem = new CombatSystem(this);
         _interactionSystem = new InteractionSystem(this);
-        _aiSystem = new AISystem(this, _combatSystem);
+        _controlSystem = new ControlSystem(this, _combatSystem);
     }
 
     public void Initialize(ConsoleEngine consoleEngine)
@@ -169,7 +169,7 @@ public class DoomGameScene : IGameScene
     private void UpdateGameLogic(double deltaTime)
     {
         // Update all systems
-        _aiSystem.Update(deltaTime);
+        _controlSystem.Update(deltaTime);
         _movementSystem.Update(deltaTime);
         _interactionSystem.Update(deltaTime);
 
