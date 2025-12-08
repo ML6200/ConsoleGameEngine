@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 using ConsoleGameEngine.Engine;
 using SimpleDoomDemo.Gameplay.Scenes;
@@ -11,6 +12,7 @@ class Program
     static void Main(string[] args)
     {
         // Create the ConsoleEngine
+        Console.OutputEncoding = Encoding.UTF8;
         ConsoleEngine engine = new ConsoleEngine();
         engine.TargetUpdatesPerSecond = 40;  // Game logic updates at 60 FPS
         engine.TargetRenderFPS = 100;         // Rendering at 40 FPS
