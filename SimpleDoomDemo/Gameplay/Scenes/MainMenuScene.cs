@@ -78,6 +78,15 @@ public class MainMenuScene : IGameScene
             BackgroundColor = ConsoleColor.DarkRed,
             ForegroundColor = ConsoleColor.White,
         };
+
+        UiInputField inputField = new UiInputField(_engine.Input)
+        {
+            RelativePosition = new Point2D(centerX - 10, centerY + 10),
+            Size = new Dimension2D(20, 1),
+            FocusedBgColor = ConsoleColor.DarkGray,
+            ForegroundColor = ConsoleColor.White,
+        };
+        _menuPanel.AddChild(inputField);
         _quitButton.OnClick += OnQuitClicked;
         _menuPanel.AddChild(_quitButton);
 
@@ -85,6 +94,7 @@ public class MainMenuScene : IGameScene
         _engine.RenderManager.FocusManager.Register(_playButton);
         _engine.RenderManager.FocusManager.Register(_settingsButton);
         _engine.RenderManager.FocusManager.Register(_quitButton);
+        _engine.RenderManager.FocusManager.Register(inputField);
     }
 
     public void OnUpdate(double deltaTime)
@@ -117,16 +127,6 @@ public class MainMenuScene : IGameScene
                 break;
 
             case ConsoleKey.Enter:
-            case ConsoleKey.Spacebar:
-                if (_playButton.IsFocused)
-                {
-                    _playButton.OnFocusActivate();
-                }
-                else if (_quitButton.IsFocused)
-                {
-                    _quitButton.OnFocusActivate();
-                }
-                break;
 
             case ConsoleKey.Escape:
                 _engine.Stop();

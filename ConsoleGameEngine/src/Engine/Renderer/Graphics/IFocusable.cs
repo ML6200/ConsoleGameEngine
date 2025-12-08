@@ -1,3 +1,5 @@
+using ConsoleGameEngine.Engine.Input;
+
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
 public interface IFocusable
@@ -6,5 +8,5 @@ public interface IFocusable
     bool CanFocus { get; set; }
     void OnFocusGained();
     void OnFocusLost();
-    void OnFocusActivate();
+    void OnFocusActivate(KeyEventArgs? param);
 }

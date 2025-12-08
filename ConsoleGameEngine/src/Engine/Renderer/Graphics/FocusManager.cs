@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ConsoleGameEngine.Engine.Input;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
@@ -71,9 +72,9 @@ public class FocusManager
         SetFocus(prevIndex);
     }
     
-    public void ActivateFocused()
+    public void ActivateFocused(KeyEventArgs? param)
     {
-        FocusedComponent?.OnFocusActivate();
+        FocusedComponent?.OnFocusActivate(param);
     }
 
     public void ClearAll()

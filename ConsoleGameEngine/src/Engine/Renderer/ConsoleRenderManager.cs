@@ -37,7 +37,11 @@ public class ConsoleRenderManager : IDisposable
     public void SubsribeFocusEventsToInput(InputManager inputManager)
     {
         inputManager.OnKeyPressed += HandleFocusInput;
-        inputManager.OnEnterPressed += (s, e) => FocusManager.ActivateFocused();
+        inputManager.OnEnterPressed += (s, e) =>
+        {
+            if (FocusManager.FocusedComponent is UiButton)
+                FocusManager.ActivateFocused(null);
+        };
     }
 
     private void HandleFocusInput(object? sender, KeyEventArgs e)
@@ -62,6 +66,10 @@ public class ConsoleRenderManager : IDisposable
             {
                 FocusManager.FocusPrevious();
             }
+        }
+        else if (FocusManager.FocusedComponent is UiInputField uiInputField)
+        {
+            FocusManager.ActivateFocused(e);
         }
     }
 
