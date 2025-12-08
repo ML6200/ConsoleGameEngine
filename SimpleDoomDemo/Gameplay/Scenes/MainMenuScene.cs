@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
+using SimpleDoomDemo.Gameplay.Actors.Demons;
+using SimpleDoomEngine.Gameplay.Actors;
+using SimpleDoomEngine.Gameplay.Items;
 
 namespace SimpleDoomDemo.Gameplay.Scenes;
 
@@ -138,14 +142,15 @@ public class MainMenuScene : IGameScene
     private void OnPlayClicked(object sender, EventArgs e)
     {
         // Load game scene
-        var gameScene = new DoomGameScene();
+        
 
         if (System.IO.File.Exists(_mapPath))
         {
-            gameScene.LoadMapFromPlainText(_mapPath);
+            var gameScene = new DoomGameScene();
+            MapLoader.LoadFromLegacyMap(_mapPath, gameScene.Items, gameScene.Demons, gameScene.Player);
+            
+            _engine.LoadScene(gameScene);
         }
-
-        _engine.LoadScene(gameScene);
     }
 
     private void OnQuitClicked(object sender, EventArgs e)

@@ -82,14 +82,11 @@ public class MapLoader
         }
     }
     
-    public void LoadFromLegacyMap(string path, 
-        out List<GameItem> Items, 
-        out List<Demon> Demons, 
-        out Player Player)
+    public static void LoadFromLegacyMap(string path, 
+        List<GameItem> Items, 
+        List<Demon> Demons, 
+        Player Player)
     {
-        Items = null;
-        Demons = null;
-        Player = null;
         try
         {
             string[] lines = File.ReadAllLines(path);
