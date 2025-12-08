@@ -76,11 +76,7 @@ public abstract class Demon : GraphicsComponent
 
     public abstract int GetAttackDamageRange(out int min, out int max);
     public abstract int GetCombatPoints();
-
-    /// <summary>
-    /// Update visibility based on distance from player.
-    /// Thread-safe visibility update.
-    /// </summary>
+    
     public void UpdateVisibility(Point2D playerPoint, double sightRange)
     {
         double distance = Point2D.Distance(WorldPosition, playerPoint);

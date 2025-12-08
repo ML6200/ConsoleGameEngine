@@ -33,26 +33,12 @@ public class AISystem : IGameSystem
             // Update attack cooldown timer
             demon.UpdateAttackCooldown(deltaTimeMs);
 
-            // Execute behavior based on state
-            switch (demon.State)
+          
+            if (demon.State == DemonState.Attack 
+                && demon.CanAttack())
             {
-                case DemonState.Idle:
-                    // Do nothing, demon is too far from player
-                    break;
-
-                case DemonState.Move:
-                    // Movement is handled by MovementSystem
-                    // AI just needs to set the state
-                    break;
-
-                case DemonState.Attack:
-                    // Demon is close enough to attack, but check cooldown
-                    if (demon.CanAttack())
-                    {
-                        _combatSystem.DemonAttack(demon);
-                        demon.ResetAttackCooldown();
-                    }
-                    break;
+                _combatSystem.DemonAttack(demon);
+                demon.ResetAttackCooldown();
             }
         }
     }
