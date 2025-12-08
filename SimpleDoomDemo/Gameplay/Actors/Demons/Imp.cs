@@ -21,8 +21,7 @@ public class Imp : Demon
         Point2D? screenPos = camera.TransformPoint(WorldPosition);
         if (screenPos == null) return; // Off-screen culling
 
-        renderer.SetCell(screenPos.X, screenPos.Y,
-            new Cell('o', ConsoleColor.Black, ConsoleColor.White));
+        renderer.DrawText(screenPos.X, screenPos.Y, "☠");
     }
 
     public override int GetAttackDamageRange(out int min, out int max)

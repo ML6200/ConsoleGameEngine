@@ -27,8 +27,10 @@ public class Zombieman : Demon
         Point2D? screenPos = camera.TransformPoint(WorldPosition);
         if (screenPos == null) return; // Off-screen culling
 
-        renderer.SetCell(screenPos.X, screenPos.Y,
-            new Cell('o', ConsoleColor.Black, ConsoleColor.Red));
+        //renderer.SetCell(screenPos.X, screenPos.Y,
+        //    new Cell('o', ConsoleColor.Black, ConsoleColor.Red));
+        
+        renderer.DrawText(screenPos.X, screenPos.Y, "☠", default, ConsoleColor.DarkCyan);
     }
 
     public override int GetAttackDamageRange(out int min, out int max)

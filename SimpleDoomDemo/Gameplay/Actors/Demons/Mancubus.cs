@@ -23,7 +23,7 @@ public class Mancubus : Demon
         if (screenPos == null) return; // Off-screen culling
 
         renderer.SetCell(screenPos.X, screenPos.Y,
-            new Cell('O', ConsoleColor.Black, ConsoleColor.DarkRed));
+            new Cell('Ω', ConsoleColor.Black, ConsoleColor.DarkRed));
     }
 
     public override int GetAttackDamageRange(out int min, out int max)
