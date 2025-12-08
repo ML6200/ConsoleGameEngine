@@ -21,46 +21,46 @@ public class GameItem : GraphicsComponent
         Available = true;
         switch (Type)
         {
-            case ItemType.AMMO:
+            case ItemType.Ammo:
                 FillingRatio = 0.0;
                 ForegroundColor = ConsoleColor.Yellow;
                 _glyph = '⁍';
                 break;
 
-            case ItemType.BFGCELL:
+            case ItemType.BfgCell:
                 FillingRatio = 0.0;
                 ForegroundColor = ConsoleColor.Green;
                 _glyph = 'B';
                 break;
 
-            case ItemType.DOOR:
+            case ItemType.Door:
                 FillingRatio = 1.0;
                 BackgroundColor = ConsoleColor.Gray;
                 ForegroundColor = ConsoleColor.Yellow;
                 _glyph = '/';
                 break;
 
-            case ItemType.LEVELEXIT:
+            case ItemType.LevelExit:
                 FillingRatio = 1.0;
                 BackgroundColor = ConsoleColor.Blue;
                 ForegroundColor = ConsoleColor.Black;
                 _glyph = 'E';
                 break;
 
-            case ItemType.MEDKIT:
+            case ItemType.MedKit:
                 FillingRatio = 0.0;
                 BackgroundColor = ConsoleColor.DarkGray;
                 ForegroundColor = ConsoleColor.Red;
                 _glyph = '+';
                 break;
 
-            case ItemType.TOXICWASTE:
+            case ItemType.ToxicWaste:
                 FillingRatio = 0.0;
                 ForegroundColor = ConsoleColor.Green;
                 _glyph = '☣';
                 break;
 
-            case ItemType.WALL:
+            case ItemType.Wall:
                 FillingRatio = 1.0;
                 BackgroundColor = ConsoleColor.Gray;
                 ForegroundColor = ConsoleColor.Gray;
@@ -78,13 +78,13 @@ public class GameItem : GraphicsComponent
 
     public void Interact()
     {
-        if (Type == ItemType.AMMO
-            || Type == ItemType.BFGCELL
-            || Type == ItemType.MEDKIT)
+        if (Type == ItemType.Ammo
+            || Type == ItemType.BfgCell
+            || Type == ItemType.MedKit)
         {
             Available = false;
         }
-        else if (Type == ItemType.DOOR)
+        else if (Type == ItemType.Door)
         {
             if (FillingRatio.Equals(1.0))
             {

@@ -31,7 +31,7 @@ public class InteractionSystem : IGameSystem
         {
             switch (item.Type)
             {
-                case ItemType.DOOR:
+                case ItemType.Door:
                     item.Interact();
                     _game.PlaySoundEffect(SoundEffectType.Door);
 
@@ -40,7 +40,7 @@ public class InteractionSystem : IGameSystem
                     item.AddAnimation(doorAnim);
                     break;
 
-                case ItemType.LEVELEXIT:
+                case ItemType.LevelExit:
                     item.Interact();
                     _game.Exited = true;
                     _game.PlaySoundEffect(SoundEffectType.LevelExit);
@@ -57,7 +57,7 @@ public class InteractionSystem : IGameSystem
         {
             switch (item.Type)
             {
-                case ItemType.AMMO:
+                case ItemType.Ammo:
                     _game.Player.PickUpAmmo(5);
                     item.Interact();
                     _game.PlaySoundEffect(SoundEffectType.ItemPickup);
@@ -66,7 +66,7 @@ public class InteractionSystem : IGameSystem
                     item.AddAnimation(pickupAnim);
                     break;
 
-                case ItemType.BFGCELL:
+                case ItemType.BfgCell:
                     if (_game.Player.BFGCells < _game.Player.MaxBFGCells)
                     {
                         _game.Player.PickUpBFGCell(1);
@@ -78,7 +78,7 @@ public class InteractionSystem : IGameSystem
                     }
                     break;
 
-                case ItemType.MEDKIT:
+                case ItemType.MedKit:
                     _game.Player.PickUpHealth(25);
                     item.Interact();
                     _game.PlaySoundEffect(SoundEffectType.ItemPickup);
@@ -87,7 +87,7 @@ public class InteractionSystem : IGameSystem
                     item.AddAnimation(medkitAnim);
                     break;
 
-                case ItemType.TOXICWASTE:
+                case ItemType.ToxicWaste:
                     _game.Player.TakeDamage(1);
                     _game.PlaySoundEffect(SoundEffectType.Pain);
 
@@ -106,7 +106,7 @@ public class InteractionSystem : IGameSystem
 
             foreach (GameItem item in itemsAtPosition)
             {
-                if (item.Type == ItemType.TOXICWASTE)
+                if (item.Type == ItemType.ToxicWaste)
                 {
                     var damageAnim = AnimationTween.Blink(demon, 0.3, loop: false);
                     demon.AddAnimation(damageAnim);
