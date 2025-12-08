@@ -21,7 +21,7 @@ public class UiButton : GraphicsComponent, IFocusable
     public bool IsFocused { get; set; }
     public bool CanFocus { get; set; } = true;
     
-    public bool HasBorder { get; set; } = true;
+    public bool HasBorder { get; set; } = false;
 
     public event EventHandler OnClick;
 
@@ -39,10 +39,12 @@ public class UiButton : GraphicsComponent, IFocusable
 
     public void OnFocusGained()
     {
+        HasBorder = true;
     }
 
     public void OnFocusLost()
     {
+        HasBorder = false;
     }
 
     public void OnFocusActivate()
@@ -107,7 +109,7 @@ public class UiButton : GraphicsComponent, IFocusable
         }
 
         // Szoveg
-        int padding = HasBorder ? (Size.Width-Text.Length) / 2 : 1;
+        int padding = (Size.Width-Text.Length) / 2;
         int textX = WorldPosition.X + padding;
         int textY = WorldPosition.Y + Size.Height / 2;
 

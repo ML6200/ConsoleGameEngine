@@ -46,7 +46,7 @@ public class MainMenuScene : IGameScene
         // Title is not needed - buttons are self-explanatory
 
         // Create Play button
-        _playButton = new UiButton("PLAY GAME")
+        _playButton = new UiButton("▶ PLAY GAME")
         {
             RelativePosition = new Point2D(centerX - 10, centerY - 3),
             Size = new Dimension2D(20, 3),
@@ -54,24 +54,22 @@ public class MainMenuScene : IGameScene
             FocusedBgColor = ConsoleColor.Green,
             BackgroundColor = ConsoleColor.DarkGreen,
             ForegroundColor = ConsoleColor.White,
-            HasBorder = true
         };
         _playButton.OnClick += OnPlayClicked;
         _menuPanel.AddChild(_playButton);
         
-        _settingsButton = new UiButton("SETTINGS")
+        _settingsButton = new UiButton("⚙ SETTINGS")
         {
             RelativePosition = new Point2D(centerX - 10, centerY + 1),
             Size = new Dimension2D(20, 3),
             FocusedBgColor = ConsoleColor.DarkBlue,
             BackgroundColor = ConsoleColor.Blue,
             ForegroundColor = ConsoleColor.White,
-            HasBorder = true
         };
         _menuPanel.AddChild(_settingsButton);
 
         // Create Quit button
-        _quitButton = new UiButton("QUIT")
+        _quitButton = new UiButton("⏼ QUIT")
         {
             RelativePosition = new Point2D(centerX - 10, centerY + 5),
             Size = new Dimension2D(20, 3),
@@ -79,7 +77,6 @@ public class MainMenuScene : IGameScene
             FocusedBgColor = ConsoleColor.Red,
             BackgroundColor = ConsoleColor.DarkRed,
             ForegroundColor = ConsoleColor.White,
-            HasBorder = true
         };
         _quitButton.OnClick += OnQuitClicked;
         _menuPanel.AddChild(_quitButton);
@@ -142,8 +139,6 @@ public class MainMenuScene : IGameScene
     private void OnPlayClicked(object sender, EventArgs e)
     {
         // Load game scene
-        
-
         if (System.IO.File.Exists(_mapPath))
         {
             var gameScene = new DoomGameScene();

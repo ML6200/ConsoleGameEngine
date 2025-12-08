@@ -150,15 +150,7 @@ public class DoomGameScene : IGameScene
         // Clean up all game entities from the root panel
         _rootPanel.RemoveChild(Player);
 
-        foreach (var item in Items)
-        {
-            _rootPanel.RemoveChild(item);
-        }
-
-        foreach (var demon in Demons)
-        {
-            _rootPanel.RemoveChild(demon);
-        }
+        CleanupEntities();
 
         if (_hud != null)
         {
