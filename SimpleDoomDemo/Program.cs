@@ -18,7 +18,7 @@ class Program
     }
     static void Main(string[] args)
     {
-        string DEFAULT_MAP_PATH = Path.Combine("..", "..","..", "assets", "arena.dcmf");
+        string DEFAULT_MAP_PATH = Path.Combine("assets", "maps", "pmp_arena.txt");
         
         // Create the ConsoleEngine
         Console.OutputEncoding = Encoding.UTF8;
