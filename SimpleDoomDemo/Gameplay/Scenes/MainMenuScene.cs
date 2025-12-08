@@ -140,7 +140,7 @@ public class MainMenuScene : IGameScene
         if (System.IO.File.Exists(_mapPath))
         {
             var gameScene = new DoomGameScene();
-            MapLoader.LoadFromLegacyMap(_mapPath, gameScene.Items, gameScene.Demons, gameScene.Player);
+            Mapper.LoadFromLegacyMap(_mapPath, gameScene.Items, gameScene.Demons, gameScene.Player);
             
             _engine.LoadScene(gameScene);
         }
