@@ -35,7 +35,7 @@ ConsoleGameEngine-Separate/
 
 - .NET 9.0 SDK
 - Terminal with ANSI color support (most modern terminals)
-- NAudio package (automatically restored via NuGet)
+- NAudio package (will be replaced with native api calls later)
 
 ## Getting Started
 
@@ -136,7 +136,9 @@ The project includes one main demonstration:
 ## Development
 
 ### Running the Doom demo
+```bash
 dotnet run --project SimpleDoomDemo/SimpleDoomDemo.csproj
+```
 
 ### Project Configuration
 
