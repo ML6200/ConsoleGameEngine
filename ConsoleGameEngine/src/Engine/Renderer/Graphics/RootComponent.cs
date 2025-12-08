@@ -6,7 +6,7 @@ using ConsoleGameEngine.Engine.Renderer.Animations;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public class RootComponent : IRenderable
+public sealed class RootComponent : IRenderable
 {
     private readonly GraphicsComponent _graphicsComponent;
     public List<Animation> Animations { get; } = new();
