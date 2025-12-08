@@ -43,6 +43,7 @@ public class DoomGameScene : IGameScene
     public bool Exited { get; set; }
     public double PlayerFillingRatio { get; private set; } = 0.4;
     private bool _gameOverHandled = false;
+    public Dimension2D WorldSize { get; private set; }
 
     // ============================= TIMING ==============================
     private const double LOGIC_UPDATE_INTERVAL = 0.5; // 500ms in seconds
@@ -75,9 +76,10 @@ public class DoomGameScene : IGameScene
         // Setup world size and camera
         int worldWidth = _engine.RootPanel().ScreenSize.Width * 3;
         int worldHeight =_engine.RootPanel().ScreenSize.Height * 3;
-        
-        _engine.Camera.WorldSize = new Dimension2D(worldWidth, worldHeight);
-        
+
+        WorldSize = new Dimension2D(worldWidth, worldHeight);
+        _engine.Camera.WorldSize = WorldSize;
+
         _engine.Camera.SetCameraPosition(new Point2D(0, 0));
 
         // Subscribe to input events

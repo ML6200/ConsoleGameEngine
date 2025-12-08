@@ -19,7 +19,6 @@ public class CombatSystem : IGameSystem
 
     public void Update(double deltaTime)
     {
-        
     }
     
     public void PlayerAttack()
@@ -76,7 +75,7 @@ public class CombatSystem : IGameSystem
         int u = _random.Next(min, max);
 
         int distance = (int) Point2D.Distance(demon.WorldPosition, _game.Player.WorldPosition);
-        int damage = u / (1 + distance);
+        int damage = 2 * u / (1 + distance);
 
         // Trigger attack animation on demon
         var attackAnim = AnimationTween.Blink(demon, 100, loop: false);
