@@ -94,8 +94,6 @@ public class MainMenuScene : IGameScene
 
     public void OnExit()
     {
-        _engine.Input.OnKeyPressed -= OnKeyPressed;
-
         // Clean up buttons from menu panel
         _menuPanel.RemoveChild(_playButton);
         _menuPanel.RemoveChild(_quitButton);
