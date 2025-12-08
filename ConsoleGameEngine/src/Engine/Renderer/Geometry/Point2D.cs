@@ -30,6 +30,12 @@ public class Point2D
     {
         return new Point2D(a.X + b.X, a.Y + b.Y);
     }
+    
+    // Added scalar constant addition
+    public static Point2D operator +(Point2D a, int b)
+    {
+        return new Point2D(a.X + b, a.Y + b);
+    }
 
     public static bool operator ==(Point2D? a, Point2D? b)
     {
