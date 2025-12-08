@@ -3,21 +3,28 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using ConsoleGameEngine.Engine;
+using SimpleDoomDemo.Gameplay;
 using SimpleDoomDemo.Gameplay.Scenes;
 
 namespace SimpleDoomDemo;
 
 class Program
 {
+    static void ConvertMap(string path)
+    {
+        Mapper mapper  = new Mapper();
+        mapper.LoadFromLegacy(path);
+        mapper.SaveMap("arena.dcmf");
+    }
     static void Main(string[] args)
     {
-        string DEFAULT_MAP_PATH = Path.Combine("assets", "maps", "pmp_arena.txt");
+        string DEFAULT_MAP_PATH = Path.Combine("..", "..","..", "assets", "arena.dcmf");
         
         // Create the ConsoleEngine
         Console.OutputEncoding = Encoding.UTF8;
         ConsoleEngine engine = new ConsoleEngine();
         engine.TargetUpdatesPerSecond = 40;  // Game logic updates at 40 FPS
-        engine.TargetRenderFPS = 100;       // Rendering at 60 FPS
+        engine.TargetRenderFPS = 100;       // Rendering at 100 FPS
         engine.Initialize();
 
         // Determine map path

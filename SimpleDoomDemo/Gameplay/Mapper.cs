@@ -215,18 +215,18 @@ public class Mapper
         return result;
     }
     
-    public List<GameItem>? CollectDemons()
+    public List<Demon> CollectDemons()
     {
         if (_dcmList.Count == 0) return null;
         
-        List<GameItem>? result = new List<GameItem>();
+        List<Demon>? result = new List<Demon>();
         
         foreach (var item in _dcmList)
         {
             if (item.Type == DcmType.Demon)
             {
                 if (item.Value != null) 
-                    result.Add((GameItem) item.Value);
+                    result.Add((Demon) item.Value);
             }
         }
         return result;

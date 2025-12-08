@@ -39,8 +39,6 @@ public class MainMenuScene : IGameScene
         };
         _engine.RootPanel().AddChild(_menuPanel);
 
-        // Title is not needed - buttons are self-explanatory
-
         // Create Play button
         _playButton = new UiButton("▶ PLAY GAME")
         {
@@ -99,7 +97,7 @@ public class MainMenuScene : IGameScene
 
     private void EditMap(object? sender, EventArgs e)
     {
-        //_engine.LoadScene();
+        _engine.LoadScene(new MapEditor(_mapPath));
     }
 
     public void OnUpdate(double deltaTime)
@@ -116,36 +114,17 @@ public class MainMenuScene : IGameScene
         // Remove menu panel from root
         _engine.RootPanel().RemoveChild(_menuPanel);
     }
-
-    private void OnKeyPressed(object sender, KeyEventArgs e)
-    {
-        switch (e.Key)
-        {
-            case ConsoleKey.UpArrow:
-                _playButton.IsFocused = true;
-                _quitButton.IsFocused = false;
-                break;
-
-            case ConsoleKey.DownArrow:
-                _playButton.IsFocused = false;
-                _quitButton.IsFocused = true;
-                break;
-
-            case ConsoleKey.Enter:
-
-            case ConsoleKey.Escape:
-                _engine.Stop();
-                break;
-        }
-    }
-
+    
     private void OnPlayClicked(object sender, EventArgs e)
     {
         // Load game scene
         if (System.IO.File.Exists(_mapPath))
         {
             var gameScene = new DoomGameScene();
-            Mapper.LoadFromLegacyMap(_mapPath, gameScene.Items, gameScene.Demons, gameScene.Player);
+            Mapper mapper = new Mapper(_mapPath);
+            gameScene.Items = mapper.CollectItems();
+            gameScene.Player = mapper.GetPlayer();
+            gameScene.Demons = mapper.CollectDemons();
             
             _engine.LoadScene(gameScene);
         }
