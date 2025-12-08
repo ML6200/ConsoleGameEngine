@@ -35,7 +35,7 @@ ConsoleGameEngine-Separate/
 
 - .NET 9.0 SDK
 - Terminal with ANSI color support (most modern terminals)
-- NAudio package (automatically restored via NuGet)
+- NAudio package (will be replaced with native api calls later)
 
 ## Getting Started
 
