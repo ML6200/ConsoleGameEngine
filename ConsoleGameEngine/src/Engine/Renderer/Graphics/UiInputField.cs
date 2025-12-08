@@ -8,6 +8,7 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 public class UiInputField : GraphicsComponent, IFocusable
 {
     private string _text = "";
+    private volatile bool _isDeleting = false;
     
     private int CursorPosition
     {
@@ -68,12 +69,16 @@ public class UiInputField : GraphicsComponent, IFocusable
             && param.Key != ConsoleKey.DownArrow
             && param.Key != ConsoleKey.UpArrow)
         {
+            _isDeleting = false;
             _text += param.KeyChar;
         }
         else if (param.Key == ConsoleKey.Backspace)
         {
             if (_text.Length > 0)
+            {
+                _isDeleting = true;
                 _text = _text.Substring(0, _text.Length - 1);
+            }
         }
     }
     
