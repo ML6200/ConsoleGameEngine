@@ -5,8 +5,8 @@ using ConsoleGameEngine.Engine.Input;
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
 public class UiButtonScrollPane : UiPanel, IFocusable
-    
 {
+    //NOT YET IMPLEMENTED!!!!!
     private string _text = "";
 
     public List<UiButton> Buttons;
@@ -22,11 +22,13 @@ public class UiButtonScrollPane : UiPanel, IFocusable
     public UiButtonScrollPane(string text)
     {
         Buttons = new List<UiButton>();
+        throw new NotImplementedException();
     }
 
     public UiButtonScrollPane()
     {
         Buttons = new List<UiButton>();
+        throw new NotImplementedException();
     }
 
 
