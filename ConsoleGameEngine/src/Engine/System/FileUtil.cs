@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -35,5 +36,23 @@ public class FileUtil
         }
         
         return fileMap;
+    }
+
+    public static bool FileHasExtension(string path, string extension)
+    {
+        try
+        {
+            FileInfo fileInfo = new FileInfo(path);
+            if (fileInfo.Extension == extension)
+            {
+                return true;
+            }
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+
+        return false;
     }
 }
