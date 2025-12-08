@@ -13,7 +13,6 @@ using SimpleDoomEngine;
 using SimpleDoomEngine.Engine;
 using SimpleDoomEngine.Gameplay.Actors;
 using SimpleDoomEngine.Gameplay.Items;
-using GameOverScene = SimpleDoomDemo.Gameplay.Scenes.GameOverScene;
 
 namespace SimpleDoomDemo.Gameplay;
 
