@@ -78,10 +78,22 @@ public class MainMenuScene : IGameScene
         _quitButton.OnClick += OnQuitClicked;
         _menuPanel.AddChild(_quitButton);
 
+        UiMsgBox msgBox = new UiMsgBox(_menuPanel, _engine.RenderManager, _engine.Input,
+            "Tip of the day", "You can select buttons with up and down arrows.");
+        msgBox.OnOptionSelected += state =>
+        {
+            
+        };
+        _menuPanel.AddChild(msgBox);
+        
+        //if (state == MessageOptionState.Ok)
+        //{
+            _engine.RenderManager.FocusManager.Register(_playButton);
+            _engine.RenderManager.FocusManager.Register(_settingsButton);
+            _engine.RenderManager.FocusManager.Register(_quitButton);
+        //}
+
         // Subscribe to input for navigation
-        _engine.RenderManager.FocusManager.Register(_playButton);
-        _engine.RenderManager.FocusManager.Register(_settingsButton);
-        _engine.RenderManager.FocusManager.Register(_quitButton);
     }
 
     private void EditMap(object? sender, EventArgs e)

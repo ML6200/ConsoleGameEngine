@@ -17,7 +17,8 @@ public class UiMsgBox : UiPanel
     
     public event Action<MessageOptionState>? OnOptionSelected;
 
-    public UiMsgBox(GraphicsComponent parent, ConsoleRenderManager renderManager,
+    public UiMsgBox(GraphicsComponent parent, ConsoleRenderManager renderManager, 
+        InputManager inputManager,
         string title, string message)
     {
         ForegroundColor = ConsoleColor.White;
@@ -41,6 +42,14 @@ public class UiMsgBox : UiPanel
         
         _okButton.OnClick += (e, s) => Close(MessageOptionState.Ok);
         _cancelButton.OnClick += (e, s) => Close(MessageOptionState.Cancel);
+
+        inputManager.OnKeyPressed += (e, s) =>
+        {
+            if (s.Key == ConsoleKey.Y)
+                Close(MessageOptionState.Ok);
+            else if (s.Key == ConsoleKey.Escape || s.Key == ConsoleKey.N)
+                Close(MessageOptionState.Cancel);
+        };
         
         AddChild(_titleLabel);
         AddChild(_messageLabel);

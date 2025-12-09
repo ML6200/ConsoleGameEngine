@@ -125,9 +125,9 @@ public class GameOverPanel : UiPanel
         }
         else if (_interrupted)
         {
-            color = ConsoleColor.Yellow;
+            color = ConsoleColor.DarkBlue;
             renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color);
-            renderer.DrawText(centerX - 3, centerY - 5, "EXITED", color);
+            renderer.DrawText(centerX - 3, centerY - 5, "EXITED", color, ConsoleColor.Yellow);
         }
         else if (_levelComplete)
         {

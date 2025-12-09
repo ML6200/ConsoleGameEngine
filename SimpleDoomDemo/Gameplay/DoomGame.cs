@@ -212,7 +212,15 @@ public class DoomGameScene : IGameScene
         switch (e.Key)
         {
             case ConsoleKey.E:
-                Interrupted = true;
+                UiMsgBox msgBox = new UiMsgBox(_rootPanel, _engine.RenderManager, _engine.Input,
+                    "You are about to exit", "Are you sure you want to exit the game? (Y/N)");
+                msgBox.OnOptionSelected += state =>
+                {
+                    if (state == MessageOptionState.Ok)
+                    {
+                        Interrupted = true;
+                    }
+                };
                 break;
 
             // Movement
