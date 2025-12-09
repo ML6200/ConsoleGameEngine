@@ -1,7 +1,5 @@
 using System;
 using System.Text;
-using System.Threading;
-using System.Xml;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 /*
@@ -42,7 +40,6 @@ namespace ConsoleGameEngine.Engine.Renderer;
 
 public class ConsoleRenderer2D
 {
-    private readonly object _bufferLock = new();
     private int _screenWidth;
     private int _screenHeight;
     
