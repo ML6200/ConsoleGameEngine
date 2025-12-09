@@ -92,5 +92,6 @@ public class MapEditor : IGameScene
         _editorPanel.RemoveChild(_placeHolder);
         _editorPanel.RemoveChild(_backButton);
         _engine.RootPanel().RemoveChild(_editorPanel);
+        _engine.RenderManager.FocusManager.Unregister(_backButton);
     }
 }

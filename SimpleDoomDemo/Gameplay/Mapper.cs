@@ -32,7 +32,7 @@ public class Mapper
         public Point2D Position;
         public DcmType Type;
         public DcmEntity Entity;
-        public GraphicsComponent? Value;
+        public GraphicsComponent Value;
     }
 
     public enum DcmType
@@ -86,7 +86,7 @@ public class Mapper
         }
     }
 
-    private GraphicsComponent? GetEntityComponentByType(Point2D pos, DcmType type, DcmEntity entity)
+    private GraphicsComponent GetEntityComponentByType(Point2D pos, DcmType type, DcmEntity entity)
     {
         switch (type)
         {
@@ -208,8 +208,7 @@ public class Mapper
         {
             if (item.Type == DcmType.GameItem)
             {
-                if (item.Value != null) 
-                    result.Add((GameItem) item.Value);
+                result.Add((GameItem) item.Value);
             }
         }
         return result;
@@ -225,8 +224,7 @@ public class Mapper
         {
             if (item.Type == DcmType.Demon)
             {
-                if (item.Value != null) 
-                    result.Add((Demon) item.Value);
+                result.Add((Demon) item.Value);
             }
         }
         return result;
@@ -240,8 +238,7 @@ public class Mapper
         {
             if (item.Type == DcmType.Player)
             {
-                if (item.Value != null)
-                    return (Player) item.Value;
+                return (Player) item.Value;
             }
         }
 
@@ -301,9 +298,9 @@ public class Mapper
     }
     
     public static void LoadFromLegacyMap(string path, 
-        List<GameItem> Items, 
-        List<Demon> Demons, 
-        Player Player)
+        List<GameItem> items, 
+        List<Demon> demons, 
+        Player player)
     {
         try
         {
@@ -321,41 +318,41 @@ public class Mapper
                     {
                         // ITEMS
                         case 'A':
-                            Items.Add(new GameItem(j, i - 1, ItemType.Ammo));
+                            items.Add(new GameItem(j, i - 1, ItemType.Ammo));
                             break;
                         case 'B':
-                            Items.Add(new GameItem(j, i - 1, ItemType.BfgCell));
+                            items.Add(new GameItem(j, i - 1, ItemType.BfgCell));
                             break;
                         case 'D':
-                            Items.Add(new GameItem(j, i - 1, ItemType.Door));
+                            items.Add(new GameItem(j, i - 1, ItemType.Door));
                             break;
                         case 'E':
-                            Items.Add(new GameItem(j, i - 1, ItemType.LevelExit));
+                            items.Add(new GameItem(j, i - 1, ItemType.LevelExit));
                             break;
                         case 'M':
-                            Items.Add(new GameItem(j, i - 1, ItemType.MedKit));
+                            items.Add(new GameItem(j, i - 1, ItemType.MedKit));
                             break;
                         case 'T':
-                            Items.Add(new GameItem(j, i - 1, ItemType.ToxicWaste));
+                            items.Add(new GameItem(j, i - 1, ItemType.ToxicWaste));
                             break;
                         case 'W':
-                            Items.Add(new GameItem(j, i - 1, ItemType.Wall));
+                            items.Add(new GameItem(j, i - 1, ItemType.Wall));
                             break;
 
                         // DEMONS
                         case 'z':
-                            Demons.Add(new Zombieman(j, i - 1));
+                            demons.Add(new Zombieman(j, i - 1));
                             break;
                         case 'i':
-                            Demons.Add(new Imp(j, i - 1));
+                            demons.Add(new Imp(j, i - 1));
                             break;
                         case 'm':
-                            Demons.Add(new Mancubus(j, i - 1));
+                            demons.Add(new Mancubus(j, i - 1));
                             break;
 
                         // PLAYER
                         case 'p':
-                            Player.WorldPosition = new Point2D(j, i - 1);
+                            player.WorldPosition = new Point2D(j, i - 1);
                             break;
                     }
                 }
