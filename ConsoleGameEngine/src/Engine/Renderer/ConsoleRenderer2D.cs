@@ -48,7 +48,7 @@ public class ConsoleRenderer2D
     
     private Cell[,] _renderBuffer;
     
-    private volatile bool _isResizing;
+    private bool _isResizing;
 
     public int ScreenWidth
     {
@@ -66,8 +66,6 @@ public class ConsoleRenderer2D
         _screenWidth = width;
         _screenHeight = height;
         _renderBuffer = new Cell[_screenWidth, _screenHeight];
-        
-        Thread.MemoryBarrier(); // priorizaljuk a meretezest
         _isResizing = false;
     }
 
