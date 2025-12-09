@@ -26,11 +26,10 @@ public class Mancubus : Demon
             new Cell('Ω', ConsoleColor.Black, ConsoleColor.DarkRed));
     }
 
-    public override int GetAttackDamageRange(out int min, out int max)
+    public override void GetAttackDamageRange(out int min, out int max)
     {
         min = 8;
         max = 64;
-        return min;
     }
 
     public override int GetCombatPoints()

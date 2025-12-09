@@ -74,7 +74,7 @@ public abstract class Demon : GraphicsComponent
         _timeSinceLastAttack = 0;
     }
 
-    public abstract int GetAttackDamageRange(out int min, out int max);
+    public abstract void GetAttackDamageRange(out int min, out int max);
     public abstract int GetCombatPoints();
     
     public void UpdateVisibility(Point2D playerPoint, double sightRange)

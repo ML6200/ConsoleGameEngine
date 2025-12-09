@@ -15,7 +15,7 @@ public class Zombieman : Demon
         // AttackRange = 3;
         // _speed = 93;
         FillingRatio = 0.4D;
-        Health = 100;
+        Health = 60;
         SightRange = 70;
         AttackRange = 3;
         _speed = 93;
@@ -33,11 +33,10 @@ public class Zombieman : Demon
         renderer.DrawText(screenPos.X, screenPos.Y, "☠", default, ConsoleColor.DarkCyan);
     }
 
-    public override int GetAttackDamageRange(out int min, out int max)
+    public override void GetAttackDamageRange(out int min, out int max)
     {
         min = 3;
         max = 15;
-        return min;
     }
 
     public override int GetCombatPoints()

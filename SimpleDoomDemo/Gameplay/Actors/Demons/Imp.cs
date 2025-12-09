@@ -24,11 +24,10 @@ public class Imp : Demon
         renderer.DrawText(screenPos.X, screenPos.Y, "☠");
     }
 
-    public override int GetAttackDamageRange(out int min, out int max)
+    public override void GetAttackDamageRange(out int min, out int max)
     {
         min = 3;
         max = 24;
-        return min;
     }
 
     public override int GetCombatPoints()
