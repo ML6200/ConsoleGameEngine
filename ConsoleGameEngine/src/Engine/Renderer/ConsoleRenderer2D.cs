@@ -98,7 +98,11 @@ public class ConsoleRenderer2D
 
         FlushBuffer();
     }
-    
+
+    public void CloseStdout()
+    {
+        _stdOut.Close();
+    }
     
     private bool IsValidCoordinate(int x, int y)
     {

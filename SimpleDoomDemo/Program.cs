@@ -1,4 +1,5 @@
-﻿using SimpleDoomDemo.Gameplay;
+﻿using System;
+using SimpleDoomDemo.Gameplay;
 using NLog;
 
 namespace SimpleDoomDemo;
@@ -17,5 +18,6 @@ class Program
         LogManager.Setup().LoadConfigurationFromFile("nlog.xml");
         DoomGameManager manager = new DoomGameManager(DEFAULT_MAP_PATH);
         manager.StartGame();
+        Console.Clear();
     }
 }
