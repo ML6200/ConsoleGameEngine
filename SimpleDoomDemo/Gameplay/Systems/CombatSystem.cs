@@ -90,7 +90,7 @@ public class CombatSystem : IGameSystem
 
         if (!demon.Alive)
         {
-            _game.Player.AddCombatPoints(demon.GetCombatPoints());
+            _game.Player?.AddCombatPoints(demon.GetCombatPoints());
             
             var deathAnim = AnimationTween.Blink(demon, 0.2, loop: false);
             demon.AddAnimation(deathAnim);

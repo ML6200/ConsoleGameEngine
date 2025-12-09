@@ -27,9 +27,9 @@ public class DoomGameScene : IGameScene
     private GameHud _hud;
 
     // ============================= ENTITIES ==============================
-    public Player? Player { get; set; }
+    public Player Player { get; set; }
     public List<Demon> Demons { get; set; }
-    public List<GameItem>? Items { get; set; }
+    public List<GameItem> Items { get; set; }
 
     // ============================= SYSTEMS ==============================
     private MovementSystem _movementSystem;
