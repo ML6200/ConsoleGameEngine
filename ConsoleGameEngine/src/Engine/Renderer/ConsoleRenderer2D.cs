@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Text;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 
@@ -42,10 +43,32 @@ public class ConsoleRenderer2D
 {
     private int _screenWidth;
     private int _screenHeight;
-    
     private Cell[,] _renderBuffer;
-    
     private bool _isResizing;
+    private Stream _stdOut;
+    
+    /*
+     * Worst case scenario:
+     *
+     * POSITION:
+     * \x1b[999;999H -> 10 bytes
+     * because: '\x1b' + "[999;999H"
+     *            1byte +  9 bytes = 10 bytes
+     * 
+     * COLOR:
+     * \x1b[100;107m
+     *
+     * CHAR:
+     * \x1bS
+     * 4 bytes (UTF8)
+     *
+     *
+     * Therefore=> 10 + 10 + 4 = 24 bytes
+     */
+    private const int ScreenBytesMax = 128;
+    private const int BufferSize = ScreenBytesMax * 1024;
+    private byte[] _writeBuffer = new byte[BufferSize];
+    
 
     public int ScreenWidth
     {
@@ -85,6 +108,7 @@ public class ConsoleRenderer2D
         Console.CursorVisible = false;
         Console.Clear();
         
+        _stdOut = Console.OpenStandardOutput(BufferSize);
         _renderBuffer = new Cell[_screenWidth, _screenHeight];
 
         FlushBuffer();
@@ -258,27 +282,128 @@ public class ConsoleRenderer2D
     {
         if(_isResizing) return;
         
-        consoleBuffer.Clear();
+        //consoleBuffer.Clear();
+        int pos = 0;
+        
         for (int y = 0; y < _screenHeight; y++)
         {
             for (int x = 0; x < _screenWidth; x++)
             {
                 Cell cell = _renderBuffer[x, y];
-                consoleBuffer.Append("\x1b[" + (y + 1) + ";" + (x + 1) + "H");
+                //consoleBuffer.Append("\x1b[" + (y + 1) + ";" + (x + 1) + "H");
+                pos = WriteEscPosToBuffer(_writeBuffer, pos, x, y);
 
                 if (cell.ForegroundColor != _lastFg || cell.BackgroundColor != _lastBg)
                 {
-                    consoleBuffer.Append(GetAnsiColorCode(cell.ForegroundColor, cell.BackgroundColor));
+                    //consoleBuffer.Append(GetAnsiColorCode(cell.ForegroundColor, cell.BackgroundColor));
+                    pos = WriteColorToBuffer(_writeBuffer, pos, 
+                        cell.ForegroundColor, 
+                        cell.BackgroundColor);
+                    
                     _lastFg = cell.ForegroundColor;
                     _lastBg = cell.BackgroundColor;
                 }
 
-                consoleBuffer.Append(cell.Character);
+                //consoleBuffer.Append(cell.Character);
+                pos = WriteCharToBuffer(_writeBuffer, pos, cell.Character);
             }
         }
         
-        consoleBuffer.Append("\x1b[0m");
-        Console.Write(consoleBuffer.ToString());
+        _stdOut.Write(_writeBuffer, 0, pos);
+        
+        //consoleBuffer.Append("\x1b[0m");
+        //Console.Write(consoleBuffer.ToString());
+    }
+
+    private int WriteEscPosToBuffer(byte[] buff, int pos, int x, int y)
+    {
+        buff[pos++] = 0x1B; // ANSI escape char
+        buff[pos++] = (byte) '[';
+        
+        /* We need to put 'y' first bc. ANSI positioning has 'y' as primary coordinate */
+        pos = WriteIntToBuffer(buff, pos, y + 1);
+        buff[pos++] = (byte)  ';';
+        pos = WriteIntToBuffer(buff, pos, x + 1);
+        buff[pos++] = (byte)'H';
+        return pos;
+    }
+    
+    private int WriteColorToBuffer(byte[] buff, int pos, ConsoleColor fg, ConsoleColor bg)
+    {
+        return WriteStrToBuffer(buff, pos, GetAnsiColorCode(fg, bg));
+    }
+    
+    private int WriteStrToBuffer(byte[] buff, int pos, string str)
+    {
+        for (int i = 0; i < str.Length; i++)
+        {
+            pos = WriteCharToBuffer(buff, pos, str[i]);
+        }
+        
+        return pos;
+    }
+
+    private int WriteCharToBuffer(byte[] buff, int pos, char ch)
+    {
+        /*
+         * in case we are under the limit of ASCII
+         * This gives us a range of: 0x00-0x7F (0-127)
+         *
+         * Basically it means we save time by avoiding
+         * utf8 conversion in case we dont need it (common ASCII)
+         */
+        if (ch < 0x80)
+        {
+            buff[pos++] = (byte) ch;
+            return pos;
+        }
+
+        int bytes = Encoding.UTF8.GetBytes([ch], 0, 1, buff, pos);
+        return pos + bytes;
+    }
+    
+    private int WriteIntToBuffer(byte[] buff, int pos, int num)
+    {
+        /*
+         *  Ex: 123456789
+         * 1 x 10
+         * 2 x 100
+         * 3 x 1000
+         * ...
+         * 
+         * 123456789 % 10 = 9
+         * 123456789 - 9 = 123456780 <- we dont need this 
+         * 123456780 / 10 = 12345678 | since conversion would truncate automatically
+         *
+         * Therefore just simply:
+         * 123456789 / 10 = 12345678
+         *
+         * And so on...
+         * 
+         */
+        if (num == 0)
+        {
+            buff[pos++] = (byte)'0';
+            return pos;
+        }
+
+        int digits = (int) Math.Log10(num) + 1;
+        int endPos = pos + digits;
+        
+        if (num < 0)
+        {
+            buff[pos] = (byte)'-';
+            num = -num;
+        }
+        
+        for (int i = endPos - 1; i >= pos; i--)
+        {
+            int remainder = num % 10;
+            buff[i] = (byte) ('0' + remainder);
+            num /= 10;
+        }
+
+        return endPos;
     }
 
     private string GetAnsiColorCode(ConsoleColor fg, ConsoleColor bg)
