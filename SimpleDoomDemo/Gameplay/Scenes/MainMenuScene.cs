@@ -75,24 +75,11 @@ public class MainMenuScene : IGameScene
         };
         _quitButton.OnClick += OnQuitClicked;
         _menuPanel.AddChild(_quitButton);
-        
-        UiInputField inputField = new UiInputField(_engine.Input)
-        {
-            RelativePosition = new Point2D(centerX - 10, centerY + 10),
-            Size = new Dimension2D(20, 1),
-            FocusedBgColor = ConsoleColor.DarkGray,
-            ForegroundColor = ConsoleColor.White,
-        };
-
-        inputField.Visible = false;
-        
-        _menuPanel.AddChild(inputField);
 
         // Subscribe to input for navigation
         _engine.RenderManager.FocusManager.Register(_playButton);
         _engine.RenderManager.FocusManager.Register(_settingsButton);
         _engine.RenderManager.FocusManager.Register(_quitButton);
-        _engine.RenderManager.FocusManager.Register(inputField);
     }
 
     private void EditMap(object? sender, EventArgs e)
@@ -110,6 +97,7 @@ public class MainMenuScene : IGameScene
         // Clean up buttons from menu panel
         _menuPanel.RemoveChild(_playButton);
         _menuPanel.RemoveChild(_quitButton);
+        _menuPanel.RemoveChild(_settingsButton);
 
         // Remove menu panel from root
         _engine.RootPanel().RemoveChild(_menuPanel);
