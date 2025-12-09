@@ -9,12 +9,11 @@ namespace ConsoleGameEngine.Engine.Renderer;
 
 public class ConsoleRenderManager : IDisposable
 {
-    private readonly Lock _graphicsLock = new();
+    private readonly RootComponent _rootComponent;
     private Thread _graphicsThread;
     private CancellationTokenSource _cts;
     private ConsoleRenderer2D _renderer;
     private ConsoleCamera _camera;
-    private RootComponent _rootComponent;
     private int _updatesPerSecond;
     
     public double CurrentFps {get; private set; }
@@ -100,14 +99,6 @@ public class ConsoleRenderManager : IDisposable
             _cts.Dispose();
         }
     }
-
-    public void SetRootComponent(RootComponent rootComponent)
-    {
-        lock (_graphicsLock)
-        {
-            _rootComponent = rootComponent;
-        }
-    }
     
     private readonly Stopwatch _timer = new Stopwatch();
     private void RenderLoop(CancellationToken ct)
@@ -123,16 +114,13 @@ public class ConsoleRenderManager : IDisposable
                 _renderer.SetDimension(Console.WindowWidth, Console.WindowHeight);
 
                 // Update root panel size to match new window size
-                RootComponent root = Volatile.Read(ref _rootComponent);
-                root.GraphicsComponent.Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight);
-
+                _rootComponent.GraphicsComponent.Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight);
                 OnWindowResized?.Invoke(this, EventArgs.Empty);
             }
             else
             {
-                RootComponent root = Volatile.Read(ref _rootComponent);
                 _renderer.FlushBuffer();
-                root.Compute(_renderer, _camera);
+                _rootComponent.Compute(_renderer, _camera);
                 _renderer.Render();
             }
 
