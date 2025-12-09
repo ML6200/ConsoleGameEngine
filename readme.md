@@ -1,6 +1,6 @@
 # Console Game Engine
 
-A modern, high-performance 2D game engine for rendering games directly in the terminal using ANSI escape codes.
+A modern 2D game engine for rendering games directly in the terminal using ANSI escape codes.
 
 ## Features
 
