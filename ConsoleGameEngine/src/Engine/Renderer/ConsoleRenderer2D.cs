@@ -26,16 +26,6 @@ using ConsoleGameEngine.Engine.Renderer.Geometry;
  *  yy                         y
  *
  *
- *
- * Box:
- * (x, y)      (x+width-1, y)
- *        +----+
- *        |TEXT|
- *        +----+    (x+width-1, y + height-1)
- * (x, y+height-1)
- *
- *
- *
  */
 namespace ConsoleGameEngine.Engine.Renderer;
 
@@ -53,32 +43,25 @@ public class ConsoleRenderer2D
      * POSITION:
      * \x1b[999;999H -> 10 bytes
      * because: '\x1b' + "[999;999H"
-     *            1byte +  9 bytes = 10 bytes
+     *          1byte  +     9 bytes = 10 bytes
      * 
      * COLOR:
-     * \x1b[100;107m
+     * \x1b[100;107m=>Same as before (10)
      *
      * CHAR:
-     * \x1bS
      * 4 bytes (UTF8)
      *
+     * we can also count with reset sequence later (\x1b[0m)
      *
-     * Therefore=> 10 + 10 + 4 = 24 bytes
+     *
+     * Therefore=> 10 + 10 + 4 = 24 bytes per cell
      */
-    private const int ScreenBytesMax = 128;
-    private const int BufferSize = ScreenBytesMax * 1024;
-    private byte[] _writeBuffer = new byte[BufferSize];
+    private const int BytesPerCell = 24;
+    private byte[] _writeBuffer;
+
+    public int ScreenWidth => _screenWidth;
+    public int ScreenHeight => _screenHeight;
     
-
-    public int ScreenWidth
-    {
-        get => _screenWidth;
-    }
-
-    public int ScreenHeight
-    {
-        get => _screenHeight;
-    }
 
     public void SetDimension(int width, int height)
     {
@@ -86,6 +69,7 @@ public class ConsoleRenderer2D
         _screenWidth = width;
         _screenHeight = height;
         _renderBuffer = new Cell[_screenWidth, _screenHeight];
+        _writeBuffer= new byte[BytesPerCell * width * height];
         _isResizing = false;
     }
 
@@ -108,8 +92,9 @@ public class ConsoleRenderer2D
         Console.CursorVisible = false;
         Console.Clear();
         
-        _stdOut = Console.OpenStandardOutput(BufferSize);
+        _stdOut = Console.OpenStandardOutput();
         _renderBuffer = new Cell[_screenWidth, _screenHeight];
+        _writeBuffer= new byte[BytesPerCell * _screenWidth * _screenHeight];
 
         FlushBuffer();
     }
@@ -143,7 +128,7 @@ public class ConsoleRenderer2D
             _renderBuffer[x, y] = cell;
         }
     }
-
+    
     public void DrawText(int x, int y, string text,
         ConsoleColor bgColor = ConsoleColor.Black,
         ConsoleColor fgColor = ConsoleColor.White)
@@ -156,6 +141,13 @@ public class ConsoleRenderer2D
         }
     }
 
+    /* Box:
+     * (x, y)      (x+width-1, y)
+     *        +----+
+     *        |TEXT|
+     *        +----+    (x+width-1, y + height-1)
+     * (x, y+height-1)
+     */
     public void DrawBox(int x, int y, int width, int height,
         ConsoleColor bg = ConsoleColor.Black,
         ConsoleColor fg = ConsoleColor.White)
