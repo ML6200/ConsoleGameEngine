@@ -134,49 +134,6 @@ public class ConsoleRenderer2D
             SetCell(x + i, y, new Cell(text[i], bgColor, fgColor));
         }
     }
-    
-    /*           #
-     *          # #
-     *         #   #
-     *        ######
-     *
-     *
-     *         *   
-     *        ***
-     *       *****
-     *      *******
-     *
-     *
-     *        WIDTH    H
-     *      +-------+  E
-     *      |   *   |  I
-     *      |  ***  |  G
-     *      | ***** |  H
-     *      +-------+  T
-     *
-     * WIDTH=5
-     * HEIGHT=3
-     * 
-     *
-     */
-    public void DrawTriangle(int x, int y,
-        int height,
-        Cell? cell = default)
-    {
-        if (_isResizing) return;
-        
-        for (int dy = 1; dy <= height; dy++)
-        {
-            for (int i = 1; i <= dy; i++)
-            {
-                // _renderBuffer[x, y + i] = new Cell(
-                //     RenderSpecCharacters.Empty,
-                //     cell.BackgroundColor,
-                //     cell.ForegroundColor
-                // );
-            }
-        }
-    }
 
     public void DrawBox(int x, int y, int width, int height,
         ConsoleColor bg = ConsoleColor.Black,
@@ -296,8 +253,6 @@ public class ConsoleRenderer2D
      *  -render
      *
      * renderBuffer:screenWidth, ScreenHeight
-     *
-     * 
      */
     private ConsoleColor _lastFg = ConsoleColor.White;
     private ConsoleColor _lastBg = ConsoleColor.Black;
