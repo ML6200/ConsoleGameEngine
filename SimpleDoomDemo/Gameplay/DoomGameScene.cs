@@ -47,13 +47,11 @@ public class DoomGameScene : IGameScene
     public Dimension2D WorldSize { get; private set; }
 
     // ============================= TIMING ==============================
-    private const double LOGIC_UPDATE_INTERVAL = 0.5; // 500ms in seconds
     private double _logicAccumulator = 0;
 
     // ============================= SYNCHRONIZATION ==============================
     private readonly object _visibilityLock = new object();
-    public object VisibilityLock => _visibilityLock;
-
+    
     public DoomGameScene()
     {
         // Initialize entities
