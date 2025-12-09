@@ -1,13 +1,14 @@
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using ConsoleGameEngine.Engine.System;
 using NAudio.Wave;
+using NLog;
 
 namespace SimpleDoomEngine.Engine;
 
 public static class AudioPlayer
 {
+    private static Logger _logger = LogManager.GetCurrentClassLogger();
     private static Process? _musicProcess;
     private static WaveOutEvent outputDevice;
     private static Mp3FileReader mp3FileReader;
@@ -36,6 +37,7 @@ public static class AudioPlayer
         }
         catch
         {
+            _logger.Warn("Cant play sound: " + filePath);
         }
     }
 
@@ -63,7 +65,9 @@ public static class AudioPlayer
             }
         }
         catch
-        { }
+        {
+            _logger.Warn("Cant play music: " + filePath);
+        }
     }
 
     public static void StopMusic()
@@ -95,7 +99,7 @@ public static class AudioPlayer
         }
         catch (Exception e)
         {
-            throw new ("Error stopping music: " + e.Message);
+            _logger.Error("Error stopping music: " + e.Message);
         }
     }
 }

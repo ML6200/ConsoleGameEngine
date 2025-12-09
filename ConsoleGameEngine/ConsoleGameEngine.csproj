@@ -10,10 +10,14 @@
 
     <ItemGroup>
       <PackageReference Include="NAudio" Version="2.2.1" />
+      <PackageReference Include="NLog" Version="6.0.7" />
     </ItemGroup>
 
     <ItemGroup>
         <Content Include="assets\**\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="nlog.xml">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>

@@ -1,10 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Text;
 using System.Threading;
 using ConsoleGameEngine.Engine;
 using SimpleDoomDemo.Gameplay;
 using SimpleDoomDemo.Gameplay.Scenes;
+using NLog;
 
 namespace SimpleDoomDemo;
 
@@ -18,9 +18,11 @@ class Program
     }
     static void Main(string[] args)
     {
-        string DEFAULT_MAP_PATH = Path.Combine("assets", "maps", "pmp_arena.txt");
-        
-        // Create the ConsoleEngine
+        string DEFAULT_MAP_PATH = "arena.dcmf";//Path.Combine("assets", "maps", "pmp_arena.txt");
+
+        // Initialize NLog configuration
+        LogManager.Setup().LoadConfigurationFromFile("nlog.xml");
+
         Console.OutputEncoding = Encoding.UTF8;
         ConsoleEngine engine = new ConsoleEngine();
         engine.TargetUpdatesPerSecond = 40;  // Game logic updates at 40 FPS
@@ -32,7 +34,7 @@ class Program
             ? args[0]
             : DEFAULT_MAP_PATH;
 
-        // Start with main menu
+        // Start with main menuX
         var menuScene = new MainMenuScene(mapPath);
         engine.SetInitialScene(menuScene);
 

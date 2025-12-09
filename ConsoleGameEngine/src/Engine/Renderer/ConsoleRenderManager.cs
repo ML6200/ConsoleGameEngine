@@ -4,11 +4,13 @@ using System.Threading;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
+using NLog;
 
 namespace ConsoleGameEngine.Engine.Renderer;
 
 public class ConsoleRenderManager : IDisposable
 {
+    private Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly RootComponent _rootComponent;
     private Thread _graphicsThread;
     private CancellationTokenSource _cts;
@@ -76,6 +78,8 @@ public class ConsoleRenderManager : IDisposable
     {
         if (_graphicsThread != null && _graphicsThread.IsAlive)
         {
+            _logger.Warn("Cant start process." +
+                         "Process is already running.");
             return;
         }
         

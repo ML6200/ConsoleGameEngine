@@ -6,11 +6,13 @@ using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
+using NLog;
 
 namespace ConsoleGameEngine.Engine;
 
 public class ConsoleEngine : IEngineLifecycle, IDisposable
 {
+    private Logger _logger = LogManager.GetCurrentClassLogger();
     private InputManager _inputManager;
     private readonly ConsoleRenderManager _renderManager;
     private readonly ConsoleRenderer2D _renderer;
@@ -96,25 +98,24 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         Console.Clear();
         _renderManager.SubsribeFocusEventsToInput(_inputManager);
         _isInitialized = true;
+        _logger.Info("Engine initialized");
     }
 
     public void OnStart()
     {
         if (!_isInitialized)
         {
+            const string message = "Engine must be initialized before starting";
+            _logger.Error(message);
             throw 
-                new InvalidOperationException(
-                    "Engine must be initialized " +
-                    "before starting"
-                );
+                new InvalidOperationException(message);
         }
 
         if (_isRunning)
         {
-            throw 
-                new InvalidOperationException(
-                    "Engine is already running"
-                );
+            const string message = "Engine is already running";
+            _logger.Error(message);
+            throw new InvalidOperationException(message);
         }
         
         _isRunning = true;
@@ -160,6 +161,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     {
         if (scene == null)
         {
+            _logger.Error("Scene cannot be null.");
             throw new ArgumentNullException(nameof(scene));
         }
 
@@ -183,11 +185,10 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     {
         if (!_isInitialized)
         {
-            throw
-                new InvalidOperationException(
-                    "Engine must be initialized " +
-                    "before starting update loop"
-                );
+            const string message = "Engine must be initialized " +
+                                   "before starting update loop.";
+            _logger.Error(message);
+            throw new InvalidOperationException(message);
         }
 
         while (_isRunning
@@ -224,11 +225,10 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     {
         if (_isRunning)
         {
-            throw 
-                new InvalidOperationException(
-                    "Cannot set initial scene while " +
-                    "engine is running. Use LoadScene instead."
-                );
+            const string message = "Cannot set initial scene while " +
+                                   "engine is running. Use LoadScene instead.";
+            _logger.Error(message);
+            throw new InvalidOperationException(message);
         }
 
         _currentScene = scene;
@@ -239,6 +239,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     {
         if (!_isRunning)
         {
+            _logger.Warn("Cant stop engine. Engine is not running.");
             return;
         }
 
