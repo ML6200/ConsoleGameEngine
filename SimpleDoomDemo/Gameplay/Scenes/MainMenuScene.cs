@@ -78,14 +78,13 @@ public class MainMenuScene : IGameScene
         _quitButton.OnClick += OnQuitClicked;
         _menuPanel.AddChild(_quitButton);
 
-        UiMsgBox msgBox = new UiMsgBox(_menuPanel, _engine.RenderManager, _engine.Input,
-            "Tip of the day", "You can select buttons with up and down arrows.");
-        msgBox.OnOptionSelected += state =>
+        if (!DoomGameManager.IsTipShown)
         {
-            
-        };
-        _menuPanel.AddChild(msgBox);
-        
+            UiMsgBox msgBox = new UiMsgBox(_menuPanel, _engine.RenderManager, _engine.Input,
+                "Tip of the day", "You can select buttons with up and down arrows.");
+            msgBox.OnOptionSelected += state => { DoomGameManager.IsTipShown = !DoomGameManager.IsTipShown; };
+        }
+
         //if (state == MessageOptionState.Ok)
         //{
             _engine.RenderManager.FocusManager.Register(_playButton);
@@ -137,6 +136,11 @@ public class MainMenuScene : IGameScene
                 _logger.Error(exception);
                 throw;
             }
+        }
+        else
+        {
+            new UiMsgBox(_menuPanel, _engine.RenderManager, _engine.Input, 
+                "File not found", "File " + _mapPath + " cannot be found!");
         }
     }
 

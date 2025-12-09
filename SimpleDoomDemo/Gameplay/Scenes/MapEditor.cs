@@ -94,4 +94,9 @@ public class MapEditor : IGameScene
         _engine.RootPanel().RemoveChild(_editorPanel);
         _engine.RenderManager.FocusManager.Unregister(_backButton);
     }
+
+    class Cursor : GraphicsComponent
+    {
+        
+    }
 }
