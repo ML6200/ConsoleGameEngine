@@ -277,12 +277,10 @@ public class ConsoleRenderer2D
      */
     private ConsoleColor _lastFg = ConsoleColor.White;
     private ConsoleColor _lastBg = ConsoleColor.Black;
-    private StringBuilder consoleBuffer = new();
     public void Render()
     {
         if(_isResizing) return;
         
-        //consoleBuffer.Clear();
         int pos = 0;
         
         for (int y = 0; y < _screenHeight; y++)
@@ -290,12 +288,10 @@ public class ConsoleRenderer2D
             for (int x = 0; x < _screenWidth; x++)
             {
                 Cell cell = _renderBuffer[x, y];
-                //consoleBuffer.Append("\x1b[" + (y + 1) + ";" + (x + 1) + "H");
                 pos = WriteEscPosToBuffer(_writeBuffer, pos, x, y);
 
                 if (cell.ForegroundColor != _lastFg || cell.BackgroundColor != _lastBg)
                 {
-                    //consoleBuffer.Append(GetAnsiColorCode(cell.ForegroundColor, cell.BackgroundColor));
                     pos = WriteColorToBuffer(_writeBuffer, pos, 
                         cell.ForegroundColor, 
                         cell.BackgroundColor);
@@ -303,16 +299,12 @@ public class ConsoleRenderer2D
                     _lastFg = cell.ForegroundColor;
                     _lastBg = cell.BackgroundColor;
                 }
-
-                //consoleBuffer.Append(cell.Character);
+                
                 pos = WriteCharToBuffer(_writeBuffer, pos, cell.Character);
             }
         }
         
         _stdOut.Write(_writeBuffer, 0, pos);
-        
-        //consoleBuffer.Append("\x1b[0m");
-        //Console.Write(consoleBuffer.ToString());
     }
 
     private int WriteEscPosToBuffer(byte[] buff, int pos, int x, int y)
@@ -335,6 +327,13 @@ public class ConsoleRenderer2D
     
     private int WriteStrToBuffer(byte[] buff, int pos, string str)
     {
+        /*
+         * This should be used for colors.
+         * Note that if we care about micro-opt.
+         * we shouldn't use it for char sequences.
+         *
+         * Btw we have more concerning things in terms of performance now
+         */
         for (int i = 0; i < str.Length; i++)
         {
             pos = WriteCharToBuffer(buff, pos, str[i]);
