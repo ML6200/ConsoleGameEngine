@@ -146,7 +146,16 @@ public class MainMenuScene : IGameScene
 
     private void OnQuitClicked(object sender, EventArgs e)
     {
-        _engine.Stop();
-        _engine.Dispose();
+        UiMsgBox msgBox = new UiMsgBox(_menuPanel, _engine.RenderManager, _engine.Input, 
+            "Quit", "Are you sure you want to quit?");
+
+        msgBox.OnOptionSelected += state =>
+        {
+            if (state == MessageOptionState.Ok)
+            {
+                _engine.Stop();
+                _engine.Dispose();
+            }
+        };
     }
 }
