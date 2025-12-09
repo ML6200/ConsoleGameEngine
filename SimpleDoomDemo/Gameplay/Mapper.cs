@@ -42,8 +42,8 @@ public class Mapper
 
     public enum DcmEntity
     {
-        Ammo = 0, BfgCell = 1, Door = 2, LevelExit = 3, 
-        Wall = 4, ToxicWaste = 5, MedKit = 6,
+        Ammo = 0, BfgCell = 1, Door = 2, LevelExit = 3, MedKit = 4,
+        ToxicWaste = 5, Wall = 6, 
         
         Zombieman = 7, Mancubus = 8, Imp = 9,
         
@@ -55,7 +55,7 @@ public class Mapper
 
     public void LoadFromDcmfFile(string path)
     {
-        if (FileUtil.FileHasExtension(path, "dcmf"))
+        if (FileUtil.FileHasExtension(path, ".dcmf"))
         {
             using StreamReader reader = new StreamReader(path);
 
@@ -131,6 +131,11 @@ public class Mapper
     public void RemoveLastObject()
     {
         _dcmList.Remove(_dcmList[_dcmList.Count - 1]);
+    }
+
+    public void ClearObjects()
+    {
+        _dcmList.Clear();
     }
 
     private DcmType ParseDcmfType(string type)

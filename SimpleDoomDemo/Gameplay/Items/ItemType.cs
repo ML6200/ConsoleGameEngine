@@ -2,11 +2,11 @@ namespace SimpleDoomEngine.Gameplay.Items;
 
 public enum ItemType
 {
-    Ammo,
-    BfgCell,
-    Door,
-    LevelExit,
-    MedKit,
-    ToxicWaste,
-    Wall
+    Ammo = 0,
+    BfgCell = 1,
+    Door = 2,
+    LevelExit = 3,
+    MedKit = 4,
+    ToxicWaste = 5,
+    Wall = 6
 }
