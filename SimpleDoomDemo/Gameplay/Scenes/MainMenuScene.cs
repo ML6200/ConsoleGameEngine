@@ -3,11 +3,13 @@ using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
+using NLog;
 
 namespace SimpleDoomDemo.Gameplay.Scenes;
 
 public class MainMenuScene : IGameScene
 {
+    private Logger  _logger = LogManager.GetCurrentClassLogger();
     private ConsoleEngine _engine;
     private UiPanel _menuPanel;
     private UiButton _playButton;
@@ -108,10 +110,21 @@ public class MainMenuScene : IGameScene
         // Load game scene
         if (System.IO.File.Exists(_mapPath))
         {
-            var gameScene = new DoomGameScene();
-            Mapper.LoadFromLegacyMap(_mapPath, gameScene.Items, gameScene.Demons, gameScene.Player);
+            try
+            {
+                //Mapper.LoadFromLegacyMap(_mapPath, gameScene.Items, gameScene.Demons, gameScene.Player);
+                Mapper mapper = new Mapper(_mapPath);
+                DoomGameScene gameScene = new DoomGameScene(mapper.GetPlayer(), 
+                    mapper.CollectDemons(), 
+                    mapper.CollectItems());
             
-            _engine.LoadScene(gameScene);
+                _engine.LoadScene(gameScene);
+            }
+            catch (Exception exception)
+            {
+                _logger.Error(exception);
+                throw;
+            }
         }
     }
 

@@ -5,6 +5,7 @@ using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
+using NLog;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
 using SimpleDoomDemo.Gameplay.Scenes;
 using SimpleDoomDemo.Gameplay.Systems;
@@ -18,6 +19,7 @@ namespace SimpleDoomDemo.Gameplay;
 
 public class DoomGameScene : IGameScene
 {
+    private Logger _logger = LogManager.GetCurrentClassLogger();
     // ============================= ENGINE ==============================
     private ConsoleEngine _engine;
     private UiPanel _rootPanel;
@@ -27,9 +29,9 @@ public class DoomGameScene : IGameScene
     private GameHud _hud;
 
     // ============================= ENTITIES ==============================
-    public Player Player { get; set; }
-    public List<Demon> Demons { get; set; }
-    public List<GameItem> Items { get; set; }
+    public Player Player { get; private set; }
+    public List<Demon> Demons { get; private set; }
+    public List<GameItem> Items { get; private set; }
 
     // ============================= SYSTEMS ==============================
     private MovementSystem _movementSystem;
@@ -58,16 +60,23 @@ public class DoomGameScene : IGameScene
         Player = new Player(0, 0);
         Demons = new List<Demon>();
         Items = new List<GameItem>();
+    }
 
+    public DoomGameScene(Player player, List<Demon> demons, List<GameItem> items)
+    {
+        Player = player;
+        Demons = demons;
+        Items = items;
+    }
+
+    public void Initialize(ConsoleEngine consoleEngine)
+    {
         // Initialize systems
         _movementSystem = new MovementSystem(this);
         _combatSystem = new CombatSystem(this);
         _interactionSystem = new InteractionSystem(this);
         _controlSystem = new ControlSystem(this, _combatSystem);
-    }
-
-    public void Initialize(ConsoleEngine consoleEngine)
-    {
+        
         _engine = consoleEngine;
         _rootPanel = _engine.RootPanel();
         _input = _engine.Input;
@@ -92,6 +101,10 @@ public class DoomGameScene : IGameScene
     public void OnEnter()
     {
         // Add all game entities to root panel (they will use camera transformation)
+        if (Player is null)
+        {
+            _logger.Error("Player is null");
+        }
         _rootPanel.AddChild(Player);
 
         foreach (var item in Items)

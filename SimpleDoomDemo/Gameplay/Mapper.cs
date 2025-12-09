@@ -4,6 +4,7 @@ using System.IO;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 using ConsoleGameEngine.Engine.System;
+using NLog;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
 using SimpleDoomEngine.Gameplay.Actors;
 using SimpleDoomEngine.Gameplay.Items;
@@ -12,11 +13,7 @@ namespace SimpleDoomDemo.Gameplay;
 
 public class Mapper
 {
-    // Doom CSV Map format
-    /*
-     * PosX;PosY;Type;Val
-     * 12;21;GI;A
-     */
+    private Logger _logger = LogManager.GetCurrentClassLogger();
 
     public Mapper(string path)
     {
@@ -27,6 +24,11 @@ public class Mapper
     {
     }
     
+    // Doom CSV Map format
+    /*
+     * PosX;PosY;Type;Val
+     * 12;21;GI;A
+     */
     public record struct DcmFormat
     {
         public Point2D Position;
@@ -75,14 +77,21 @@ public class Mapper
                     
                     AddObject(pos, type, entity);
                 }
+                _logger.Info("Dcmf file loaded");
             }
             catch (Exception e)
             {
+                _logger.Error(e.Message);
             }
             finally
             {
                 reader.Close();
             }
+        }
+        else
+        {
+            _logger.Warn("File does not have a propper extension." +
+                         "The extension should be *.dcmf'! " + path);
         }
     }
 
@@ -108,6 +117,7 @@ public class Mapper
                     default: return null;
                 }
         }
+        _logger.Warn("Unknown entity type: " + type);
 
         return null;
     }
@@ -156,6 +166,7 @@ public class Mapper
         if (val < 10) return DcmType.Demon;
         if (val == 10) return DcmType.Player;
         
+        _logger.Warn("Unknown entity type: " + entity);
         return DcmType.Unknown;
     }
 
@@ -176,6 +187,7 @@ public class Mapper
             case "p": return DcmEntity.Player;
         }
 
+        _logger.Warn("Unknown entity type: " + entity);
         return DcmEntity.Unknown;
     }
     
@@ -205,7 +217,11 @@ public class Mapper
 
     public List<GameItem>? CollectItems()
     {
-        if (_dcmList.Count == 0) return null;
+        if (_dcmList.Count == 0)
+        {
+            _logger.Error("No entity in dcm list");
+            return null;
+        }
         
         List<GameItem>? result = new List<GameItem>();
         
@@ -221,9 +237,9 @@ public class Mapper
     
     public List<Demon> CollectDemons()
     {
-        if (_dcmList.Count == 0) return null;
+        if (CheckCount()) return null;
         
-        List<Demon>? result = new List<Demon>();
+        List<Demon> result = new List<Demon>();
         
         foreach (var item in _dcmList)
         {
@@ -235,9 +251,24 @@ public class Mapper
         return result;
     }
 
+    private bool CheckCount()
+    {
+        if (_dcmList.Count == 0)
+        {
+            _logger.Error("No entity was found in dcm list");
+            return true;
+        }
+
+        return false;
+    }
+
     public Player? GetPlayer()
     {
-        if (_dcmList.Count == 0) return null;
+        if (_dcmList.Count == 0)
+        {
+            _logger.Error("No entity in dcm list");
+            return null;
+        }
 
         foreach (var item in _dcmList)
         {
@@ -298,10 +329,12 @@ public class Mapper
         }
         catch (Exception e)
         {
+            _logger.Error(e.Message);
             throw new Exception("Failed to load the map", e);
         }
     }
     
+    static Logger _staticLogger = LogManager.GetCurrentClassLogger();
     public static void LoadFromLegacyMap(string path, 
         List<GameItem> items, 
         List<Demon> demons, 
@@ -365,7 +398,7 @@ public class Mapper
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            _staticLogger.Error(e.Message);
             throw;
         }
     }
