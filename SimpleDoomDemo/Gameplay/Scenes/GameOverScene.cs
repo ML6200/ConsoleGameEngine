@@ -75,17 +75,13 @@ public class GameOverScene : IGameScene
     {
         _engine.Input.OnKeyPressed -= OnKeyPressed;
 
-        // Clean up panel
-        if (_gameOverPanel != null)
-        {
-            _rootPanel.RemoveChild(_gameOverPanel);
-        }
+        _rootPanel.BackgroundColor = ConsoleColor.Black;
+        _rootPanel.RemoveChild(_gameOverPanel);
     }
 
     private void OnKeyPressed(object sender, KeyEventArgs e)
     {
-        // Any key exits
-        _engine.Stop();
+        _engine.LoadScene(new MainMenuScene("")); // later we fix this by adding settings
     }
 }
 
