@@ -77,10 +77,6 @@ public class CombatSystem : IGameSystem
         int distance = (int) Point2D.Distance(demon.WorldPosition, _game.Player.WorldPosition);
         int damage = 2 * u / (1 + distance);
 
-        // Trigger attack animation on demon
-        var attackAnim = AnimationTween.Blink(demon, 100, loop: false);
-        demon.AddAnimation(attackAnim);
-
         DealDamageToPlayer(damage);
     }
 
@@ -92,7 +88,7 @@ public class CombatSystem : IGameSystem
         {
             _game.Player?.AddCombatPoints(demon.GetCombatPoints());
             
-            var deathAnim = AnimationTween.Blink(demon, 0.2, loop: false);
+            var deathAnim = AnimationTween.Blink(demon, 0.5, loop: false);
             demon.AddAnimation(deathAnim);
         }
         else
