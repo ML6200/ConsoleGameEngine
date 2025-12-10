@@ -10,14 +10,8 @@ public class UiInputField : GraphicsComponent, IFocusable
     private string _text = "";
     private volatile bool _isDeleting = false;
     
-    private int CursorPosition
-    {
-        get
-        {
-            return _text.Length;
-        }
-    } 
-    
+    private int CursorPosition => _text.Length;
+
     public string Text
     {
         get => _text;
@@ -28,7 +22,7 @@ public class UiInputField : GraphicsComponent, IFocusable
             UpdateSize(); //for growth later
         }
     }
-    
+
     public bool IsFocused { get; set; }
     public bool CanFocus { get; set; } = true;
     
@@ -96,8 +90,6 @@ public class UiInputField : GraphicsComponent, IFocusable
 
     protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
-        if (WorldPosition == null) return;
-
         // UI buttons render directly at world position (no camera transformation)
         var bgColor = IsFocused ? FocusedBgColor : BackgroundColor;
         var fgColor = IsFocused ? FocusedFgColor : ForegroundColor;
@@ -136,8 +128,6 @@ public class UiInputField : GraphicsComponent, IFocusable
             );
         }
         
-        int textXIndex = Size.Width - Text.Length - 1;
-        //Text.Substring(textXIndex, Text.Length - 1)
         renderer.DrawText(textX, textY, Text, bgColor, fgColor);
         renderer.SetCell(textX + CursorPosition, textY, 
             new ('_', bgColor, fgColor));
