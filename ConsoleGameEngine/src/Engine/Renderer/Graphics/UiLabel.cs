@@ -6,23 +6,39 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
 public class UiLabel : GraphicsComponent
 {
-    public string Text { get; set; } = "";
+    private string _text = "";
+
+    public string Text
+    {
+        get
+        {
+            return _text;
+        }
+        set
+        {
+            _text = value;
+            UpdateSize();
+        }
+    }
+
+    private void UpdateSize()
+    {
+        Size = new Dimension2D(Text.Length, 1);
+    }
 
     public UiLabel()
     {
+        Size = new Dimension2D(Text.Length, 1);
     }
 
     public UiLabel(string text)
     {
         Text = text;
-        Width = text.Length;
-        Height = 1;
+        UpdateSize();
     }
 
     protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
-        if (WorldPosition == null) return;
-
         // UI labels render directly at world position (no camera transformation)
         renderer.DrawText(WorldPosition.X, WorldPosition.Y, Text,
             BackgroundColor, ForegroundColor);
