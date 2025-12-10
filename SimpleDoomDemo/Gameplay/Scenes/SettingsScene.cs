@@ -69,7 +69,7 @@ public class SettingsScene : IGameScene
         {
             UiMsgBox msgBox = new UiMsgBox(_settingsPanel, _engine.RenderManager, _engine.Input,
                 "Format mismatch", "Only DCMF is acceptable!");
-            msgBox.OnOptionSelected += state =>
+            msgBox.OnComplete += state =>
             { };
         }
         else

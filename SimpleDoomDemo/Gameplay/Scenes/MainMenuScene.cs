@@ -92,7 +92,7 @@ public class MainMenuScene : IGameScene
         {
             UiMsgBox msgBox = new UiMsgBox(_menuPanel, _engine.RenderManager, _engine.Input,
                 "💡 Tip of the day", "You can select buttons with up and down arrows.");
-            msgBox.OnOptionSelected += state =>
+            msgBox.OnComplete += state =>
             {
                 DoomGameManager.IsTipShown = true;
             };
@@ -105,7 +105,7 @@ public class MainMenuScene : IGameScene
         
         _engine.RenderManager.OnWindowResized += WindowResized;
     }
-
+    
     private void WindowResized(object? sender, EventArgs e)
     {
         int x = _engine.RootPanel().ScreenSize.Width / 2 - _menuPanel.Size.Width / 2;
@@ -173,7 +173,7 @@ public class MainMenuScene : IGameScene
         UiMsgBox msgBox = new UiMsgBox(_menuPanel, _engine.RenderManager, _engine.Input, 
             "Quit", "Are you sure you want to quit?");
 
-        msgBox.OnOptionSelected += state =>
+        msgBox.OnComplete += state =>
         {
             if (state == MessageOptionState.Ok)
             {

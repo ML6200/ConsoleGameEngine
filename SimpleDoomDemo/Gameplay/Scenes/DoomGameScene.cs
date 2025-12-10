@@ -212,7 +212,7 @@ public class DoomGameScene : IGameScene
             case ConsoleKey.E:
                 UiMsgBox msgBox = new UiMsgBox(_rootPanel, _engine.RenderManager, _engine.Input,
                     "You are about to exit", "Are you sure you want to exit the game? (Y/N)");
-                msgBox.OnOptionSelected += state =>
+                msgBox.OnComplete += state =>
                 {
                     if (state == MessageOptionState.Ok)
                     {
