@@ -1,28 +1,35 @@
 using System;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
+using NLog;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public class UiMsgBox : UiPanel
+
+
+public class UiInputBox : UiPanel
 {
     private readonly string _title;
     private readonly string _message;
     
     private readonly UiLabel _titleLabel;
-    private readonly UiLabel _messageLabel;
+    private readonly UiInputField _inputField;
     private readonly UiButton _cancelButton;
     private readonly GraphicsComponent _parent;
     private readonly UiButton _okButton;
+    private Logger _logger = LogManager.GetCurrentClassLogger();
     
-    public event Action<MessageOptionState>? OnComplete;
+    public event Action<string>? OnComplete;
 
-    public UiMsgBox(GraphicsComponent parent, ConsoleRenderManager renderManager, 
+    public UiInputBox(GraphicsComponent parent, ConsoleRenderManager renderManager, 
         InputManager inputManager,
         string title, string message)
     {
         ForegroundColor = ConsoleColor.White;
         BackgroundColor = ConsoleColor.Blue;
+        
+        Size = new Dimension2D(20, 6);
+        
         parent.AddChild(this);
         _parent = parent;
         _title = title;
@@ -32,10 +39,11 @@ public class UiMsgBox : UiPanel
             ForegroundColor = ConsoleColor.White,
             BackgroundColor = this.BackgroundColor,
         };
-        _messageLabel = new UiLabel(_message)
+        _inputField = new UiInputField("")
         {
             ForegroundColor = ConsoleColor.White,
             BackgroundColor = this.BackgroundColor,
+            Size = new Dimension2D(20, 1),
         };
         _cancelButton = new UiButton("Cancel")
         {
@@ -52,22 +60,23 @@ public class UiMsgBox : UiPanel
             FocusedFgColor = ConsoleColor.DarkBlue
         };
         
-        _okButton.OnClick += (e, s) => Close(MessageOptionState.Ok);
-        _cancelButton.OnClick += (e, s) => Close(MessageOptionState.Cancel);
+        _okButton.OnClick += (e, s) => Close();
+        _cancelButton.OnClick += (e, s) => Close();
 
         inputManager.OnKeyPressed += (e, s) =>
         {
             if (s.Key == ConsoleKey.Y)
-                Close(MessageOptionState.Ok);
+                Close();
             else if (s.Key == ConsoleKey.Escape || s.Key == ConsoleKey.N)
-                Close(MessageOptionState.Cancel);
+                Close();
         };
         
         AddChild(_titleLabel);
-        AddChild(_messageLabel);
+        AddChild(_inputField);
         AddChild(_cancelButton);
         AddChild(_okButton);
         
+        renderManager.FocusManager.Register(_inputField);
         renderManager.FocusManager.Register(_okButton);
         renderManager.FocusManager.Register(_cancelButton);
         
@@ -76,20 +85,22 @@ public class UiMsgBox : UiPanel
         ComputePositions();
     }
 
-    private void Close(MessageOptionState option)
+    private void Close()
     {
-        OnComplete?.Invoke(option);
+        OnComplete?.Invoke(_inputField.Text);
         Visible = false;
         _parent.RemoveChild(this);
     }
 
-
+    
     private void ComputeSizes()
     {
         // 2 before and 2 after
-        int horizontal = _messageLabel.Size.Width + 4; 
+        int horizontal = _inputField.Size.Width > _titleLabel.Size.Width ? 
+            _inputField.Size.Width + 2 : _titleLabel.Size.Width + 2; 
+        
         /* 3 below title, 1 below the message*/
-        int vertical = _messageLabel.Size.Height + _titleLabel.Size.Height + 4;
+        int vertical = _titleLabel.Size.Height + _titleLabel.Size.Height + 4;
         Size = new Dimension2D(horizontal, vertical);
     }
 
@@ -105,13 +116,7 @@ public class UiMsgBox : UiPanel
         _okButton.RelativePosition = new Point2D(2, Size.Height - 2);
         _cancelButton.RelativePosition = _okButton.RelativePosition + new Point2D(3, 0);
         _titleLabel.RelativePosition = new Point2D(Size.Width / 2 - _titleLabel.Size.Width / 2, 0);
-        _messageLabel.RelativePosition = new Point2D(Size.Width / 2 - _messageLabel.Size.Width / 2,
-            Size.Height / 2 - _messageLabel.Size.Height / 2);
+        _inputField.RelativePosition = new Point2D(Size.Width / 2 - _inputField.Size.Width / 2,
+            Size.Height / 2 - _inputField.Size.Height / 2);
     }
-}
-
-public enum MessageOptionState
-{
-    Ok,
-    Cancel,
 }
