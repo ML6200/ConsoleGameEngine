@@ -73,6 +73,7 @@ public class GameOverScene : IGameScene
 
     public void OnExit()
     {
+        _engine.RenderManager.FocusManager.UnregisterAll();
         _engine.Input.OnKeyPressed -= OnKeyPressed;
 
         _rootPanel.BackgroundColor = ConsoleColor.Black;
@@ -81,7 +82,7 @@ public class GameOverScene : IGameScene
 
     private void OnKeyPressed(object sender, KeyEventArgs e)
     {
-        _engine.LoadScene(new MainMenuScene("")); // later we fix this by adding settings
+        _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath)); // later we fix this by adding settings
     }
 }
 

@@ -15,6 +15,7 @@ public class MainMenuScene : IGameScene
     private UiButton _playButton;
     private UiButton _quitButton;
     private UiButton _settingsButton;
+    private UiButton _mapEditButton;
     private string _mapPath;
 
     public MainMenuScene(string mapPath)
@@ -44,9 +45,8 @@ public class MainMenuScene : IGameScene
         // Create Play button
         _playButton = new UiButton("▶ PLAY GAME")
         {
-            RelativePosition = new Point2D(centerX - 10, centerY - 3),
+            RelativePosition = new Point2D(centerX - 10, centerY - 8),
             Size = new Dimension2D(20, 3),
-            NormalBgColor = ConsoleColor.DarkGreen,
             FocusedBgColor = ConsoleColor.Green,
             BackgroundColor = ConsoleColor.DarkGreen,
             ForegroundColor = ConsoleColor.White,
@@ -54,23 +54,33 @@ public class MainMenuScene : IGameScene
         _playButton.OnClick += OnPlayClicked;
         _menuPanel.AddChild(_playButton);
         
-        _settingsButton = new UiButton("⚙ Map Editor")
+        _settingsButton = new UiButton("⚙ Settings")
         {
-            RelativePosition = new Point2D(centerX - 10, centerY + 1),
+            RelativePosition = new Point2D(centerX - 10, centerY - 4),
             Size = new Dimension2D(20, 3),
             FocusedBgColor = ConsoleColor.DarkBlue,
             BackgroundColor = ConsoleColor.Blue,
             ForegroundColor = ConsoleColor.White,
         };
-        _settingsButton.OnClick += EditMap;
+        _settingsButton.OnClick += Settings;
         _menuPanel.AddChild(_settingsButton);
+        
+        _mapEditButton = new UiButton("✎ Edit Map")
+        {
+            RelativePosition = new Point2D(centerX - 10, centerY),
+            Size = new Dimension2D(20, 3),
+            FocusedBgColor = ConsoleColor.DarkGray,
+            BackgroundColor = ConsoleColor.Gray,
+            ForegroundColor = ConsoleColor.Black,
+        };
+        _mapEditButton.OnClick += EditMap;
+        _menuPanel.AddChild(_mapEditButton);
 
         // Create Quit button
         _quitButton = new UiButton("⏼ QUIT")
         {
-            RelativePosition = new Point2D(centerX - 10, centerY + 5),
+            RelativePosition = new Point2D(centerX - 10, centerY + 6),
             Size = new Dimension2D(20, 3),
-            NormalBgColor = ConsoleColor.DarkRed,
             FocusedBgColor = ConsoleColor.Red,
             BackgroundColor = ConsoleColor.DarkRed,
             ForegroundColor = ConsoleColor.White,
@@ -81,18 +91,24 @@ public class MainMenuScene : IGameScene
         if (!DoomGameManager.IsTipShown)
         {
             UiMsgBox msgBox = new UiMsgBox(_menuPanel, _engine.RenderManager, _engine.Input,
-                "Tip of the day", "You can select buttons with up and down arrows.");
-            msgBox.OnOptionSelected += state => { DoomGameManager.IsTipShown = !DoomGameManager.IsTipShown; };
+                "💡 Tip of the day", "You can select buttons with up and down arrows.");
+            msgBox.OnOptionSelected += state =>
+            {
+                DoomGameManager.IsTipShown = true;
+            };
         }
-
-        //if (state == MessageOptionState.Ok)
-        //{
-            _engine.RenderManager.FocusManager.Register(_playButton);
-            _engine.RenderManager.FocusManager.Register(_settingsButton);
-            _engine.RenderManager.FocusManager.Register(_quitButton);
-        //}
+        
+        _engine.RenderManager.FocusManager.Register(_playButton);
+        _engine.RenderManager.FocusManager.Register(_settingsButton);
+        _engine.RenderManager.FocusManager.Register(_mapEditButton);
+        _engine.RenderManager.FocusManager.Register(_quitButton);
 
         // Subscribe to input for navigation
+    }
+
+    private void Settings(object? sender, EventArgs e)
+    {
+        _engine.LoadScene(new SettingsScene());
     }
 
     private void EditMap(object? sender, EventArgs e)
@@ -107,11 +123,7 @@ public class MainMenuScene : IGameScene
 
     public void OnExit()
     {
-        // Clean up buttons from menu panel
-        _menuPanel.RemoveChild(_playButton);
-        _menuPanel.RemoveChild(_quitButton);
-        _menuPanel.RemoveChild(_settingsButton);
-
+        _engine.RenderManager.FocusManager.UnregisterAll();
         // Remove menu panel from root
         _engine.RootPanel().RemoveChild(_menuPanel);
     }

@@ -8,13 +8,14 @@ namespace SimpleDoomDemo.Gameplay;
 
 public class DoomGameManager
 {
-    public string DefaultMapPath { get; set; }
-    public static bool IsTipShown = false;
+    public static string DefaultMapPath { get; set; }
+    public static bool IsTipShown { get; set; }
     private ConsoleEngine _engine;
     private MainMenuScene _menuScene;
 
     public DoomGameManager(string defaultMapPath)
     {
+        IsTipShown = false;
         DefaultMapPath = defaultMapPath;
         Console.OutputEncoding = Encoding.UTF8;
         _engine= new ConsoleEngine();
