@@ -53,7 +53,7 @@ public class Mapper
         Unknown = 11
     }
 
-    public List<DcmFormat> _dcmList = new();
+    public List<DcmFormat> DcmList = new();
 
     public void LoadFromDcmfFile(string path)
     {
@@ -124,7 +124,7 @@ public class Mapper
 
     public void AddObject(Point2D position, DcmType type, DcmEntity entity)
     {
-        _dcmList.Add(new DcmFormat
+        DcmList.Add(new DcmFormat
         {
             Position = position,
             Type = type,
@@ -135,17 +135,17 @@ public class Mapper
 
     public void RemoveObject(DcmFormat dcmFormat)
     {
-        _dcmList.Remove(dcmFormat);
+        DcmList.Remove(dcmFormat);
     }
 
     public void RemoveLastObject()
     {
-        _dcmList.Remove(_dcmList[_dcmList.Count - 1]);
+        DcmList.Remove(DcmList[DcmList.Count - 1]);
     }
 
     public void ClearObjects()
     {
-        _dcmList.Clear();
+        DcmList.Clear();
     }
 
     private DcmType ParseDcmfType(string type)
@@ -217,7 +217,7 @@ public class Mapper
 
     public List<GameItem>? CollectItems()
     {
-        if (_dcmList.Count == 0)
+        if (DcmList.Count == 0)
         {
             _logger.Error("No entity in dcm list");
             return null;
@@ -225,7 +225,7 @@ public class Mapper
         
         List<GameItem>? result = new List<GameItem>();
         
-        foreach (var item in _dcmList)
+        foreach (var item in DcmList)
         {
             if (item.Type == DcmType.GameItem)
             {
@@ -241,7 +241,7 @@ public class Mapper
         
         List<Demon> result = new List<Demon>();
         
-        foreach (var item in _dcmList)
+        foreach (var item in DcmList)
         {
             if (item.Type == DcmType.Demon)
             {
@@ -253,7 +253,7 @@ public class Mapper
 
     private bool CheckCount()
     {
-        if (_dcmList.Count == 0)
+        if (DcmList.Count == 0)
         {
             _logger.Error("No entity was found in dcm list");
             return true;
@@ -264,13 +264,13 @@ public class Mapper
 
     public Player? GetPlayer()
     {
-        if (_dcmList.Count == 0)
+        if (DcmList.Count == 0)
         {
             _logger.Error("No entity in dcm list");
             return null;
         }
 
-        foreach (var item in _dcmList)
+        foreach (var item in DcmList)
         {
             if (item.Type == DcmType.Player)
             {
@@ -287,7 +287,7 @@ public class Mapper
         {
             using StreamWriter sw = new StreamWriter(path);
             sw.WriteLine("#PX;PY;Typ;Val");
-            foreach (var item in _dcmList)
+            foreach (var item in DcmList)
             {
                 sw.WriteLine($"{item.Position.X};" +
                              $"{item.Position.Y};" +
