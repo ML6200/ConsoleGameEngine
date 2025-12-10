@@ -125,7 +125,7 @@ public class MainMenuScene : IGameScene
 
     private void EditMap(object? sender, EventArgs e)
     {
-        _engine.LoadScene(new MapEditor(_mapPath));
+        _engine.LoadScene(new MapEditorScene(_mapPath));
     }
 
     public void OnUpdate(double deltaTime)

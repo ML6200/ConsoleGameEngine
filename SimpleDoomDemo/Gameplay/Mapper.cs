@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 using ConsoleGameEngine.Engine.System;
@@ -131,6 +132,32 @@ public class Mapper
             Entity = entity,
             Value = GetEntityComponentByType(position, type, entity)
         });
+    }
+
+    public GraphicsComponent? RemoveObject(Point2D position)
+    {
+        GraphicsComponent? removed = null;
+        foreach (DcmFormat format in DcmList.ToList())
+        {
+            if (format.Position == position)
+            {
+                removed = format.Value;
+                DcmList.Remove(format);
+            }
+        }
+        return removed;
+    }
+
+    public bool IsPositionAcquired(Point2D position)
+    {
+        foreach (DcmFormat format in DcmList.ToList())
+        {
+            if (format.Position == position)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void RemoveObject(DcmFormat dcmFormat)
