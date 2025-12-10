@@ -5,7 +5,7 @@ A modern 2D game engine for rendering games directly in the terminal using ANSI 
 ## Features
 
 - **Console Rendering**: ANSI-based color rendering for cross-platform terminal support
-- **Multi-threaded Architecture**: Separate timers for both update and render threads for smooth gameplay, yet better control
+- **Multi-threaded Architecture**: Separate timers for both update and render threads for smooth gameplay, and better control
 - **Component System**: Hierarchical component-based architecture with parent-child relationships
 - **Scene Management**: Clean lifecycle management with `Initialize`, `OnEnter`, `OnUpdate`, and `OnExit` callbacks
 - **Optimized Rendering**: Utilized stdout with byte buffer for faster access and culling for optimized rendering
