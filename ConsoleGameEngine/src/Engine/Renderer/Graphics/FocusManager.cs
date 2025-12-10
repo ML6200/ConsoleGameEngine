@@ -31,6 +31,12 @@ public class FocusManager
             _focusableComponents.Remove(focusable);
         }
     }
+
+    public void UnregisterAll()
+    {
+        _focusableComponents.Clear();
+        _currentFocusIndex = -1;
+    }
     private void SetFocus(int index)
     {
         if (_currentFocusIndex >= 0 && _currentFocusIndex < _focusableComponents.Count)
