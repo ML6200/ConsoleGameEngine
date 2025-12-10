@@ -36,6 +36,8 @@ public class UiInputField : GraphicsComponent, IFocusable
 
     private event EventHandler OnTextChanged;
     public ConsoleColor FocusedBgColor { get; set; } = ConsoleColor.Cyan;
+    public ConsoleColor FocusedFgColor { get; set; } = ConsoleColor.Black;
+    
     private InputManager _inputManager;
     
     public UiInputField(string text)
@@ -84,7 +86,7 @@ public class UiInputField : GraphicsComponent, IFocusable
     private void UpdateSize()
     {
         int minWidth = HasBorder ? _text.Length + 2 : _text.Length;
-        int minHeight = HasBorder ? 2 : 1;
+        int minHeight = 1;
         
         int newWidth = Math.Max(minWidth, Size.Width);
         int newHeight = Math.Max(minHeight, Size.Height);
@@ -98,6 +100,7 @@ public class UiInputField : GraphicsComponent, IFocusable
 
         // UI buttons render directly at world position (no camera transformation)
         var bgColor = IsFocused ? FocusedBgColor : BackgroundColor;
+        var fgColor = IsFocused ? FocusedFgColor : ForegroundColor;
 
         // Szoveg
         int padding = (Size.Width-Text.Length) / 2;
@@ -113,7 +116,7 @@ public class UiInputField : GraphicsComponent, IFocusable
                 Size.Height,
                 ' ',
                 bgColor,
-                ForegroundColor
+                fgColor
             );
 
             // Szegely
@@ -129,14 +132,14 @@ public class UiInputField : GraphicsComponent, IFocusable
                 Size.Height,
                 ' ',
                 bgColor,
-                ForegroundColor
+                fgColor
             );
         }
         
         int textXIndex = Size.Width - Text.Length - 1;
         //Text.Substring(textXIndex, Text.Length - 1)
-        renderer.DrawText(textX, textY, Text, bgColor, ForegroundColor);
+        renderer.DrawText(textX, textY, Text, bgColor, fgColor);
         renderer.SetCell(textX + CursorPosition, textY, 
-            new ('_', bgColor, ForegroundColor));
+            new ('_', bgColor, fgColor));
     }
 }
