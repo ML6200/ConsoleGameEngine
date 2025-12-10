@@ -38,7 +38,7 @@ public static class AnimationTween
     {
         return new Animation(duration, progress =>
         {
-            button.NormalBgColor = progress < 0.5f ? from : to;
+            button.BackgroundColor = progress < 0.5f ? from : to;
         });
     }
 

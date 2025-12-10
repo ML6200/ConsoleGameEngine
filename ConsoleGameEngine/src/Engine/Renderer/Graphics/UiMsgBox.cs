@@ -37,8 +37,20 @@ public class UiMsgBox : UiPanel
             ForegroundColor = ConsoleColor.White,
             BackgroundColor = this.BackgroundColor,
         };
-        _cancelButton = new UiButton("Cancel");
-        _okButton = new UiButton("OK");
+        _cancelButton = new UiButton("Cancel")
+        {
+            BackgroundColor = ConsoleColor.DarkBlue,
+            ForegroundColor = ConsoleColor.White,
+            FocusedBgColor = ConsoleColor.Yellow,
+            FocusedFgColor = ConsoleColor.DarkBlue
+        };
+        _okButton = new UiButton("OK")
+        {
+            BackgroundColor = ConsoleColor.DarkBlue,
+            ForegroundColor = ConsoleColor.White,
+            FocusedBgColor = ConsoleColor.Yellow,
+            FocusedFgColor = ConsoleColor.DarkBlue
+        };
         
         _okButton.OnClick += (e, s) => Close(MessageOptionState.Ok);
         _cancelButton.OnClick += (e, s) => Close(MessageOptionState.Cancel);

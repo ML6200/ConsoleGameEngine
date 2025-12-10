@@ -25,9 +25,10 @@ public class UiButton : GraphicsComponent, IFocusable
     public bool HasBorder { get; set; } = false;
 
     public event EventHandler OnClick;
-
-    public ConsoleColor NormalBgColor { get; set; } = ConsoleColor.DarkGray;
+    
     public ConsoleColor FocusedBgColor { get; set; } = ConsoleColor.Cyan;
+    public ConsoleColor FocusedFgColor { get; set; } = ConsoleColor.Cyan;
+    
     public UiButton(string text)
     {
         Text = text;
@@ -72,7 +73,8 @@ public class UiButton : GraphicsComponent, IFocusable
         if (WorldPosition == null) return;
 
         // UI buttons render directly at world position (no camera transformation)
-        var bgColor = IsFocused ? FocusedBgColor : NormalBgColor;
+        ConsoleColor bgColor = IsFocused ? FocusedBgColor : BackgroundColor;
+        ConsoleColor fgColor = IsFocused ? FocusedFgColor : ForegroundColor;
 
         if (HasBorder)
         {
@@ -83,7 +85,7 @@ public class UiButton : GraphicsComponent, IFocusable
                 Size.Height,
                 ' ',
                 bgColor,
-                ForegroundColor
+                fgColor
             );
 
             // Szegely
@@ -93,7 +95,7 @@ public class UiButton : GraphicsComponent, IFocusable
                 Size.Width,
                 Size.Height,
                 bgColor,
-                BorderColor
+                fgColor
             );
         }
         else
@@ -105,7 +107,7 @@ public class UiButton : GraphicsComponent, IFocusable
                 Size.Height,
                 ' ',
                 bgColor,
-                ForegroundColor
+                fgColor
             );
         }
 
@@ -114,6 +116,6 @@ public class UiButton : GraphicsComponent, IFocusable
         int textX = WorldPosition.X + padding;
         int textY = WorldPosition.Y + Size.Height / 2;
 
-        renderer.DrawText(textX, textY, Text, bgColor, ForegroundColor);
+        renderer.DrawText(textX, textY, Text, bgColor, fgColor);
     }
 }

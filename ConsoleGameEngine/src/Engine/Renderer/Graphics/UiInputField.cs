@@ -23,6 +23,7 @@ public class UiInputField : GraphicsComponent, IFocusable
         get => _text;
         set
         {
+            OnTextChanged?.Invoke(this, EventArgs.Empty);
             _text = value;
             UpdateSize(); //for growth later
         }
@@ -33,9 +34,7 @@ public class UiInputField : GraphicsComponent, IFocusable
     
     public bool HasBorder { get; set; } = false;
 
-    private event EventHandler KeyPressed;
-
-    public ConsoleColor NormalBgColor { get; set; } = ConsoleColor.DarkGray;
+    private event EventHandler OnTextChanged;
     public ConsoleColor FocusedBgColor { get; set; } = ConsoleColor.Cyan;
     private InputManager _inputManager;
     
@@ -70,14 +69,14 @@ public class UiInputField : GraphicsComponent, IFocusable
             && param.Key != ConsoleKey.UpArrow)
         {
             _isDeleting = false;
-            _text += param.KeyChar;
+            Text += param.KeyChar;
         }
         else if (param.Key == ConsoleKey.Backspace)
         {
-            if (_text.Length > 0)
+            if (Text.Length > 0)
             {
                 _isDeleting = true;
-                _text = _text.Substring(0, _text.Length - 1);
+                Text = _text.Substring(0, Text.Length - 1);
             }
         }
     }
@@ -98,7 +97,7 @@ public class UiInputField : GraphicsComponent, IFocusable
         if (WorldPosition == null) return;
 
         // UI buttons render directly at world position (no camera transformation)
-        var bgColor = IsFocused ? FocusedBgColor : NormalBgColor;
+        var bgColor = IsFocused ? FocusedBgColor : BackgroundColor;
 
         // Szoveg
         int padding = (Size.Width-Text.Length) / 2;
