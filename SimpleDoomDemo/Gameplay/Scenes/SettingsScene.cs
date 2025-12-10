@@ -8,11 +8,13 @@ namespace SimpleDoomDemo.Gameplay.Scenes;
 public class SettingsScene : IGameScene
 {
     private UiPanel _settingsPanel;
-    private UiInputField _inputField;
     private UiButton _backButton;
     private UiButton _saveAndBackButton;
+    
+    private UiInputField _inputField;
     private UiLabel _titleLabel;
     private UiLabel _mapLabel;
+    private UiButton _browseButton;
     private ConsoleEngine _engine;
     
     public void Initialize(ConsoleEngine consoleEngine)
@@ -54,25 +56,6 @@ public class SettingsScene : IGameScene
             FocusedFgColor = ConsoleColor.Yellow
         };
         _settingsPanel.AddChild(_backButton);
-
-
-        // map setting
-        _mapLabel = new UiLabel("Default map path:")
-        {
-            RelativePosition = new Point2D(3, 3),
-            BackgroundColor = ConsoleColor.DarkBlue,
-            ForegroundColor = ConsoleColor.Yellow,
-        };
-        _settingsPanel.AddChild(_mapLabel);
-        _inputField = new UiInputField(DoomGameManager.DefaultMapPath)
-        {
-            RelativePosition = new Point2D(3, 4),
-            Size = new Dimension2D(40, 1),
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ForegroundColor = ConsoleColor.Blue,
-        };
-        _settingsPanel.AddChild(_inputField);
-        _settingsPanel.AddChild(_backButton);
     }
 
     private void Back(object? sender, EventArgs e)
@@ -98,13 +81,48 @@ public class SettingsScene : IGameScene
 
     public void OnEnter()
     {
+        // map setting
+        _mapLabel = new UiLabel("Default map path:")
+        {
+            RelativePosition = new Point2D(3, 3),
+            BackgroundColor = ConsoleColor.DarkBlue,
+            ForegroundColor = ConsoleColor.Yellow,
+        };
+        _settingsPanel.AddChild(_mapLabel);
+        
+        _inputField = new UiInputField(DoomGameManager.DefaultMapPath)
+        {
+            RelativePosition = new Point2D(3, 4),
+            Size = new Dimension2D(40, 1),
+            BackgroundColor = ConsoleColor.DarkYellow,
+            ForegroundColor = ConsoleColor.Blue,
+        };
+        _settingsPanel.AddChild(_inputField);
+
+        _browseButton = new UiButton("Browse")
+        {
+            RelativePosition = new Point2D(_inputField.Size.Width + 4, 4),
+            BackgroundColor = ConsoleColor.Blue,
+            ForegroundColor = ConsoleColor.Yellow,
+            FocusedBgColor = ConsoleColor.Yellow,
+            FocusedFgColor = ConsoleColor.Blue
+        };
+        _settingsPanel.AddChild(_browseButton);
+        
         _engine.RenderManager.FocusManager.Register(_saveAndBackButton);
         _engine.RenderManager.FocusManager.Register(_backButton);
         _engine.RenderManager.FocusManager.Register(_inputField);
+        _engine.RenderManager.FocusManager.Register(_browseButton);
         
         _saveAndBackButton.OnClick += SaveAndBack;
         _backButton.OnClick += Back;
         _engine.RenderManager.OnWindowResized += ResizePanel;
+        _browseButton.OnClick += Browse;
+    }
+
+    private void Browse(object? sender, EventArgs e)
+    {
+        
     }
 
     private void ResizePanel(object? sender, EventArgs e)
