@@ -225,6 +225,14 @@ public abstract class GraphicsComponent : IRenderable
         }
     }
 
+    public void RemoveAllChildren()
+    {
+        lock (_childrenLock)
+        {
+            Children.Clear();
+        }
+    }
+
     public List<GraphicsComponent> GetChildrenSnapshot()
     {
         lock (_childrenLock)
