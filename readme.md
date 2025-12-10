@@ -28,7 +28,7 @@ ConsoleGameEngine-Separate/
 │               └── Graphics/              # Components, panels, UI
 ├── ConsoleGameEngine.Demo/     # Basic demo project
 ├── ConsoleGameEngine.Tests/    # Unit tests
-└── SimpleDoomDemo/             # Doom-like game demo with ECS
+└── SimpleDoomDemo/             # Doom-like game demo
 ```
 
 ## Requirements
@@ -110,7 +110,6 @@ public interface IGameScene
 The project includes one main demonstration:
 
 1. **SimpleDoomDemo**: A Doom-like game showcasing:
-   - Entity-Component-System (ECS) architecture
    - Multiple game systems (Movement, Combat, AI, Interaction)
    - Visibility/fog-of-war mechanics (hiding unnecessary entities)
    - Advanced gameplay features (still in developmnet)
@@ -132,6 +131,7 @@ The project includes one main demonstration:
 - More advanced audio system
 - Custom map editor
 - Settings management
+- Entity-Component-System (ECS) architecture
 
 ## Development
 
