@@ -102,8 +102,20 @@ public class MainMenuScene : IGameScene
         _engine.RenderManager.FocusManager.Register(_settingsButton);
         _engine.RenderManager.FocusManager.Register(_mapEditButton);
         _engine.RenderManager.FocusManager.Register(_quitButton);
+        
+        _engine.RenderManager.OnWindowResized += WindowResized;
+    }
 
-        // Subscribe to input for navigation
+    private void WindowResized(object? sender, EventArgs e)
+    {
+        int x = _engine.RootPanel().ScreenSize.Width / 2 - _menuPanel.Size.Width / 2;
+        int y = _engine.RootPanel().ScreenSize.Height / 2 - _menuPanel.Size.Height / 2;
+        
+        foreach (var child in _menuPanel.Children)
+        {
+            child.RelativePosition = new Point2D(x, y) + child.RelativePosition;
+        }
+        _menuPanel.Size = _engine.RootPanel().Size;
     }
 
     private void Settings(object? sender, EventArgs e)
