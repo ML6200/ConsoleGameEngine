@@ -5,12 +5,12 @@ A modern 2D game engine for rendering games directly in the terminal using ANSI 
 ## Features
 
 - **Console Rendering**: ANSI-based color rendering for cross-platform terminal support
-- **Multi-threaded Architecture**: Separate update (60 UPS) and render (60 FPS) threads for smooth gameplay
+- **Multi-threaded Architecture**: Separate timers for both update (60 UPS) and render (60 FPS) threads for smooth gameplay, yet better control
 - **Component System**: Hierarchical component-based architecture with parent-child relationships
 - **Scene Management**: Clean lifecycle management with `Initialize`, `OnEnter`, `OnUpdate`, and `OnExit` callbacks
-- **Optimized Rendering**: Dirty-cell tracking to minimize unnecessary screen updates
+- **Optimized Rendering**: Utilized stdout with byte buffer for faster access and culling for optimized rendering
 - **Input Handling**: Event-based input system for responsive controls
-- **Audio Support**: Integrated audio via NAudio library
+- **Audio Support**: Integrated audio via NAudio library for Windows and afplay for Mac
 - **Camera System**: Viewport and camera support (in development)
 
 ## Project Structure
@@ -28,7 +28,7 @@ ConsoleGameEngine-Separate/
 │               └── Graphics/              # Components, panels, UI
 ├── ConsoleGameEngine.Demo/     # Basic demo project
 ├── ConsoleGameEngine.Tests/    # Unit tests
-└── SimpleDoomDemo/             # Doom-like game demo with ECS
+└── SimpleDoomDemo/             # Doom-like game demo
 ```
 
 ## Requirements
@@ -110,7 +110,6 @@ public interface IGameScene
 The project includes one main demonstration:
 
 1. **SimpleDoomDemo**: A Doom-like game showcasing:
-   - Entity-Component-System (ECS) architecture
    - Multiple game systems (Movement, Combat, AI, Interaction)
    - Visibility/fog-of-war mechanics (hiding unnecessary entities)
    - Advanced gameplay features (still in developmnet)
@@ -125,13 +124,14 @@ The project includes one main demonstration:
 - Scene management
 
 ### In Development
-- Camera viewport system (placeholder exists, implementation in progress)
+- Camera viewport system (works if implemented for an actor, implementation in progress)
 - World-to-screen coordinate transformation
 - Viewport culling for large worlds
 - Camera following and tracking
 - More advanced audio system
 - Custom map editor
 - Settings management
+- Entity-Component-System (ECS) architecture support
 
 ## Development
 
