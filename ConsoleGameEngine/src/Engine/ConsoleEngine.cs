@@ -79,9 +79,9 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
 
         // Initialize camera after _rootComponent is created
         Camera = new ConsoleCamera(
-            new Dimension2D(width, height),  // World size matches screen for now
+            new Dimension2D(width, height),  
             new Point2D(0, 0),
-            new Dimension2D(width, height)   // Camera size matches screen
+            new Dimension2D(width, height)
         );
 
         _renderManager = new ConsoleRenderManager(_renderer, Camera, _rootComponent, _targetUpdatesPerSecond);
@@ -135,11 +135,11 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         }
     }
 
+    private readonly Stopwatch _updateDeltaTimer = Stopwatch.StartNew();
     public void OnUpdate()
     {
-        DateTime now = DateTime.Now;
-        double deltaTime = (now - _lastUpdateTime).TotalMilliseconds / 1000.0;
-        _lastUpdateTime = now;
+        double deltaTime = _updateDeltaTimer.Elapsed.TotalSeconds;
+        _updateDeltaTimer.Restart();
         
         lock (_sceneLock)
         {
@@ -151,10 +151,9 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
                 _currentScene.OnEnter();
             }
         }
-        // minden komponens frissitese
+        // update all components
         RootPanel().Update(deltaTime);
         _currentScene?.OnUpdate(deltaTime);
-        
     }
     
     public void LoadScene(IGameScene scene)
@@ -180,7 +179,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         _inputManager.Dispose();
     }
     
-    Stopwatch timer = new Stopwatch();
+    private readonly Stopwatch _updateTimer = Stopwatch.StartNew();
     public void UpdateLoop()
     {
         if (!_isInitialized)
@@ -196,19 +195,19 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         { 
             long targetTicksPerUpdate = Stopwatch.Frequency / _targetUpdatesPerSecond;
             
-            timer.Restart();
+            _updateTimer.Restart();
 
             OnUpdate();
             
-            while (targetTicksPerUpdate > timer.ElapsedTicks)
+            while (targetTicksPerUpdate > _updateTimer.ElapsedTicks)
             {
-                if (targetTicksPerUpdate - timer.ElapsedTicks > 20_000)
+                if (targetTicksPerUpdate - _updateTimer.ElapsedTicks > 20_000)
                 {
                     Thread.Sleep(1);
                 }
             }
             
-            double updateTime = timer.Elapsed.TotalMilliseconds;
+            double updateTime = _updateTimer.Elapsed.TotalMilliseconds;
             if (updateTime > 0)
             {
                 CurrentUpdateRate = 1000.0D / updateTime;
@@ -246,7 +245,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         _isRunning = false;
         _cancellationTokenSource?.Cancel();
 
-        // Keves timeout a befejezesig
+        // timeout for canceled theread
         if (_updateThread != null && _updateThread.IsAlive)
         {
             _updateThread.Join(1000);
