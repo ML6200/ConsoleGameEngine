@@ -36,7 +36,7 @@ public class GameItem : GraphicsComponent
             case ItemType.Door:
                 FillingRatio = 1.0;
                 BackgroundColor = ConsoleColor.Gray;
-                ForegroundColor = ConsoleColor.Yellow;
+                ForegroundColor = ConsoleColor.Black;
                 _glyph = '/';
                 break;
 
@@ -89,12 +89,12 @@ public class GameItem : GraphicsComponent
             if (FillingRatio.Equals(1.0))
             {
                 FillingRatio = 0.0;
-                ForegroundColor = ConsoleColor.DarkYellow;
+                ForegroundColor = ConsoleColor.Black;
                 _glyph = '/';
             }
             else
             {
-                ForegroundColor = ConsoleColor.Yellow;
+                ForegroundColor = ConsoleColor.Black;
                 FillingRatio = 1.0;
                 _glyph = '\\';
             }
