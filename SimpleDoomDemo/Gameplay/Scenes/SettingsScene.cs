@@ -25,6 +25,7 @@ public class SettingsScene : IGameScene
             BackgroundColor = ConsoleColor.DarkBlue,
             ForegroundColor = ConsoleColor.White,
             Size = _engine.RootPanel().Size,
+            BorderColor = ConsoleColor.Yellow
         };
         
         _engine.RootPanel().AddChild(_settingsPanel);

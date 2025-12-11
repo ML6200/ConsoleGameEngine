@@ -101,6 +101,8 @@ public class MapEditorScene : IGameScene
         _mapper = new Mapper();
     }
 
+    private bool _isEntityAdded = false;
+    
     private void HandleUserInput(object? sender, KeyEventArgs e)
     {
         switch (e.Key)
@@ -141,7 +143,7 @@ public class MapEditorScene : IGameScene
                 AddEntity(Mapper.DcmEntity.Zombieman, Mapper.DcmType.Demon);
                 break;
             case ConsoleKey.C:
-                AddEntity(Mapper.DcmEntity.Zombieman, Mapper.DcmType.Demon);
+                AddEntity(Mapper.DcmEntity.Mancubus, Mapper.DcmType.Demon);
                 break;
             case ConsoleKey.I:
                 AddEntity(Mapper.DcmEntity.Imp, Mapper.DcmType.Demon);
@@ -160,6 +162,15 @@ public class MapEditorScene : IGameScene
                 RemoveEntity(_cursor.WorldPosition);
                 break;
         }
+    }
+
+    private void PlaceCursorOnTop()
+    {
+        if (!_isEntityAdded) return;
+
+        _editorPanel.RemoveChild(_cursor);
+        _editorPanel.AddChild(_cursor);
+        _isEntityAdded = false;
     }
 
     private void OpenMap(string filename)
@@ -223,11 +234,11 @@ public class MapEditorScene : IGameScene
         Point2D targetPoint = _cursor.WorldPosition;
         if (_mapper.IsPositionAcquired(targetPoint))
             return;
-        _editorPanel.RemoveChild(_cursor);
+        
         _mapper.AddObject(targetPoint, dmType, entity);
         _editorPanel.AddChild(_mapper.DcmList[^1].Value); 
-        _editorPanel.AddChild(_cursor);
         _isModified = true;
+        _isEntityAdded =  true;
     }
 
     private void RemoveEntity(Point2D point)
@@ -240,6 +251,7 @@ public class MapEditorScene : IGameScene
     {
         Point2D targetPoint = _cursor.WorldPosition + new Point2D(x, y);
         _cursor.RelativePosition = targetPoint;
+        PlaceCursorOnTop();
     }
 
     private void HandleOpen()
@@ -257,6 +269,9 @@ public class MapEditorScene : IGameScene
 
     private void HandleBack()
     {
+        if (_mapper.DcmList.Count == 0)
+            return;
+        
         _engine.Input.OnKeyPressed -= HandleUserInput;
         UiMsgBox msgBox = new UiMsgBox(_engine.RootPanel(), _engine.RenderManager, _engine.Input,
             "Save?", "Do you want to save your work? " +
@@ -267,13 +282,12 @@ public class MapEditorScene : IGameScene
             _engine.RenderManager.FocusManager.UnregisterAll();
             if (state == MessageOptionState.Ok)
             {
-                if (_mapper.DcmList.Count > 0)
-                {
+                
                     UiInputBox msgBox2 = new UiInputBox(_engine.RootPanel(), 
                         _engine.RenderManager, _engine.Input,
                         "Do you want to save your work?", "");
                     msgBox2.OnComplete += SaveMap;
-                }
+                    msgBox2.OnCancelled += SaveAborted;
             }
             else
             {
@@ -283,6 +297,10 @@ public class MapEditorScene : IGameScene
                     HandleOpen();
             }
         };
+    }
+
+    private void SaveAborted(object? sender, EventArgs e)
+    {
     }
 
     public void OnUpdate(double deltaTime)
@@ -303,13 +321,15 @@ public class MapEditorScene : IGameScene
             RelativePosition = new Point2D(x, y);
         }
 
+        public char Glyph { get; set; } = '⊡';
+
         protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
         {
             Point2D? screenPos = camera.TransformPoint(WorldPosition);
             if (screenPos == null) return; // Off-screen culling
 
             renderer.SetCell(screenPos.X, screenPos.Y,
-                new Cell('⊡', ConsoleColor.Black, ConsoleColor.Green));
+                new Cell(Glyph, ConsoleColor.Black, ConsoleColor.Green));
         }
     }
 }
