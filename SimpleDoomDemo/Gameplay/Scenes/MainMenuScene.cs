@@ -95,17 +95,23 @@ public class MainMenuScene : IGameScene
             msgBox.OnComplete += state =>
             {
                 DoomGameManager.IsTipShown = true;
+                RegisterButtons();
             };
         }
-        
+
+        if (DoomGameManager.IsTipShown) RegisterButtons();
+
+        _engine.RenderManager.OnWindowResized += WindowResized;
+    }
+
+    private void RegisterButtons()
+    {
         _engine.RenderManager.FocusManager.Register(_playButton);
         _engine.RenderManager.FocusManager.Register(_settingsButton);
         _engine.RenderManager.FocusManager.Register(_mapEditButton);
         _engine.RenderManager.FocusManager.Register(_quitButton);
-        
-        _engine.RenderManager.OnWindowResized += WindowResized;
     }
-    
+
     private void WindowResized(object? sender, EventArgs e)
     {
         int x = _engine.RootPanel().ScreenSize.Width / 2 - _menuPanel.Size.Width / 2;
