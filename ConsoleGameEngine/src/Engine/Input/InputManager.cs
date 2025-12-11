@@ -37,8 +37,6 @@ public class InputManager: IDisposable
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 HandleKeyPressed(keyInfo);
             }
-            // Egy keves kesleltetes a cpu-spinning elkerulesere:
-            Thread.Sleep(5);
         }
     }
 
