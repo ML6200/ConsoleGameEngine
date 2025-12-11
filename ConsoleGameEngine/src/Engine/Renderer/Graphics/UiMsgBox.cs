@@ -14,6 +14,8 @@ public class UiMsgBox : UiPanel
     private readonly UiButton _cancelButton;
     private readonly GraphicsComponent _parent;
     private readonly UiButton _okButton;
+    private readonly ConsoleRenderManager _renderManager;
+    private readonly InputManager _inputManager;
     
     public event Action<MessageOptionState>? OnComplete;
 
@@ -21,9 +23,14 @@ public class UiMsgBox : UiPanel
         InputManager inputManager,
         string title, string message)
     {
+        _renderManager = renderManager;
+        _inputManager = inputManager;
+        
         ForegroundColor = ConsoleColor.White;
         BackgroundColor = ConsoleColor.Blue;
+        BorderColor = ConsoleColor.White;
         parent.AddChild(this);
+        
         _parent = parent;
         _title = title;
         _message = message;
@@ -55,13 +62,7 @@ public class UiMsgBox : UiPanel
         _okButton.OnClick += (e, s) => Close(MessageOptionState.Ok);
         _cancelButton.OnClick += (e, s) => Close(MessageOptionState.Cancel);
         
-        inputManager.OnKeyPressed += (e, s) =>
-        {
-            if (s.Key == ConsoleKey.Y )
-                Close(MessageOptionState.Ok);
-            else if (s.Key == ConsoleKey.Escape || s.Key == ConsoleKey.N)
-                Close(MessageOptionState.Cancel);
-        };
+        inputManager.OnKeyPressed += HandleYesNo;
         
         AddChild(_titleLabel);
         AddChild(_messageLabel);
@@ -76,11 +77,22 @@ public class UiMsgBox : UiPanel
         ComputePositions();
     }
 
+    private void HandleYesNo(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == ConsoleKey.Y )
+            Close(MessageOptionState.Ok);
+        else if (e.Key == ConsoleKey.Escape || e.Key == ConsoleKey.N)
+            Close(MessageOptionState.Cancel);
+    }
+
     private void Close(MessageOptionState option)
     {
+        _inputManager.OnKeyPressed -= HandleYesNo;
         OnComplete?.Invoke(option);
-        Visible = false;
+        _renderManager.FocusManager.Unregister(_okButton);
+        _renderManager.FocusManager.Unregister(_cancelButton);
         _parent.RemoveChild(this);
+        Visible = false;
     }
 
 

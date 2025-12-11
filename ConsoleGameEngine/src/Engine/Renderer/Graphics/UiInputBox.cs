@@ -19,6 +19,7 @@ public class UiInputBox : UiPanel
     private readonly UiButton _cancelButton;
     private readonly GraphicsComponent _parent;
     private readonly UiButton _okButton;
+    private readonly ConsoleRenderManager _renderManager;
     private Logger _logger = LogManager.GetCurrentClassLogger();
     
     public event Action<string>? OnComplete;
@@ -28,6 +29,8 @@ public class UiInputBox : UiPanel
         InputManager inputManager,
         string title, string message)
     {
+        _renderManager = renderManager;
+        
         ForegroundColor = ConsoleColor.White;
         BackgroundColor = ConsoleColor.Blue;
         
@@ -92,6 +95,9 @@ public class UiInputBox : UiPanel
     {
         Visible = false;
         _parent.RemoveChild(this);
+        _renderManager.FocusManager.Unregister(_inputField);
+        _renderManager.FocusManager.Unregister(_okButton);
+        _renderManager.FocusManager.Unregister(_cancelButton);
     }
 
     
