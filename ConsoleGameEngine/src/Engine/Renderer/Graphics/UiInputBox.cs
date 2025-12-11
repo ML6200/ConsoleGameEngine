@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Runtime.InteropServices.ComTypes;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using NLog;
@@ -20,6 +22,7 @@ public class UiInputBox : UiPanel
     private Logger _logger = LogManager.GetCurrentClassLogger();
     
     public event Action<string>? OnComplete;
+    public event EventHandler OnCancelled;
 
     public UiInputBox(GraphicsComponent parent, ConsoleRenderManager renderManager, 
         InputManager inputManager,
@@ -60,15 +63,15 @@ public class UiInputBox : UiPanel
             FocusedFgColor = ConsoleColor.DarkBlue
         };
         
-        _okButton.OnClick += (e, s) => Close();
-        _cancelButton.OnClick += (e, s) => Close();
-
-        inputManager.OnKeyPressed += (e, s) =>
+        _okButton.OnClick += (e, s) =>
         {
-            if (s.Key == ConsoleKey.Y)
-                Close();
-            else if (s.Key == ConsoleKey.Escape || s.Key == ConsoleKey.N)
-                Close();
+            OnComplete?.Invoke(_inputField.Text);
+            Close();
+        };
+        _cancelButton.OnClick += (e, s) =>
+        {
+            OnCancelled?.Invoke(this, EventArgs.Empty);
+            Close();
         };
         
         AddChild(_titleLabel);
@@ -87,7 +90,6 @@ public class UiInputBox : UiPanel
 
     private void Close()
     {
-        OnComplete?.Invoke(_inputField.Text);
         Visible = false;
         _parent.RemoveChild(this);
     }
