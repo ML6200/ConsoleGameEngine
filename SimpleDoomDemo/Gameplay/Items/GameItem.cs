@@ -90,11 +90,13 @@ public class GameItem : GraphicsComponent
             {
                 FillingRatio = 0.0;
                 ForegroundColor = ConsoleColor.DarkYellow;
+                _glyph = '/';
             }
             else
             {
                 ForegroundColor = ConsoleColor.Yellow;
                 FillingRatio = 1.0;
+                _glyph = '\\';
             }
         }
     }
