@@ -109,7 +109,8 @@ public class UiInputBox : UiPanel
         
         /* 3 below title, 1 below the message*/
         int vertical = _titleLabel.Size.Height + _titleLabel.Size.Height + 4;
-        Size = new Dimension2D(horizontal, vertical);
+        Width = horizontal;
+        Height = vertical;
     }
 
     private void ComputePositions()

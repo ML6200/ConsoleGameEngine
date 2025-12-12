@@ -23,18 +23,23 @@ public class UiLabel : GraphicsComponent
 
     private void UpdateSize()
     {
-        Size = new Dimension2D(Text.Length, 1);
+        SetSize();
     }
 
     public UiLabel()
     {
-        Size = new Dimension2D(Text.Length, 1);
+        SetSize();
     }
 
     public UiLabel(string text)
     {
         Text = text;
         UpdateSize();
+    }
+    
+    private void SetSize()
+    {
+        Height = 1;
     }
 
     protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)

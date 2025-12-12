@@ -65,7 +65,8 @@ public class UiButton : GraphicsComponent, IFocusable
         
         int newWidth = Math.Max(minWidth, Size.Width);
         int newHeight = Math.Max(minHeight, Size.Height);
-        Size = new Dimension2D(newWidth, newHeight);
+        Width = newWidth;
+        Height = newHeight;
     }
 
     protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Animations;
 
@@ -71,7 +72,7 @@ public abstract class GraphicsComponent : IRenderable
     protected int Width;
     protected int Height;
 
-    private Point2D _relativePosition = new Point2D(0, 0);
+    private Point2D _relativePosition = new(0, 0);
     public virtual bool Visible { get; set; } = true;
     
     public ConsoleColor BackgroundColor { get; set; }
@@ -82,7 +83,7 @@ public abstract class GraphicsComponent : IRenderable
     public List<GraphicsComponent> Children { get; } = new();
     private IRenderable Parent { get; set; }
     
-    private readonly object _childrenLock = new();
+    private readonly Lock _childrenLock = new();
     
     
     public Dimension2D ScreenSize => new(Console.WindowWidth, Console.WindowHeight);
@@ -120,10 +121,7 @@ public abstract class GraphicsComponent : IRenderable
     // ====================POSITIONING====================
     public Dimension2D Size
     {
-        get
-        {
-            return new Dimension2D(Width, Height);
-        }
+        get => new(Width, Height);
         set
         {
             Width = value.Width;
