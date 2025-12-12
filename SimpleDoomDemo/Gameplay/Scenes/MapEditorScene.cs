@@ -217,7 +217,7 @@ public class MapEditorScene : IGameScene
 
     private void MarkStateUnsaved()
     {
-        _state = string.IsNullOrEmpty(_filePath) ?  
+        _state = string.IsNullOrEmpty(_filePath) ? 
             EditorState.Changed : EditorState.ChangedHasPath;
     }
 
@@ -280,7 +280,7 @@ public class MapEditorScene : IGameScene
 
     private void SaveMap(string filename)
     {
-        if (_state is EditorState.ChangedHasPath)
+        if (_state is EditorState.ChangedHasPath or EditorState.Changed)
         {
             _mapper.SaveMap(filename);
             ReloadMap();
