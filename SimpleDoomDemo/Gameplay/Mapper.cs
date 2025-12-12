@@ -60,33 +60,32 @@ public class Mapper
     {
         if (FileUtil.FileHasExtension(path, ".dcmf"))
         {
-            using StreamReader reader = new StreamReader(path);
-
+            StreamReader reader;
             string? line;
             try
             {
-                while ((line = reader.ReadLine()) != null)
+                using (reader = new StreamReader(path))
                 {
-                    if (line.StartsWith("#")) continue;
-                    
-                    string[] columns = line.Split(";");
-                    if (columns.Length != 4) throw new Exception("Invalid map file format");
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        if (line.StartsWith("#")) continue;
 
-                    Point2D pos = new Point2D(int.Parse(columns[0]), int.Parse(columns[1]));
-                    DcmType type = ParseDcmfType(columns[2]);
-                    DcmEntity entity =  ParseDcmEntity(columns[3]);
-                    
-                    AddObject(pos, type, entity);
+                        string[] columns = line.Split(";");
+                        if (columns.Length != 4) throw new Exception("Invalid map file format");
+
+                        Point2D pos = new Point2D(int.Parse(columns[0]), int.Parse(columns[1]));
+                        DcmType type = ParseDcmfType(columns[2]);
+                        DcmEntity entity = ParseDcmEntity(columns[3]);
+
+                        AddObject(pos, type, entity);
+                    }
+
+                    _logger.Info("Dcmf file loaded");
                 }
-                _logger.Info("Dcmf file loaded");
             }
             catch (Exception e)
             {
                 _logger.Error(e.Message);
-            }
-            finally
-            {
-                reader.Close();
             }
         }
         else
