@@ -10,6 +10,16 @@ namespace SimpleDoomDemo.Gameplay.Scenes;
 
 public class MapEditorScene : IGameScene
 {
+    private enum EditorState
+    {
+        Editing,
+        SavingForExit,
+        SavingForOpen,
+        SavingManual,
+        OpeningFile,
+        Unchanged
+    }
+    
     /*
      * +-----------------------------------
      * |
@@ -25,6 +35,7 @@ public class MapEditorScene : IGameScene
      *
      */
     private ConsoleEngine _engine;
+    private UiPanel _mainPanel;
     private UiPanel _toolBarPanel;
     private UiPanel _editorPanel;
     private UiLabel _placeHolder;
@@ -33,9 +44,7 @@ public class MapEditorScene : IGameScene
     private Mapper _mapper;
     
     private string _mapPath;
-    private bool _isModified;
-    private bool _isOpenPending;
-    private bool _isExitPending;
+    private EditorState _state = EditorState.Unchanged;
     private string _filePath = "";
 
     public MapEditorScene(string mapPath)
@@ -50,6 +59,18 @@ public class MapEditorScene : IGameScene
 
     public void OnEnter()
     {
+        // _mainPanel = new UiPanel()
+        // {
+        //     RelativePosition = new Point2D(0, 0),
+        //     BackgroundColor = ConsoleColor.Black,
+        //     ForegroundColor = ConsoleColor.White,
+        //     Size = _engine.RootPanel().ScreenSize,
+        //     HasBorder = true,
+        //     BorderColor = ConsoleColor.White
+        // };
+        //_engine.RootPanel().AddChild(_mainPanel);
+        //_engine.RootPanel().AddChild(_editorPanel);
+        
         _toolBarPanel = new UiPanel()
         {
             RelativePosition = new Point2D(0, 0),
@@ -63,12 +84,11 @@ public class MapEditorScene : IGameScene
             RelativePosition = new Point2D(0, 0),
             BackgroundColor = ConsoleColor.Black,
             ForegroundColor = ConsoleColor.White,
-            Size = new Dimension2D(_engine.RootPanel().ScreenSize.Width,
-                _engine.RootPanel().ScreenSize.Height),
-            HasBorder = false
+            Size = _engine.RootPanel().Size,
+            HasBorder = false,
         };
+        //_mainPanel.AddChild(_editorPanel);
         _engine.RootPanel().AddChild(_editorPanel);
-        //_engine.RootPanel().AddChild(_toolBarPanel);
         
         int centerX = _engine.RootPanel().ScreenSize.Width / 2;
         int centerY = _engine.RootPanel().ScreenSize.Height / 2;
@@ -80,7 +100,7 @@ public class MapEditorScene : IGameScene
             BackgroundColor = ConsoleColor.Gray,
         };
         _placeHolder.RelativePosition = new Point2D(centerX - _placeHolder.Size.Width / 2, 0);
-        _toolBarPanel.AddChild(_placeHolder);
+        //_toolBarPanel.AddChild(_placeHolder);
 
         _backButton = new UiButton()
         {
@@ -97,10 +117,16 @@ public class MapEditorScene : IGameScene
         
         _engine.RenderManager.FocusManager.Register(_backButton);
         _engine.Input.OnKeyPressed += HandleUserInput;
+        _engine.Camera.CameraSize = _engine.RootPanel().ScreenSize;
 
         _cursor = new Cursor(0, 0);
         _editorPanel.AddChild(_cursor);
         _mapper = new Mapper();
+        _engine.RenderManager.OnWindowResized += (sender, args) =>
+        {
+            _editorPanel.Size = _engine.RootPanel().ScreenSize;
+            _engine.Camera.CameraSize = _engine.RootPanel().ScreenSize;
+        };
     }
 
     private bool _isEntityAdded;
@@ -173,6 +199,7 @@ public class MapEditorScene : IGameScene
             switch (e.Key)
             {
                 case ConsoleKey.S:
+                    _state = EditorState.SavingManual;
                     HandleSave();   
                     break;
                 case ConsoleKey.O:
@@ -189,36 +216,43 @@ public class MapEditorScene : IGameScene
         _editorPanel.RemoveChild(_cursor);
         _editorPanel.AddChild(_cursor);
         _isEntityAdded = false;
+        _state = EditorState.Editing;
     }
 
     private void OpenMap(string filename)
     {
+        _state = EditorState.OpeningFile;
         _filePath = filename;
         ReloadMap();
-        _isOpenPending = false;
         _editorPanel.AddChild(_cursor);
         _engine.Input.OnKeyPressed += HandleUserInput;
     }
 
     private void ReloadMap()
     {
-        _isModified = false;
-        _engine.RootPanel().RemoveAllChildren();
+        _editorPanel.RemoveAllChildren();
         _mapper.DcmList.Clear();
         _mapper.LoadFromDcmfFile(_filePath);
-        _engine.RootPanel().AddChild(_editorPanel);
         
         foreach (var dcm in _mapper.DcmList)
         {
             _editorPanel.AddChild(dcm.Value);
         }
+        _editorPanel.AddChild(_cursor);
     }
 
     private void SaveMap(string filename)
     {
+        if (_state is EditorState.SavingForExit)
+        {
+            _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath));
+            return;
+        }
+        
         _mapper.SaveMap(filename);
         _mapper.ClearObjects();
         _filePath = filename;
+        _state = EditorState.SavingManual;
     }
     
     /*
@@ -259,14 +293,17 @@ public class MapEditorScene : IGameScene
         
         _mapper.AddObject(targetPoint, dmType, entity);
         _editorPanel.AddChild(_mapper.DcmList[^1].Value); 
-        _isModified = true;
         _isEntityAdded =  true;
+        _state = EditorState.Editing;
     }
 
     private void RemoveEntity(Point2D point)
     {
         var removed = _mapper.RemoveObject(point);
         if (removed != null) _editorPanel.RemoveChild(removed);
+        
+        _isEntityAdded = false;
+        _state = EditorState.Editing;
     }
     
     private void MoveCursorBy(int x, int y)
@@ -278,18 +315,18 @@ public class MapEditorScene : IGameScene
 
     private void HandleExit()
     {
-        _isExitPending = true;
+        _state = EditorState.SavingForExit;
         HandleSave();
-        _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath));
     }
 
     private void HandleOpen()
     {
-        _isOpenPending = true;
-        if (!_isModified)
-        {
+        _state = EditorState.SavingForOpen;
+        
+        if (_state is EditorState.Editing)
+            HandleUnsaved();
+        else 
             HandleOpenDialog();
-        } else HandleUnsaved();
     }
 
     private void HandleOpenDialog()
@@ -304,26 +341,26 @@ public class MapEditorScene : IGameScene
         msgBox2.OnOk += OpenMap;
         msgBox2.OnCancelled += (sender, args) => 
         {
-            _isOpenPending = false;
+            _state = EditorState.Editing;
             _engine.Input.OnKeyPressed += HandleUserInput;
         };
     }
-
+    
     private void HandleSave()
     {
-        if (_mapper.DcmList.Count == 0 || !_isModified)
-            return;
-
-        if (_filePath.Equals(string.Empty))
+        if (_filePath.Equals(String.Empty) &&
+            _isEntityAdded) // (_state is not EditorState.SavingManual && _isEntityAdded)
         {
             _engine.RenderManager.FocusManager.UnregisterAll();
             _engine.Input.OnKeyPressed -= HandleUserInput;
-            
-            if (_isExitPending || _isOpenPending)
+
+            if (_state is EditorState.SavingForExit or EditorState.SavingForOpen)
                 HandleUnsaved();
             else
                 HandleSaveDialog();
-        } else SaveMap(_filePath);
+        }
+        else
+            SaveMap(_filePath);
     }
     
     private void HandleUnsaved()
@@ -339,13 +376,9 @@ public class MapEditorScene : IGameScene
             _engine.Input.OnKeyPressed -= HandleUserInput;
             
             if (state == MessageOptionState.Ok)
-            {
                 HandleSaveDialog();
-            }
             else
-            {
                 _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath));
-            }
         };
     }
 
@@ -356,11 +389,9 @@ public class MapEditorScene : IGameScene
             "Enter the path of the file", "");
         inpBox.OnOk += s =>
         {
-            _isModified = false;
-            _isExitPending = false;
             SaveMap(s);
             
-            if (_isOpenPending) HandleOpen();
+            if (_state is EditorState.OpeningFile) HandleOpen();
             _engine.Input.OnKeyPressed += HandleUserInput;
         };
         inpBox.OnCancelled += SaveAborted;
