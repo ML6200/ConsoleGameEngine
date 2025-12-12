@@ -1,103 +1,114 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace ConsoleGameEngine.Engine.Renderer.Geometry;
 
-public class Point2D
+public readonly struct Point2D(int x, int y) : IEquatable<Point2D>
 {
-    // =============================FIELDS_PRIVATE==============================
-    private int _x, _y;
+    // =============================FIELDS_PUBLIC==============================
+    public readonly int X = x;
+    public readonly int Y = y;
+
+    // =============================OPERATOR-OVERLOADS==============================
     
-    // =============================SETTERS&GETTERS==============================
-    public int X
-    {
-        get { return _x;}
-        set { _x = value; }
-    }
-
-    public int Y
-    {
-        get => _y;
-        set => _y = value;
-    }
-
-    public Point2D(int x, int y)
-    {
-        this._x = x;
-        this._y = y;
-    }
-
-    public static Point2D operator +(Point2D a, Point2D b)
-    {
-        return new Point2D(a.X + b.X, a.Y + b.Y);
-    }
+    /* ADD */
     
-    // Added scalar constant addition
-    public static Point2D operator +(Point2D a, int b)
-    {
-        return new Point2D(a.X + b, a.Y + b);
-    }
+    /*
+     * [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     * 
+     * We give a hint to the JIT compiler to insert the body into the calling code
+     * therefore it can reduce the amount of stack calls for small frequent calls
+     * It can also increase the size of the compiled binary since its being duplicated
+     * every call, but it can provide benefit for small math functions/helpers  
+     */
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Point2D operator +(Point2D a, Point2D b) 
+        => new(a.X + b.X, a.Y + b.Y);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Point2D operator +(Point2D a, int b) 
+        => new(a.X + b, a.Y + b);
+    
+    /* SUBTRACT */
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Point2D operator -(Point2D a, Point2D b)
+        => new(a.X - b.X, a.Y - b.Y);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Point2D operator -(Point2D a, int b)
+        => new(a.X - b, a.Y - b);
+    
+    /* EQUALS */
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator ==(Point2D a, Point2D b)
+        => a.X == b.X && a.Y == b.Y;
 
-    public static bool operator ==(Point2D? a, Point2D? b)
-    {
-        if (a is null && b is null) return true;
-        if (a is null || b is null) return false;
-        return a.X == b.X && a.Y == b.Y;
-    }
-
-    public static bool operator !=(Point2D? a, Point2D? b)
-    {
-        return !(a == b);
-    }
-
-    public static Point2D operator -(Point2D left, Point2D right)
-    {
-        return new Point2D(left.X - right.X, left.Y - right.Y);
-    }
-
-    // =============================METHODS==============================
-
-    public static double Distance(Point2D position1, Point2D position2)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator !=(Point2D a, Point2D b)
+        => a.X != b.X || a.Y != b.Y;
+    
+    
+    // =============================DISTANCES==============================
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double EuclideanDistance(Point2D position1, Point2D position2)
     {
         return Math.Sqrt(Math.Pow(position2.X - position1.X, 2) + Math.Pow(position2.Y - position1.Y, 2));
     }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int ChebyshevDistance(Point2D position1, Point2D position2)
+    {
+        int dx = position2.X - position1.X;
+        int dy = position2.Y - position1.Y;
+        
+        if (dx < 0) dx = -dx;
+        if (dy < 0) dy = -dy;
+        
+        return dx > dy ? dx : dy;
+    }
 
+    // =============================CLAMPS==============================
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Point2D Clamp(int minX, int maxX, int minY, int maxY)
-    {
-         _x = Math.Max(minX, _x);
-         _x = Math.Min(maxX, _x);
-
-         _y = Math.Max(minY, _y);
-         _y = Math.Min(maxY, _y);
-         
-         return new Point2D(_x, _y);
-    }
-    
-    public Point2D Clamp(Point2D minPoint, Point2D maxPoint)
-    {
-        _x = Math.Max(minPoint.X, _x);
-        _x = Math.Min(maxPoint.X, _x);
-
-        _y = Math.Max(minPoint.Y, _y);
-        _y = Math.Min(maxPoint.Y, _y);
-         
-        return new Point2D(_x, _y);
-    }
-
-    public static void Clamp(int min, int max, out int value)
-    {
-        value = 0;
-        value = Math.Max(min, value);
-        value = Math.Min(max, value);
-    }
-    
-    public Point2D Clamp(Point2D minPoint, Dimension2D maxDimension)
-    {
-        return Clamp(
-            minPoint.X, 
-            maxDimension.Width, 
-            minPoint.Y, 
-            maxDimension.Height
+        => new(
+            Math.Clamp(X, minX, maxX),
+            Math.Clamp(Y, minY, maxY)
         );
-    }
-}
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Point2D Clamp(Point2D min, Point2D max)
+        => new(
+            Math.Clamp(X, min.X, max.X),
+            Math.Clamp(Y, min.Y, max.Y)
+        );
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Point2D Clamp(Point2D min, Dimension2D max)
+        => new(
+            Math.Clamp(X, min.X, max.Width),
+            Math.Clamp(Y, min.Y, max.Height)
+        );
+
+    // =========================VALUE-TYPE-UTILS==========================
+    public bool Equals(Point2D other)
+    {
+        return X == other.X && Y == other.Y;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Point2D other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(X, Y);
+    }
+    
+    public static Point2D NullPoint = new(0, 0);
+    
+    /// <summary>
+    /// OutsideScreenPoint is for culling when the object is outside the sight range
+    /// </summary>
+    public static Point2D OutsideScreenPoint = new(-1, -1);
+}
