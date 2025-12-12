@@ -10,4 +10,24 @@ public struct Dimension2D
         Width = width;
         Height = height;
     }
+    
+    public static Dimension2D operator +(Dimension2D a, Dimension2D b)
+    {
+        return new Dimension2D(a.Width + b.Width, a.Height + b.Height);
+    }
+
+    public static Dimension2D operator +(Dimension2D a, int scalar)
+    {
+        return new Dimension2D(a.Width + scalar, a.Height + scalar);
+    }
+    
+    public static Dimension2D operator -(Dimension2D a, Dimension2D b)
+    {
+        return new Dimension2D(a.Width - b.Width, a.Height - b.Height);
+    }
+    
+    public static Dimension2D operator -(Dimension2D a, int scalar)
+    {
+        return new Dimension2D(a.Width - scalar, a.Height - scalar);
+    }
 }
