@@ -155,32 +155,27 @@ public class MainMenuScene : IGameScene
     private void OnPlayClicked(object sender, EventArgs e)
     {
         // Load game scene
-        if (System.IO.File.Exists(_mapPath))
+        try
         {
-            try
-            {
-                Mapper mapper = new Mapper(_mapPath);
-                DoomGameScene gameScene = new DoomGameScene(mapper.GetPlayer(), 
-                    mapper.CollectDemons(), 
-                    mapper.CollectItems());
-            
-                _engine.LoadScene(gameScene);
-            }
-            catch (Exception exception)
-            {
-                _logger.Error(exception);
-                throw;
-            }
+            Mapper mapper = new Mapper(_mapPath);
+            DoomGameScene gameScene = new DoomGameScene(mapper.GetPlayer(), 
+                mapper.CollectDemons(), 
+                mapper.CollectItems());
+        
+            _engine.LoadScene(gameScene);
         }
-        else
+        catch (Exception exception)
         {
             DisableButtons();
-            UiMsgBox msgBox = new UiMsgBox(_menuPanel, _engine.RenderManager, _engine.Input, 
-                "File not found", "File " + _mapPath + " cannot be found!");
-            msgBox.OnComplete += state =>
+            UiMsgBox msgBox = new UiMsgBox(_engine.RootPanel(),
+                _engine.RenderManager, _engine.Input,
+                "Failed to load", exception.Message);
+
+            msgBox.OnComplete += result =>
             {
                 EnableButtons();
             };
+            _logger.Error(exception);
         }
     }
 

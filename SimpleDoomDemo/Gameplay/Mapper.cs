@@ -7,6 +7,7 @@ using ConsoleGameEngine.Engine.Renderer.Graphics;
 using ConsoleGameEngine.Engine.System;
 using NLog;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
+using SimpleDoomDemo.Gameplay.Scenes.Exceptions;
 using SimpleDoomEngine.Gameplay.Actors;
 using SimpleDoomEngine.Gameplay.Items;
 
@@ -58,6 +59,7 @@ public class Mapper
 
     public void LoadFromDcmfFile(string path)
     {
+        bool hasPlayer = false;
         if (FileUtil.FileHasExtension(path, ".dcmf"))
         {
             StreamReader reader;
@@ -71,13 +73,26 @@ public class Mapper
                         if (line.StartsWith("#")) continue;
 
                         string[] columns = line.Split(";");
-                        if (columns.Length != 4) throw new Exception("Invalid map file format");
+                        if (columns.Length != 4)
+                        {
+                            _logger.Error("Invalid Dcmf file format: " + line);
+                            throw new InvalidMapFormatException("Invalid map file format!");
+                        }
 
                         Point2D pos = new Point2D(int.Parse(columns[0]), int.Parse(columns[1]));
                         DcmType type = ParseDcmfType(columns[2]);
                         DcmEntity entity = ParseDcmEntity(columns[3]);
 
+                        if (type == DcmType.Player) hasPlayer = true;
+
                         AddObject(pos, type, entity);
+                    }
+                    
+                    if (!hasPlayer) 
+                    {
+                        _logger.Warn("No player found.");
+                        throw new PlayerNotFoundException("Player was not found in map file. " + 
+                                                          "You can add it via map editor");
                     }
 
                     _logger.Info("Dcmf file loaded");
@@ -86,12 +101,14 @@ public class Mapper
             catch (Exception e)
             {
                 _logger.Error(e.Message);
+                throw new Exception("Dcmf file could not be loaded: " + e.Message, e);
             }
         }
         else
         {
             _logger.Warn("File does not have a propper extension." +
-                         "The extension should be *.dcmf'! " + path);
+                         "The extension should be *.dcmf'! ");
+            throw new Exception("The extension should be .dcmf!");
         }
     }
 

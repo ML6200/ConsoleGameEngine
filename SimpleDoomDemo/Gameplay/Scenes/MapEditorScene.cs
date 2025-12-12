@@ -240,23 +240,25 @@ public class MapEditorScene : IGameScene
 
     private void OpenMap(string filename)
     {
-        // better to handle file existence and format mismatch in the mapper later
-        if (File.Exists(filename))
+        try
         {
             _state = EditorState.Saved;
             _filePath = filename;
             ReloadMap();
             EnableEditor();
+            _stateTrigger = StateTrigger.NoTrigger;
         }
-        else
+        catch (Exception e)
         {
             UiMsgBox msgBox = new UiMsgBox(_engine.RootPanel(),
                 _engine.RenderManager, _engine.Input,
-                "Failed to load", $"File '{filename}' not found");
+                "Failed to load", e.Message);
 
             msgBox.OnComplete += result =>
             {
+                _stateTrigger = StateTrigger.NoTrigger;
                 EnableEditor();
+                ReaddTools();
             };
         }
     }
@@ -273,16 +275,21 @@ public class MapEditorScene : IGameScene
         _engine.Input.OnKeyPressed -= HandleUserInput;
     }
 
-    private void ReloadMap()
+    private void ReloadMap(bool trustDcmf = true)
     {
         _editorPanel.RemoveAllChildren();
-        _mapper.ClearObjects();
-        _mapper.LoadFromDcmfFile(_filePath);
+        
+        if (trustDcmf) _mapper.LoadFromDcmfFile(_filePath);
         
         foreach (var dcm in _mapper.DcmList)
         {
             _editorPanel.AddChild(dcm.Value);
         }
+        ReaddTools();
+    }
+
+    private void ReaddTools()
+    {
         _editorPanel.AddChild(_cursor);
         _editorPanel.AddChild(_toolBarPanel);
     }
