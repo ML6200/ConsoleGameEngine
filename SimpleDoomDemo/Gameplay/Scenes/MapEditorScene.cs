@@ -284,6 +284,7 @@ public class MapEditorScene : IGameScene
             _editorPanel.AddChild(dcm.Value);
         }
         _editorPanel.AddChild(_cursor);
+        _editorPanel.AddChild(_toolBarPanel);
     }
 
     private void SaveMap(string filename)
@@ -413,7 +414,10 @@ public class MapEditorScene : IGameScene
                 HandleUnsavedDialog();
             else
                 HandleSaveDialog();
-        } 
+        } else if (_state is EditorState.ChangedHasPath && _stateTrigger is StateTrigger.Exit)
+        {
+            HandleUnsavedDialog();
+        }
         else
             SaveMap(_filePath);
     }
