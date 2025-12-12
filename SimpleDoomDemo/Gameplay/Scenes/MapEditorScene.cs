@@ -437,7 +437,8 @@ public class MapEditorScene : IGameScene
         {
             if (result == MessageOptionState.Ok)
             {
-                if (_stateTrigger is StateTrigger.Exit)
+                if (_stateTrigger is StateTrigger.Exit 
+                    && _state is EditorState.ChangedHasPath)
                     SaveMap(_filePath);
                 else
                     HandleSaveDialog();
@@ -460,6 +461,8 @@ public class MapEditorScene : IGameScene
 
     private void HandleSaveDialog()
     {
+        DisableEditor();
+        
         UiInputBox inpBox = new UiInputBox(_editorPanel, 
             _engine.RenderManager, _engine.Input,
             "Enter the path of the file to be saved:", "");
