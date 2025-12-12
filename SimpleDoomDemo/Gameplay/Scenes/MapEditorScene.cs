@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
@@ -283,12 +284,11 @@ public class MapEditorScene : IGameScene
 
     private void SaveMap(string filename)
     {
-        if (_state is EditorState.ChangedHasPath or EditorState.Changed)
+        if (_state is EditorState.ChangedHasPath)
         {
             _mapper.SaveMap(filename);
-            ReloadMap();
-            
             MarkStateSaved(filename);
+            ReloadMap();
         }
         
         if (_stateTrigger is StateTrigger.Exit 
@@ -390,6 +390,7 @@ public class MapEditorScene : IGameScene
 
     private void HandleOpenDialog()
     {
+        DisableEditor();
         UiInputBox msgBox2 = new UiInputBox(_editorPanel,
             _engine.RenderManager, _engine.Input,
             "Enter the path of the file to be opened:", "");
@@ -411,16 +412,14 @@ public class MapEditorScene : IGameScene
                 HandleUnsavedDialog();
             else
                 HandleSaveDialog();
-        } else if (_state is EditorState.ChangedHasPath)
-        {
-            HandleUnsavedDialog();
-        }
+        } 
         else
             SaveMap(_filePath);
     }
     
     private void HandleUnsavedDialog()
     {
+        DisableEditor();
         UiMsgBox msgBox = new UiMsgBox(_editorPanel,
             _engine.RenderManager, _engine.Input,
             "You have unsaved work!", "Do you want to save your work? " +
@@ -455,11 +454,14 @@ public class MapEditorScene : IGameScene
     private void HandleSaveDialog()
     {
         DisableEditor();
-        
         UiInputBox inpBox = new UiInputBox(_editorPanel, 
             _engine.RenderManager, _engine.Input,
             "Enter the path of the file to be saved:", "");
-        inpBox.OnOk += SaveMap;
+        inpBox.OnOk += s =>
+        {
+            _state = EditorState.ChangedHasPath;
+            SaveMap(s);
+        };
         inpBox.OnCancelled +=  (sender, args) => EnableEditor(false);
     }
     
