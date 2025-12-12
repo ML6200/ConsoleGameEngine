@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 using NLog;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
-using SimpleDoomDemo.Gameplay.Scenes;
 using SimpleDoomDemo.Gameplay.Systems;
 using SimpleDoomDemo.Gameplay.UI;
 using SimpleDoomEngine;
@@ -15,7 +15,7 @@ using SimpleDoomEngine.Engine;
 using SimpleDoomEngine.Gameplay.Actors;
 using SimpleDoomEngine.Gameplay.Items;
 
-namespace SimpleDoomDemo.Gameplay;
+namespace SimpleDoomDemo.Gameplay.Scenes;
 
 public class DoomGameScene : IGameScene
 {
@@ -40,17 +40,14 @@ public class DoomGameScene : IGameScene
     private ControlSystem _controlSystem;
 
     // ============================= GAME STATE ==============================
-    public bool Interrupted { get; set; }
+    private bool Interrupted { get; set; }
     public bool Exited { get; set; }
     
     private bool _gameOverHandled = false;
     public Dimension2D WorldSize { get; private set; }
 
-    // ============================= TIMING ==============================
-    private double _logicAccumulator = 0;
-
     // ============================= SYNCHRONIZATION ==============================
-    private readonly object _visibilityLock = new object();
+    private readonly Lock _visibilityLock = new();
     
     public DoomGameScene()
     {
@@ -102,6 +99,7 @@ public class DoomGameScene : IGameScene
         if (Player is null)
         {
             _logger.Error("Player is null");
+            return;
         }
         _rootPanel.AddChild(Player);
 
@@ -209,7 +207,7 @@ public class DoomGameScene : IGameScene
     {
         switch (e.Key)
         {
-            case ConsoleKey.E:
+            case ConsoleKey.Escape:
                 UiMsgBox msgBox = new UiMsgBox(_rootPanel, _engine.RenderManager, _engine.Input,
                     "You are about to exit", "Are you sure you want to exit the game? (Y/N)");
                 msgBox.OnComplete += state =>

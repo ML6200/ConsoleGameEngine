@@ -13,12 +13,12 @@ public class Player : GraphicsComponent
     private int _ammo;
     private int _bfgCells;
     private int _compatPoints;
-    private int _sightRange;
+    private readonly int _sightRange;
     private bool _alive;
 
     // ==========================FIELDS_SETTERS&GETTERS=========================
 
-    public static int PlayerSolidity = 4;
+    public static readonly int PlayerSolidity = 4;
     
     public int Ammo 
     { 
@@ -36,7 +36,7 @@ public class Player : GraphicsComponent
 
     public int Health
     {
-        get { return _health; }
+        get => _health;
         private set 
         { 
             if (value > MaxHealth) _health = MaxHealth;
@@ -49,25 +49,19 @@ public class Player : GraphicsComponent
 
     public int MaxAmmo => CombatPoints / 50 + 10;
 
-    public int BFGCells
+    public int BfgCells
     {
-        get { return _bfgCells; }
+        get => _bfgCells;
         private set {
-            if (value > MaxBFGCells) _bfgCells = MaxBFGCells;
+            if (value > MaxBfgCells) _bfgCells = MaxBfgCells;
             else if(value < 0) _bfgCells = 0;
             else _bfgCells = value;
         }
     }
 
-    public int MaxBFGCells
-    {
-        get { return 3; }
-    }
+    public int MaxBfgCells => 3;
 
-    public int SightRange
-    {
-        get { return _sightRange; }
-    }
+    public int SightRange => _sightRange;
 
     // =============================METHODS==============================
     public Player(int x, int y)
@@ -109,7 +103,7 @@ public class Player : GraphicsComponent
 
     public void PickUpBFGCell(int cells)
     {
-        BFGCells += cells;
+        BfgCells += cells;
     }
 
     public void ShootBFG()

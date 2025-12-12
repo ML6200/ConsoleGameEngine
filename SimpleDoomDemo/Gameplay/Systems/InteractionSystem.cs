@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
+using SimpleDoomDemo.Gameplay.Scenes;
 using SimpleDoomEngine;
 using SimpleDoomEngine.Gameplay.Actors;
 using SimpleDoomEngine.Gameplay.Items;
@@ -65,7 +66,7 @@ public class InteractionSystem : IGameSystem
                     break;
 
                 case ItemType.BfgCell:
-                    if (_game.Player.BFGCells < _game.Player.MaxBFGCells)
+                    if (_game.Player.BfgCells < _game.Player.MaxBfgCells)
                     {
                         _game.Player.PickUpBFGCell(1);
                         item.Interact();

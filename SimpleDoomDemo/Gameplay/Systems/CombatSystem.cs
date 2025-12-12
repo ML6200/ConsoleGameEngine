@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
+using SimpleDoomDemo.Gameplay.Scenes;
 using SimpleDoomEngine;
 
 namespace SimpleDoomDemo.Gameplay.Systems;
@@ -46,7 +47,7 @@ public class CombatSystem : IGameSystem
     
     public void PlayerBFGAttack()
     {
-        if (_game.Player.BFGCells <= 0)
+        if (_game.Player.BfgCells <= 0)
             return;
 
         _game.Player.ShootBFG();

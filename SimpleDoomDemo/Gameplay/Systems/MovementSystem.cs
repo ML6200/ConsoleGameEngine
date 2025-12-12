@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Threading;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
+using SimpleDoomDemo.Gameplay.Scenes;
 using SimpleDoomEngine.Gameplay.Actors;
 using SimpleDoomEngine.Gameplay.Items;
 
