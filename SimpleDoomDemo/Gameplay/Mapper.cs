@@ -326,7 +326,7 @@ public class Mapper
             throw new Exception("Error saving map", e);
         }
     }
-
+    
     public void LoadFromLegacy(string path)
     {
         try
@@ -360,7 +360,7 @@ public class Mapper
         }
     }
     
-    static Logger _staticLogger = LogManager.GetCurrentClassLogger();
+    [Obsolete("This method is deprecated, please use LoadFromLegacy (inner function) instead")]
     public static void LoadFromLegacyMap(string path, 
         List<GameItem> items, 
         List<Demon> demons, 
@@ -424,7 +424,6 @@ public class Mapper
         }
         catch (Exception e)
         {
-            _staticLogger.Error(e.Message);
             throw;
         }
     }
