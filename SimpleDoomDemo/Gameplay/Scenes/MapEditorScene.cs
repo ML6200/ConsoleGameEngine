@@ -13,12 +13,17 @@ public class MapEditorScene : IGameScene
 {
     private enum EditorState
     {
-        Editing,
-        SavingForExit,
-        SavingForOpen,
-        SavingManual,
-        OpeningFile,
-        Unchanged
+        Saved,
+        Changed,
+        ChangedHasPath,
+    }
+    
+    private enum StateTrigger
+    {
+        ManualSave,
+        Open,
+        Exit,
+        NoTrigger
     }
     
     /*
@@ -43,10 +48,13 @@ public class MapEditorScene : IGameScene
     private UiButton _backButton;
     private Cursor _cursor;
     private Mapper _mapper;
-    
+
     private string _mapPath;
-    private EditorState _state = EditorState.Unchanged;
     private string _filePath = "";
+    private bool _isSaved =  false;
+    
+    private EditorState _state = EditorState.Saved;
+    private StateTrigger _stateTrigger = StateTrigger.NoTrigger;
 
     public MapEditorScene(string mapPath)
     {
@@ -123,6 +131,7 @@ public class MapEditorScene : IGameScene
         _cursor = new Cursor(0, 0);
         _editorPanel.AddChild(_cursor);
         _mapper = new Mapper();
+        
         _engine.RenderManager.OnWindowResized += (sender, args) =>
         {
             _editorPanel.Size = _engine.RootPanel().ScreenSize;
@@ -200,14 +209,27 @@ public class MapEditorScene : IGameScene
             switch (e.Key)
             {
                 case ConsoleKey.S:
-                    _state = EditorState.SavingManual;
+                    _stateTrigger = StateTrigger.ManualSave;
                     HandleSave();   
                     break;
                 case ConsoleKey.O:
+                    _stateTrigger = StateTrigger.Open;
                     HandleOpen();
                     break;
             }
         }
+    }
+
+    private void MarkStateSaved(string filename)
+    {
+        _filePath = filename;
+        _state = EditorState.Saved;
+    }
+
+    private void MarkStateUnsaved()
+    {
+        _state = string.IsNullOrEmpty(_filePath) ?  
+            EditorState.Changed : EditorState.ChangedHasPath;
     }
 
     private void PlaceCursorOnTop()
@@ -217,7 +239,6 @@ public class MapEditorScene : IGameScene
         _editorPanel.RemoveChild(_cursor);
         _editorPanel.AddChild(_cursor);
         _isEntityAdded = false;
-        _state = EditorState.Editing;
     }
 
     private void OpenMap(string filename)
@@ -225,11 +246,10 @@ public class MapEditorScene : IGameScene
         // better to handle file existence and format mismatch in the mapper later
         if (File.Exists(filename))
         {
-            _state = EditorState.OpeningFile;
+            _state = EditorState.Saved;
             _filePath = filename;
             ReloadMap();
-            _editorPanel.AddChild(_cursor);
-            _engine.Input.OnKeyPressed += HandleUserInput;
+            EnableEditor();
         }
         else
         {
@@ -237,18 +257,29 @@ public class MapEditorScene : IGameScene
                 _engine.RenderManager, _engine.Input,
                 "Failed to load", $"File '{filename}' not found");
 
-            msgBox.OnComplete += state =>
+            msgBox.OnComplete += result =>
             {
-                _editorPanel.AddChild(_cursor);
-                _engine.Input.OnKeyPressed += HandleUserInput;
+                EnableEditor();
             };
         }
+    }
+
+    private void EnableEditor(bool readdCursor = true)
+    {
+        if (readdCursor) _editorPanel.AddChild(_cursor);
+        _engine.Input.OnKeyPressed += HandleUserInput;
+    }
+    
+    private void DisableEditor()
+    {
+        _engine.RenderManager.FocusManager.UnregisterAll();
+        _engine.Input.OnKeyPressed -= HandleUserInput;
     }
 
     private void ReloadMap()
     {
         _editorPanel.RemoveAllChildren();
-        _mapper.DcmList.Clear();
+        _mapper.ClearObjects();
         _mapper.LoadFromDcmfFile(_filePath);
         
         foreach (var dcm in _mapper.DcmList)
@@ -260,16 +291,28 @@ public class MapEditorScene : IGameScene
 
     private void SaveMap(string filename)
     {
-        if (_state is EditorState.SavingForExit)
+        if (_state is EditorState.ChangedHasPath)
+        {
+            _mapper.SaveMap(filename);
+            ReloadMap();
+            
+            MarkStateSaved(filename);
+        }
+        
+        if (_stateTrigger is StateTrigger.Exit 
+            && _state is EditorState.Saved)
         {
             _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath));
             return;
         }
+
+        if (_stateTrigger is StateTrigger.Open 
+            && _state is EditorState.Saved)
+        {
+            HandleOpen();
+        }
         
-        _mapper.SaveMap(filename);
-        _mapper.ClearObjects();
-        _filePath = filename;
-        _state = EditorState.SavingManual;
+        EnableEditor(false);
     }
     
     /*
@@ -311,16 +354,20 @@ public class MapEditorScene : IGameScene
         _mapper.AddObject(targetPoint, dmType, entity);
         _editorPanel.AddChild(_mapper.DcmList[^1].Value); 
         _isEntityAdded =  true;
-        _state = EditorState.Editing;
+        MarkStateUnsaved();
     }
 
     private void RemoveEntity(Point2D point)
     {
         var removed = _mapper.RemoveObject(point);
-        if (removed != null) _editorPanel.RemoveChild(removed);
+        if (removed != null)
+        {
+            _editorPanel.RemoveChild(removed);
+            _isSaved = false;
+        }
         
         _isEntityAdded = false;
-        _state = EditorState.Editing;
+        MarkStateUnsaved();
     }
     
     private void MoveCursorBy(int x, int y)
@@ -332,91 +379,92 @@ public class MapEditorScene : IGameScene
 
     private void HandleExit()
     {
-        _state = EditorState.SavingForExit;
+        _stateTrigger = StateTrigger.Exit;
         HandleSave();
     }
 
     private void HandleOpen()
     {
-        _state = EditorState.SavingForOpen;
-        
-        if (_state is EditorState.Editing)
-            HandleUnsaved();
+        DisableEditor();
+        if (_state is not EditorState.Saved)
+        {
+            _stateTrigger = StateTrigger.Open;
+            HandleUnsavedDialog();
+        }
         else 
             HandleOpenDialog();
     }
 
     private void HandleOpenDialog()
     {
-        _engine.RenderManager.FocusManager.UnregisterAll();
-        _engine.Input.OnKeyPressed -= HandleUserInput;
-        
-        UiInputBox msgBox2 = new UiInputBox(_engine.RootPanel(),
+        UiInputBox msgBox2 = new UiInputBox(_editorPanel,
             _engine.RenderManager, _engine.Input,
             "Enter the path of the file to be opened:", "");
             
         msgBox2.OnOk += OpenMap;
         msgBox2.OnCancelled += (sender, args) => 
         {
-            _state = EditorState.Editing;
-            _engine.Input.OnKeyPressed += HandleUserInput;
+            EnableEditor(false);
         };
     }
     
     private void HandleSave()
     {
-        if (_filePath.Equals(String.Empty) &&
-            _isEntityAdded) // (_state is not EditorState.SavingManual && _isEntityAdded)
+        DisableEditor();
+        
+        if (_state is EditorState.Changed)
         {
-            _engine.RenderManager.FocusManager.UnregisterAll();
-            _engine.Input.OnKeyPressed -= HandleUserInput;
-
-            if (_state is EditorState.SavingForExit or EditorState.SavingForOpen)
-                HandleUnsaved();
+            if (_stateTrigger is StateTrigger.Exit or StateTrigger.Open)
+                HandleUnsavedDialog();
             else
                 HandleSaveDialog();
+        } else if (_state is EditorState.ChangedHasPath)
+        {
+            HandleUnsavedDialog();
         }
         else
             SaveMap(_filePath);
     }
     
-    private void HandleUnsaved()
+    private void HandleUnsavedDialog()
     {
-        UiMsgBox msgBox = new UiMsgBox(_engine.RootPanel(),
+        UiMsgBox msgBox = new UiMsgBox(_editorPanel,
             _engine.RenderManager, _engine.Input,
-            "Save?", "Do you want to save your work? " +
+            "You have unsaved work!", "Do you want to save your work? " +
                      "If you hit cancel all changes WILL BE LOST!");
 
-        msgBox.OnComplete += state =>
+        msgBox.OnComplete += result =>
         {
-            _engine.RenderManager.FocusManager.UnregisterAll();
-            _engine.Input.OnKeyPressed -= HandleUserInput;
-            
-            if (state == MessageOptionState.Ok)
-                HandleSaveDialog();
+            if (result == MessageOptionState.Ok)
+            {
+                if (_stateTrigger is StateTrigger.Exit)
+                    SaveMap(_filePath);
+                else
+                    HandleSaveDialog();
+            }
             else
-                _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath));
+            {
+                if (_stateTrigger is StateTrigger.Exit)
+                {
+                    _state = EditorState.Saved;
+                    SaveMap(_filePath);
+                } else if (_stateTrigger is StateTrigger.Open)
+                {
+                    _state = EditorState.Saved;
+                    HandleOpen();
+                }
+                else EnableEditor(false);
+            }
         };
     }
 
     private void HandleSaveDialog()
     {
-        UiInputBox inpBox = new UiInputBox(_engine.RootPanel(), 
+        UiInputBox inpBox = new UiInputBox(_editorPanel, 
             _engine.RenderManager, _engine.Input,
-            "Enter the path of the file", "");
-        inpBox.OnOk += s =>
-        {
-            SaveMap(s);
-            
-            if (_state is EditorState.OpeningFile) HandleOpen();
-            _engine.Input.OnKeyPressed += HandleUserInput;
-        };
-        inpBox.OnCancelled += SaveAborted;
-    }
-
-    private void SaveAborted(object? sender, EventArgs e)
-    {
-        _engine.Input.OnKeyPressed += HandleUserInput;
+            "Enter the path of the file to be saved:", "");
+        inpBox.OnOk += SaveMap;
+        inpBox.OnCancelled +=  (sender, args) => EnableEditor(false);
     }
     
     public void OnUpdate(double deltaTime)
