@@ -51,10 +51,17 @@ public readonly struct Point2D(int x, int y) : IEquatable<Point2D>
     // =============================DISTANCES==============================
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double EuclideanDistance(Point2D position1, Point2D position2)
-    {
-        return Math.Sqrt(Math.Pow(position2.X - position1.X, 2) + Math.Pow(position2.Y - position1.Y, 2));
-    }
+    => Math.Sqrt(Math.Pow(position2.X - position1.X, 2) + Math.Pow(position2.Y - position1.Y, 2));
     
+    
+    /* Euclidean calculation is pointless for an integer based grid
+     * But we can use Chebyshev's formula to calculate distance
+     *
+     * After we calculated the differences for each axis,
+     * we just take the largest value
+     *
+     * so the base formula is: d(P,Q) = max(|xP-XQ|, |yP-yQ|)
+     * */
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int ChebyshevDistance(Point2D position1, Point2D position2)
     {
