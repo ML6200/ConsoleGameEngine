@@ -36,7 +36,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         set { _targetUpdatesPerSecond = value != 0 ? value : 60; }
     }
 
-    public int TargetRenderFPS
+    public int TargetRenderFps
     {
         get => _targetRenderFps;
         set
@@ -47,8 +47,6 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         
     }
 
-    private DateTime _lastUpdateTime;
-    
     public InputManager Input => _inputManager;
     public ConsoleRenderer2D Renderer => _renderer;
     public ConsoleRenderManager RenderManager => _renderManager;
@@ -156,7 +154,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         _currentScene?.OnUpdate(deltaTime);
     }
     
-    public void LoadScene(IGameScene scene)
+    public void LoadScene(IGameScene? scene)
     {
         if (scene == null)
         {

@@ -20,7 +20,7 @@ public class DoomGameManager
         Console.OutputEncoding = Encoding.UTF8;
         _engine= new ConsoleEngine();
         _engine.TargetUpdatesPerSecond = 40;  // Game logic updates at 40 FPS
-        _engine.TargetRenderFPS = 100;       // Rendering at 100 FPS
+        _engine.TargetRenderFps = 100;       // Rendering at 100 FPS
         _engine.Initialize();
         _menuScene = new MainMenuScene(DefaultMapPath);
     }
