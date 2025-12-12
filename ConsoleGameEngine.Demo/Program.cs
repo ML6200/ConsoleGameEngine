@@ -333,7 +333,7 @@ class SimpleScene : IGameScene
             
             
             button.AddAnimation(
-                AnimationTween.FadeColor(button, ConsoleColor.White, button.NormalBgColor, 0.2)
+                AnimationTween.FadeColor(button, ConsoleColor.White, button.BackgroundColor, 0.2)
             );
         };
         
