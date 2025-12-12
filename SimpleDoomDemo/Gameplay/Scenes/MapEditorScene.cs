@@ -553,9 +553,10 @@ public class MapEditorScene : IGameScene
             };
             AddChild(demonsLabel);
 
+            string specific = SystemInfo.Os.IsWindows() ? "[Ctrl+Alt+S]Save" : "[Ctrl+S]Save";
             var controlsLabel = new UiLabel
             {
-                Text = "Controls: [Arrows]Move [Backspace]Delete [Ctrl+S]Save [Ctrl+O]Open [Esc]Exit",
+                Text = "Controls: [Arrows]Move [Backspace]Delete "+ specific + " [Ctrl+O]Open [Esc]Exit",
                 ForegroundColor = controlsColor,
                 BackgroundColor = panelBg,
                 RelativePosition = new Point2D(2, 3)
