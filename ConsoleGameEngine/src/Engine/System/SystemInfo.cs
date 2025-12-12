@@ -2,9 +2,9 @@ using System;
 
 namespace ConsoleGameEngine.Engine.System;
 
-public class SystemInfo
+public abstract class SystemInfo
 {
-    internal static class OS
+    public static class Os
     {
         public static bool IsWindows()
         {

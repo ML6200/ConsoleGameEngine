@@ -6,6 +6,7 @@ using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
+using ConsoleGameEngine.Engine.System;
 
 namespace SimpleDoomDemo.Gameplay.Scenes;
 
@@ -174,7 +175,8 @@ public class MapEditorScene : IGameScene
                 AddEntity(Mapper.DcmEntity.Zombieman, Mapper.DcmType.Demon);
                 break;
             case ConsoleKey.C:
-                AddEntity(Mapper.DcmEntity.Mancubus, Mapper.DcmType.Demon);
+                if (e.Shift) 
+                    AddEntity(Mapper.DcmEntity.Mancubus, Mapper.DcmType.Demon);
                 break;
             case ConsoleKey.I:
                 AddEntity(Mapper.DcmEntity.Imp, Mapper.DcmType.Demon);
@@ -198,7 +200,8 @@ public class MapEditorScene : IGameScene
             switch (e.Key)
             {
                 case ConsoleKey.S:
-                    _stateTrigger = StateTrigger.ManualSave;
+                    if (SystemInfo.Os.IsWindows() && e.Alt)
+                        _stateTrigger = StateTrigger.ManualSave;
                     HandleSave();   
                     break;
                 case ConsoleKey.O:

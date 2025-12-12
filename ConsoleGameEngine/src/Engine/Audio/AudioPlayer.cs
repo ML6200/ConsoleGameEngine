@@ -17,7 +17,7 @@ public static class AudioPlayer
     {
         try
         {
-            if (SystemInfo.OS.IsMacOsX())
+            if (SystemInfo.Os.IsMacOsX())
             {
                 Process.Start(new ProcessStartInfo
                 {
@@ -27,7 +27,7 @@ public static class AudioPlayer
                     UseShellExecute = false
                 });
             }
-            else if (SystemInfo.OS.IsWindows())
+            else if (SystemInfo.Os.IsWindows())
             {
                 Mp3FileReader mp = new Mp3FileReader(filePath);
                 WaveOutEvent soundOut = new WaveOutEvent();
@@ -46,7 +46,7 @@ public static class AudioPlayer
         StopMusic();
         try
         {
-            if (SystemInfo.OS.IsMacOsX())
+            if (SystemInfo.Os.IsMacOsX())
             {
                 _musicProcess = Process.Start(new ProcessStartInfo
                 {
@@ -56,7 +56,7 @@ public static class AudioPlayer
                     UseShellExecute = false
                 });
             }
-            else if (SystemInfo.OS.IsWindows())
+            else if (SystemInfo.Os.IsWindows())
             {
                 mp3FileReader = new Mp3FileReader(filePath);
                 outputDevice = new WaveOutEvent();
@@ -74,7 +74,7 @@ public static class AudioPlayer
     {
         try
         {
-            if (SystemInfo.OS.IsMacOsX())
+            if (SystemInfo.Os.IsMacOsX())
             {
                 if (_musicProcess != null)
                 {
@@ -91,7 +91,7 @@ public static class AudioPlayer
                     {
                     }
                 }
-            } else if (SystemInfo.OS.IsWindows())
+            } else if (SystemInfo.Os.IsWindows())
             {
                 if (outputDevice != null)
                     outputDevice.Stop();
