@@ -33,8 +33,10 @@ public class MapEditorScene : IGameScene
     private Mapper _mapper;
     
     private string _mapPath;
-    private bool _isModified = false;
-    private bool _isOpenPending = false;
+    private bool _isModified;
+    private bool _isOpenPending;
+    private bool _isExitPending;
+    private string _filePath = "";
 
     public MapEditorScene(string mapPath)
     {
@@ -101,12 +103,14 @@ public class MapEditorScene : IGameScene
         _mapper = new Mapper();
     }
 
-    private bool _isEntityAdded = false;
+    private bool _isEntityAdded;
     
     private void HandleUserInput(object? sender, KeyEventArgs e)
     {
+        // Mono Keys
         switch (e.Key)
         {
+            // Movement
             case ConsoleKey.LeftArrow:
                 MoveCursorBy(-1, 0);
                 break;
@@ -120,6 +124,7 @@ public class MapEditorScene : IGameScene
                 MoveCursorBy(0, 1);
                 break;
             
+            // Game Items
             case ConsoleKey.W:
                 AddEntity(Mapper.DcmEntity.Wall, Mapper.DcmType.GameItem);
                 break;
@@ -139,6 +144,7 @@ public class MapEditorScene : IGameScene
                 AddEntity(Mapper.DcmEntity.Door, Mapper.DcmType.GameItem);
                 break;
             
+            // Demons
             case ConsoleKey.Z:
                 AddEntity(Mapper.DcmEntity.Zombieman, Mapper.DcmType.Demon);
                 break;
@@ -148,19 +154,31 @@ public class MapEditorScene : IGameScene
             case ConsoleKey.I:
                 AddEntity(Mapper.DcmEntity.Imp, Mapper.DcmType.Demon);
                 break;
-            
             case ConsoleKey.P:
                 AddEntity(Mapper.DcmEntity.Player, Mapper.DcmType.Player);
                 break;
-            case ConsoleKey.S:
-                HandleBack();
-                break;
-            case ConsoleKey.O:
-                HandleOpen();
+            
+            // Controls
+            case ConsoleKey.Escape:
+                HandleExit();
                 break;
             case ConsoleKey.Backspace:
                 RemoveEntity(_cursor.WorldPosition);
                 break;
+        }
+
+        // Keybindings
+        if (e.Control)
+        {
+            switch (e.Key)
+            {
+                case ConsoleKey.S:
+                    HandleSave();   
+                    break;
+                case ConsoleKey.O:
+                    HandleOpen();
+                    break;
+            }
         }
     }
 
@@ -175,28 +193,32 @@ public class MapEditorScene : IGameScene
 
     private void OpenMap(string filename)
     {
+        _filePath = filename;
+        ReloadMap();
+        _isOpenPending = false;
+        _editorPanel.AddChild(_cursor);
+        _engine.Input.OnKeyPressed += HandleUserInput;
+    }
+
+    private void ReloadMap()
+    {
+        _isModified = false;
         _engine.RootPanel().RemoveAllChildren();
         _mapper.DcmList.Clear();
-        _mapper.LoadFromDcmfFile(filename);
+        _mapper.LoadFromDcmfFile(_filePath);
         _engine.RootPanel().AddChild(_editorPanel);
         
         foreach (var dcm in _mapper.DcmList)
         {
             _editorPanel.AddChild(dcm.Value);
         }
-        _editorPanel.AddChild(_cursor);
-        
-        _engine.Input.OnKeyPressed += HandleUserInput;
-        
     }
-    
+
     private void SaveMap(string filename)
     {
         _mapper.SaveMap(filename);
         _mapper.ClearObjects();
-        if (!_isOpenPending)
-            _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath));
-        else HandleOpen();
+        _filePath = filename;
     }
     
     /*
@@ -254,62 +276,108 @@ public class MapEditorScene : IGameScene
         PlaceCursorOnTop();
     }
 
+    private void HandleExit()
+    {
+        _isExitPending = true;
+        HandleSave();
+        _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath));
+    }
+
     private void HandleOpen()
     {
         _isOpenPending = true;
         if (!_isModified)
         {
-            _engine.Input.OnKeyPressed -= HandleUserInput;
-            UiInputBox msgBox2 = new UiInputBox(_engine.RootPanel(),
-                _engine.RenderManager, _engine.Input,
-                "Do you want to save your work?", "");
-            msgBox2.OnComplete += OpenMap;
-        } else HandleBack();
+            HandleOpenDialog();
+        } else HandleUnsaved();
     }
 
-    private void HandleBack()
+    private void HandleOpenDialog()
     {
-        if (_mapper.DcmList.Count == 0)
-            return;
-        
+        _engine.RenderManager.FocusManager.UnregisterAll();
         _engine.Input.OnKeyPressed -= HandleUserInput;
-        UiMsgBox msgBox = new UiMsgBox(_engine.RootPanel(), _engine.RenderManager, _engine.Input,
+        
+        UiInputBox msgBox2 = new UiInputBox(_engine.RootPanel(),
+            _engine.RenderManager, _engine.Input,
+            "Enter the path of the file to be opened:", "");
+            
+        msgBox2.OnOk += OpenMap;
+        msgBox2.OnCancelled += (sender, args) => 
+        {
+            _isOpenPending = false;
+            _engine.Input.OnKeyPressed += HandleUserInput;
+        };
+    }
+
+    private void HandleSave()
+    {
+        if (_mapper.DcmList.Count == 0 || !_isModified)
+            return;
+
+        if (_filePath.Equals(string.Empty))
+        {
+            _engine.RenderManager.FocusManager.UnregisterAll();
+            _engine.Input.OnKeyPressed -= HandleUserInput;
+            
+            if (_isExitPending || _isOpenPending)
+                HandleUnsaved();
+            else
+                HandleSaveDialog();
+        } else SaveMap(_filePath);
+    }
+    
+    private void HandleUnsaved()
+    {
+        UiMsgBox msgBox = new UiMsgBox(_engine.RootPanel(),
+            _engine.RenderManager, _engine.Input,
             "Save?", "Do you want to save your work? " +
                      "If you hit cancel all changes WILL BE LOST!");
+
         msgBox.OnComplete += state =>
         {
-            _isModified = false;
             _engine.RenderManager.FocusManager.UnregisterAll();
+            _engine.Input.OnKeyPressed -= HandleUserInput;
+            
             if (state == MessageOptionState.Ok)
             {
-                
-                    UiInputBox msgBox2 = new UiInputBox(_engine.RootPanel(), 
-                        _engine.RenderManager, _engine.Input,
-                        "Do you want to save your work?", "");
-                    msgBox2.OnComplete += SaveMap;
-                    msgBox2.OnCancelled += SaveAborted;
+                HandleSaveDialog();
             }
             else
             {
-                if (!_isOpenPending) 
-                    _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath));
-                else
-                    HandleOpen();
+                _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath));
             }
         };
     }
 
-    private void SaveAborted(object? sender, EventArgs e)
+    private void HandleSaveDialog()
     {
+        UiInputBox inpBox = new UiInputBox(_engine.RootPanel(), 
+            _engine.RenderManager, _engine.Input,
+            "Enter the path of the file", "");
+        inpBox.OnOk += s =>
+        {
+            _isModified = false;
+            _isExitPending = false;
+            SaveMap(s);
+            
+            if (_isOpenPending) HandleOpen();
+            _engine.Input.OnKeyPressed += HandleUserInput;
+        };
+        inpBox.OnCancelled += SaveAborted;
     }
 
+    private void SaveAborted(object? sender, EventArgs e)
+    {
+        _engine.Input.OnKeyPressed += HandleUserInput;
+    }
+    
     public void OnUpdate(double deltaTime)
     {
+        // Not used
     }
 
     public void OnExit()
     {
-        _engine.RenderManager.FocusManager.Unregister(_backButton);
         _engine.RenderManager.FocusManager.UnregisterAll();
         _engine.RootPanel().RemoveAllChildren();
     }
@@ -321,7 +389,7 @@ public class MapEditorScene : IGameScene
             RelativePosition = new Point2D(x, y);
         }
 
-        public char Glyph { get; set; } = '⊡';
+        private readonly char _glyph  = '⊡';
 
         protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
         {
@@ -329,7 +397,7 @@ public class MapEditorScene : IGameScene
             if (screenPos == null) return; // Off-screen culling
 
             renderer.SetCell(screenPos.X, screenPos.Y,
-                new Cell(Glyph, ConsoleColor.Black, ConsoleColor.Green));
+                new Cell(_glyph, ConsoleColor.Black, ConsoleColor.Green));
         }
     }
 }
