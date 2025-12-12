@@ -17,19 +17,16 @@ public class UiPanel : GraphicsComponent
 
     protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
-        if (WorldPosition == null) return;
-
         // UI panels render directly at world position (no camera transformation)
         // This makes them fixed on screen, perfect for menus, HUDs, etc.
-        renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height,
-            ' ', BackgroundColor, ForegroundColor);
 
+        renderer.FillRect(WorldPosition.X, WorldPosition.Y, Width, Height,
+            ' ', BackgroundColor, ForegroundColor);
+        
         if (HasBorder)
         {
             renderer.DrawBox(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height,
                 BackgroundColor, BorderColor);
         }
-
-        // Children are rendered automatically by GraphicsComponent.Compute()
     }
 }
