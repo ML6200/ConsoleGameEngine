@@ -501,7 +501,7 @@ public class MapEditorScene : IGameScene
     }
     
     /// <summary>
-    /// AI generated toolbar class
+    /// AI generated toolbar class (ofc I had to intervene :D)
     ///
     /// The best way to use AI is doing boring, repetitive things like this
     /// </summary>
@@ -509,19 +509,28 @@ public class MapEditorScene : IGameScene
     {
         public MapToolbar(int width, int height)
         {
+            ConsoleColor panelBg = ConsoleColor.Black;
+            ConsoleColor panelFg = ConsoleColor.White;
+            ConsoleColor borderColor = ConsoleColor.DarkGray;
+            ConsoleColor titleColor = ConsoleColor.White;
+            ConsoleColor itemsColor = ConsoleColor.DarkGreen;
+            ConsoleColor demonsColor = ConsoleColor.DarkYellow;
+            ConsoleColor controlsColor = ConsoleColor.DarkCyan;
+            ConsoleColor infoColor = ConsoleColor.DarkGray;
+
             // Configure panel
-            BackgroundColor = ConsoleColor.DarkGray;
-            ForegroundColor = ConsoleColor.White;
+            BackgroundColor = panelBg;
+            ForegroundColor = panelFg;
             HasBorder = true;
-            BorderColor = ConsoleColor.Gray;
+            BorderColor = borderColor;
             Size = new Dimension2D(width, height);
 
             // Create labels for shortcuts
             var titleLabel = new UiLabel
             {
                 Text = "MAP EDITOR SHORTCUTS",
-                ForegroundColor = ConsoleColor.Yellow,
-                BackgroundColor = ConsoleColor.DarkGray,
+                ForegroundColor = titleColor,
+                BackgroundColor = panelBg,
                 RelativePosition = new Point2D(2, 0)
             };
             AddChild(titleLabel);
@@ -529,8 +538,8 @@ public class MapEditorScene : IGameScene
             var gameItemsLabel = new UiLabel
             {
                 Text = "Items: [W]Wall [T]Toxic [A]Ammo [M]MedKit [B]BFG [D]Door",
-                ForegroundColor = ConsoleColor.Green,
-                BackgroundColor = ConsoleColor.DarkGray,
+                ForegroundColor = itemsColor,
+                BackgroundColor = panelBg,
                 RelativePosition = new Point2D(2, 1)
             };
             AddChild(gameItemsLabel);
@@ -538,8 +547,8 @@ public class MapEditorScene : IGameScene
             var demonsLabel = new UiLabel
             {
                 Text = "Demons: [Z]Zombieman [Shift+C]Mancubus [I]Imp  |  [P]Player",
-                ForegroundColor = ConsoleColor.Yellow,
-                BackgroundColor = ConsoleColor.DarkGray,
+                ForegroundColor = demonsColor,
+                BackgroundColor = panelBg,
                 RelativePosition = new Point2D(2, 2)
             };
             AddChild(demonsLabel);
@@ -547,8 +556,8 @@ public class MapEditorScene : IGameScene
             var controlsLabel = new UiLabel
             {
                 Text = "Controls: [Arrows]Move [Backspace]Delete [Ctrl+S]Save [Ctrl+O]Open [Esc]Exit",
-                ForegroundColor = ConsoleColor.Cyan,
-                BackgroundColor = ConsoleColor.DarkGray,
+                ForegroundColor = controlsColor,
+                BackgroundColor = panelBg,
                 RelativePosition = new Point2D(2, 3)
             };
             AddChild(controlsLabel);
@@ -556,12 +565,11 @@ public class MapEditorScene : IGameScene
             var infoLabel = new UiLabel
             {
                 Text = "Press H to hide or show",
-                ForegroundColor = ConsoleColor.Black,
-                BackgroundColor = ConsoleColor.DarkGray,
+                ForegroundColor = infoColor,
+                BackgroundColor = panelBg,
                 RelativePosition = new Point2D(2, 4)
             };
             AddChild(infoLabel);
         }
     }
-
 }
