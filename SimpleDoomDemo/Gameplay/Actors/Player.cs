@@ -17,49 +17,42 @@ public class Player : GraphicsComponent
     private bool _alive;
 
     // ==========================FIELDS_SETTERS&GETTERS=========================
+
+    public static int PlayerSolidity = 4;
+    
     public int Ammo 
     { 
-        get { return _ammo; } 
-        set { 
+        get => _ammo;
+        private set { 
             if (value > MaxAmmo) _ammo = MaxAmmo;
             else if(value < 0) _ammo = 0;
             else _ammo = value;
         }   
     }
 
-    public int CombatPoints
-    {
-        get {return _compatPoints;} 
-    }
+    public int CombatPoints => _compatPoints;
 
-    public bool Alive
-    {
-        get { return _alive; }
-    }
+    public bool Alive => _alive;
+
     public int Health
     {
         get { return _health; }
-        set { 
+        private set 
+        { 
             if (value > MaxHealth) _health = MaxHealth;
             else if(value < 0) _health = 0;
             else _health = value;
         }       
     }
 
-    public int MaxHealth
-    {
-        get { return CombatPoints / 10 + 100; }
-    }
+    public int MaxHealth => CombatPoints / 10 + 100;
 
-    public int MaxAmmo
-    {
-        get { return CombatPoints / 50 + 10; }
-    }
+    public int MaxAmmo => CombatPoints / 50 + 10;
 
     public int BFGCells
     {
         get { return _bfgCells; }
-        set {
+        private set {
             if (value > MaxBFGCells) _bfgCells = MaxBFGCells;
             else if(value < 0) _bfgCells = 0;
             else _bfgCells = value;
@@ -135,8 +128,8 @@ public class Player : GraphicsComponent
         }
 
         // Transform world coordinates to screen coordinates
-        Point2D? screenPos = camera.TransformPoint(WorldPosition);
-        if (screenPos == null) return; // Off-screen culling
+        Point2D screenPos = camera.TransformPoint(WorldPosition);
+        if (screenPos == Point2D.OutsideScreenPoint) return; // Off-screen culling
 
         renderer.SetCell(screenPos.X, screenPos.Y,
             new Cell('●', ConsoleColor.Black, ConsoleColor.Green));

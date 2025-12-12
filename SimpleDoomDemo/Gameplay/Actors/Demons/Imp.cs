@@ -8,7 +8,7 @@ public class Imp : Demon
 {
     public Imp(int x, int y) : base(x, y)
     {
-        FillingRatio = 0.4d;
+        Solidity = 4;
         Health = 20;
         SightRange = 70;
         AttackRange = 6;
@@ -18,8 +18,8 @@ public class Imp : Demon
     protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
         // Transform world coordinates to screen coordinates
-        Point2D? screenPos = camera.TransformPoint(WorldPosition);
-        if (screenPos == null) return; // Off-screen culling
+        Point2D screenPos = camera.TransformPoint(WorldPosition);
+        if (screenPos == Point2D.OutsideScreenPoint) return; // Off-screen culling
 
         renderer.DrawText(screenPos.X, screenPos.Y, "☠");
     }

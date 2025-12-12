@@ -482,8 +482,8 @@ public class MapEditorScene : IGameScene
 
         protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
         {
-            Point2D? screenPos = camera.TransformPoint(WorldPosition);
-            if (screenPos == null) return; // Off-screen culling
+            Point2D screenPos = camera.TransformPoint(WorldPosition);
+            if (screenPos == Point2D.OutsideScreenPoint) return; // Off-screen culling
 
             renderer.SetCell(screenPos.X, screenPos.Y,
                 new Cell(_glyph, ConsoleColor.Black, ConsoleColor.Green));

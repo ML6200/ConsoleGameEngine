@@ -9,7 +9,7 @@ public class Zombieman : Demon
 {
     public Zombieman(int x, int y) : base(x, y)
     {
-        FillingRatio = 4;
+        Solidity = 4;
         Health = 60;
         SightRange = 70;
         AttackRange = 3;

@@ -9,12 +9,11 @@ public class GameItem : GraphicsComponent
 {
     // =============================FIELDS_PUBLIC==============================
     public ItemType Type { get; }
-    public double FillingRatio { get; set; }
+    public int Solidity { get; set; }
     public bool Available { get; private set; }
-
     
     // =============================METHODS==============================
-    private char _glyph;
+    private volatile char _glyph;
 
     private void SetInitialProperties()
     {
@@ -22,46 +21,46 @@ public class GameItem : GraphicsComponent
         switch (Type)
         {
             case ItemType.Ammo:
-                FillingRatio = 0.0;
+                Solidity = 0;
                 ForegroundColor = ConsoleColor.Yellow;
                 _glyph = '⁍';
                 break;
 
             case ItemType.BfgCell:
-                FillingRatio = 0.0;
+                Solidity = 0;
                 ForegroundColor = ConsoleColor.Green;
                 _glyph = 'B';
                 break;
 
             case ItemType.Door:
-                FillingRatio = 1.0;
+                Solidity = 10;
                 BackgroundColor = ConsoleColor.Gray;
                 ForegroundColor = ConsoleColor.Black;
                 _glyph = '/';
                 break;
 
             case ItemType.LevelExit:
-                FillingRatio = 1.0;
+                Solidity = 0;
                 BackgroundColor = ConsoleColor.Blue;
                 ForegroundColor = ConsoleColor.Black;
                 _glyph = 'E';
                 break;
 
             case ItemType.MedKit:
-                FillingRatio = 0.0;
+                Solidity = 0;
                 BackgroundColor = ConsoleColor.DarkGray;
                 ForegroundColor = ConsoleColor.Red;
                 _glyph = '+';
                 break;
 
             case ItemType.ToxicWaste:
-                FillingRatio = 0.0;
+                Solidity = 0;
                 ForegroundColor = ConsoleColor.Green;
                 _glyph = '☣';
                 break;
 
             case ItemType.Wall:
-                FillingRatio = 1.0;
+                Solidity = 10;
                 BackgroundColor = ConsoleColor.Gray;
                 ForegroundColor = ConsoleColor.Gray;
                 _glyph = ' ';
@@ -86,16 +85,16 @@ public class GameItem : GraphicsComponent
         }
         else if (Type == ItemType.Door)
         {
-            if (FillingRatio.Equals(1.0))
+            if (Solidity.Equals(10))
             {
-                FillingRatio = 0.0;
+                Solidity = 0;
                 ForegroundColor = ConsoleColor.Black;
                 _glyph = '/';
             }
             else
             {
                 ForegroundColor = ConsoleColor.Black;
-                FillingRatio = 1.0;
+                Solidity = 10;
                 _glyph = '\\';
             }
         }
@@ -106,15 +105,15 @@ public class GameItem : GraphicsComponent
     /// </summary>
     public void UpdateVisibility(Point2D playerPoint, double sightRange)
     {
-        double distance = Point2D.Distance(WorldPosition, playerPoint);
+        double distance = Point2D.ChebyshevDistance(WorldPosition, playerPoint);
         Visible = Available && distance <= sightRange;
     }
 
     protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
         // Transform world coordinates to screen coordinates
-        Point2D? screenPos = camera.TransformPoint(WorldPosition);
-        if (screenPos == null) return; // Off-screen culling
+        Point2D screenPos = camera.TransformPoint(WorldPosition);
+        if (screenPos == Point2D.OutsideScreenPoint) return; // Off-screen culling
 
         renderer.SetCell(screenPos.X, screenPos.Y,
             new Cell(_glyph, BackgroundColor, ForegroundColor));

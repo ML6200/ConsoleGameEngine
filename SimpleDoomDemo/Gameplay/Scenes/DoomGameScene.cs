@@ -42,7 +42,7 @@ public class DoomGameScene : IGameScene
     // ============================= GAME STATE ==============================
     public bool Interrupted { get; set; }
     public bool Exited { get; set; }
-    public double PlayerFillingRatio { get; private set; } = 0.4;
+    
     private bool _gameOverHandled = false;
     public Dimension2D WorldSize { get; private set; }
 

@@ -9,19 +9,13 @@ using SimpleDoomEngine.Gameplay.Items;
 
 namespace SimpleDoomDemo.Gameplay.Systems;
 
-public class MovementSystem : IGameSystem
+public class MovementSystem(DoomGameScene game) : IGameSystem
 {
-    private readonly DoomGameScene _game;
     private readonly Random _random = new();
-
-    public MovementSystem(DoomGameScene game)
-    {
-        _game = game;
-    }
 
     public void Update(double deltaTime)
     {
-        foreach (var demon in _game.Demons)
+        foreach (var demon in game.Demons)
         {
             if (demon.State == DemonState.Move)
             {
@@ -43,80 +37,75 @@ public class MovementSystem : IGameSystem
         if (!IsPointWithinBounds(targetPos))
             return;
 
-        double totalFillingRatio = GetTotalFillingRatio(targetPos) + demon.FillingRatio;
+        int totalSolidity = GetTotalSolidity(targetPos) + demon.Solidity;
         if (rndMove < pMove)
         {
-            if (totalFillingRatio < 1.0)
+            if (totalSolidity < 10)
             {
                 demon.WorldPosition = targetPos;
             }
         }
     }
     
-    public bool MovePlayer(Point2D targetPoint)
+    public void MovePlayer(Point2D targetPoint)
     {
-        if (!IsPointWithinBounds(targetPoint))
-            return false;
+        if (!IsPointWithinBounds(targetPoint)) return;
 
-        double totalFillingRatio = GetTotalFillingRatio(targetPoint) + _game.PlayerFillingRatio;
+        int totalSolidity = GetTotalSolidity(targetPoint) + Player.PlayerSolidity;
 
-        if (totalFillingRatio < 1.0)
+        if (totalSolidity < 10)
         {
-            _game.Player.RelativePosition = targetPoint;
-            return true;
+            game.Player.RelativePosition = targetPoint;
         }
-
-        return false;
     }
 
-    public double GetTotalFillingRatio(Point2D position)
+    private int GetTotalSolidity(Point2D position)
     {
         List<GameItem> items = GetGameItemsWithinDistance(position, 0);
         List<Demon> dems = GetDemonsWithinDistance(position, 0);
         
-        double sum = 0;
+        int sum = 0;
         
         foreach (var t in items)
         {
-            sum += t.FillingRatio;
+            sum += t.Solidity;
         }
         
-        for (int i = 0; i < dems.Count; i++)
+        foreach (var d in dems)
         {
-            sum += dems[i].FillingRatio;
+            sum += d.Solidity;
         }
         
         return sum;
     }
-    
-    public List<Demon> GetDemonsWithinDistance(Point2D position, double distanceTreshold)
+
+    private List<Demon> GetDemonsWithinDistance(Point2D position, int distanceThreshold)
     {
         List<Demon> closeItems = new List<Demon>();
 
-        for (int i = 0; i < _game.Demons.Count; i++)
+        for (int i = 0; i < game.Demons.Count; i++)
         {
-            double distance = Point2D.Distance(position, _game.Demons[i].WorldPosition);
+            int distance = Point2D.ChebyshevDistance(position, game.Demons[i].WorldPosition);
 
-            if (distance <= distanceTreshold)
+            if (distance <= distanceThreshold)
             {
-                closeItems.Add(_game.Demons[i]);
+                closeItems.Add(game.Demons[i]);
             }
         }
 
         return closeItems;
     }
-    
-    public List<GameItem> GetGameItemsWithinDistance(Point2D position, double distanceTreshold)
+
+    private List<GameItem> GetGameItemsWithinDistance(Point2D position, int distanceTreshold)
     {
         List<GameItem> closeItems = new List<GameItem>();
-
-        for (int i = 0; i < _game.Items.Count; i++)
+        foreach (var items in game.Items)
         {
-            double distance = Point2D.Distance(position, _game.Items[i].WorldPosition);
+            int distance = Point2D.ChebyshevDistance(position, items.WorldPosition);
 
             if (distance <= distanceTreshold)
             {
-                closeItems.Add(_game.Items[i]);
+                closeItems.Add(items);
             }
         }
 
@@ -127,7 +116,7 @@ public class MovementSystem : IGameSystem
 
     private bool IsPointWithinBounds(Point2D point)
     {
-        return point.X >= 0 && point.X < _game.WorldSize.Width
-               && point.Y >= 0 && point.Y < _game.WorldSize.Height;
+        return point.X >= 0 && point.X < game.WorldSize.Width
+               && point.Y >= 0 && point.Y < game.WorldSize.Height;
     }
 }

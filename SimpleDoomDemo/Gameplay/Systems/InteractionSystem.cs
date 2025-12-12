@@ -36,8 +36,6 @@ public class InteractionSystem : IGameSystem
                     _game.PlaySoundEffect(SoundEffectType.Door);
 
                     // Door animation - quick blink
-                    var doorAnim = AnimationTween.Blink(item, 0.3, loop: false);
-                    item.AddAnimation(doorAnim);
                     break;
 
                 case ItemType.LevelExit:
@@ -117,13 +115,13 @@ public class InteractionSystem : IGameSystem
         }
     }
 
-    private List<GameItem> GetItemsWithinRange(Point2D point, double range)
+    private List<GameItem> GetItemsWithinRange(Point2D point, int range)
     {
         List<GameItem> result = new List<GameItem>();
 
         foreach (GameItem item in _game.Items)
         {
-            double distance = Point2D.Distance(point, item.WorldPosition);
+            int distance = Point2D.ChebyshevDistance(point, item.WorldPosition);
             if (distance <= range)
             {
                 result.Add(item);

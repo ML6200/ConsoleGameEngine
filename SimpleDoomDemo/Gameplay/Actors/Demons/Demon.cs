@@ -14,16 +14,16 @@ public abstract class Demon : GraphicsComponent
     private double _timeSinceLastAttack = 0;
 
     // =========================FIELDS_SETTERS&GETTERS==============================
-    public double FillingRatio { get; protected set; }
+    public int Solidity { get; protected set; }
     public bool Alive { get; private set; }
     public int Health { get; set; }
     public int SightRange { get; set; }
     public int AttackRange { get; set; }
     public int Speed { get { return _speed; } }
     public DemonState  State { get; private set; }
-    public int AttackCooldownMs { get; protected set; } = 500; // 0.5 seconds between attacks
+    private int AttackCooldownMs { get; set; } = 500; // 0.5 seconds between attacks
         
-    public double LastDistanceToPlayer { get; set; }
+    public int LastDistanceToPlayer { get; set; }
     
     
     // =============================METHODS==============================
@@ -40,7 +40,7 @@ public abstract class Demon : GraphicsComponent
     {
         Point2D playerPos = player.WorldPosition;
         Point2D demonPos = WorldPosition;
-        double dist = Point2D.Distance(playerPos, demonPos);
+        double dist = Point2D.ChebyshevDistance(playerPos, demonPos);
 
         if (dist < AttackRange)
         {
@@ -79,7 +79,7 @@ public abstract class Demon : GraphicsComponent
     
     public void UpdateVisibility(Point2D playerPoint, double sightRange)
     {
-        double distance = Point2D.Distance(WorldPosition, playerPoint);
+        double distance = Point2D.ChebyshevDistance(WorldPosition, playerPoint);
         bool newVisibility = Alive && distance <= sightRange;
 
         Visible = newVisibility;
