@@ -93,11 +93,12 @@ public class UiInputBox : UiPanel
 
     private void Close()
     {
-        Visible = false;
-        _parent.RemoveChild(this);
         _renderManager.FocusManager.Unregister(_inputField);
         _renderManager.FocusManager.Unregister(_okButton);
         _renderManager.FocusManager.Unregister(_cancelButton);
+        
+        Visible = false;
+        _parent.RemoveChild(this);
     }
 
     

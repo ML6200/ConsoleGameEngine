@@ -91,6 +91,7 @@ public class UiMsgBox : UiPanel
         OnComplete?.Invoke(option);
         _renderManager.FocusManager.Unregister(_okButton);
         _renderManager.FocusManager.Unregister(_cancelButton);
+        
         _parent.RemoveChild(this);
         Visible = false;
     }
