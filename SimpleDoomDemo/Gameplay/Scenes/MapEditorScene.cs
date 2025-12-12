@@ -44,8 +44,7 @@ public class MapEditorScene : IGameScene
     private UiPanel _mainPanel;
     private UiPanel _toolBarPanel;
     private UiPanel _editorPanel;
-    private UiLabel _placeHolder;
-    private UiButton _backButton;
+    private UiLabel _title;
     private Cursor _cursor;
     private Mapper _mapper;
 
@@ -68,17 +67,30 @@ public class MapEditorScene : IGameScene
 
     public void OnEnter()
     {
-        // _mainPanel = new UiPanel()
-        // {
-        //     RelativePosition = new Point2D(0, 0),
-        //     BackgroundColor = ConsoleColor.Black,
-        //     ForegroundColor = ConsoleColor.White,
-        //     Size = _engine.RootPanel().ScreenSize,
-        //     HasBorder = true,
-        //     BorderColor = ConsoleColor.White
-        // };
-        //_engine.RootPanel().AddChild(_mainPanel);
-        //_engine.RootPanel().AddChild(_editorPanel);
+         _mainPanel = new UiPanel()
+         {
+             RelativePosition = new Point2D(0, 0),
+             BackgroundColor = ConsoleColor.Black,
+             ForegroundColor = ConsoleColor.White,
+             Size = _engine.RootPanel().ScreenSize,
+             HasBorder = true,
+             BorderColor = ConsoleColor.White,
+         };
+        _engine.RootPanel().AddChild(_mainPanel);
+        
+        int centerX = _engine.RootPanel().ScreenSize.Width / 2;
+        int centerY = _engine.RootPanel().ScreenSize.Height / 2;
+        
+        _title = new UiLabel()
+        {
+            Text = "Map Editor",
+            ForegroundColor = ConsoleColor.White,
+            BackgroundColor = ConsoleColor.Black,
+        };
+        
+        _title.RelativePosition = new Point2D(centerX - _title.Size.Width / 2, 0);
+        _mainPanel.AddChild(_title);
+        
         
         _toolBarPanel = new UiPanel()
         {
@@ -88,45 +100,19 @@ public class MapEditorScene : IGameScene
             Size = new Dimension2D(_engine.RootPanel().ScreenSize.Width, 5),
             HasBorder = true
         };
+        
         _editorPanel = new UiPanel()
         {
-            RelativePosition = new Point2D(0, 0),
+            RelativePosition = new Point2D(1, 1),
             BackgroundColor = ConsoleColor.Black,
             ForegroundColor = ConsoleColor.White,
-            Size = _engine.RootPanel().Size,
+            Size = _mainPanel.Size - 2,
             HasBorder = false,
         };
-        //_mainPanel.AddChild(_editorPanel);
-        _engine.RootPanel().AddChild(_editorPanel);
+        _mainPanel.AddChild(_editorPanel);
         
-        int centerX = _engine.RootPanel().ScreenSize.Width / 2;
-        int centerY = _engine.RootPanel().ScreenSize.Height / 2;
-        
-        _placeHolder = new UiLabel()
-        {
-            Text = "Map Editor",
-            ForegroundColor = ConsoleColor.Black,
-            BackgroundColor = ConsoleColor.Gray,
-        };
-        _placeHolder.RelativePosition = new Point2D(centerX - _placeHolder.Size.Width / 2, 0);
-        //_toolBarPanel.AddChild(_placeHolder);
-
-        _backButton = new UiButton()
-        {
-            Text = "Back",
-            RelativePosition = new Point2D(centerX, centerY - 10),
-            Size = new Dimension2D(20, 3),
-            FocusedBgColor = ConsoleColor.Red,
-            BackgroundColor = ConsoleColor.DarkRed,
-            ForegroundColor = ConsoleColor.White,
-        };
-        
-        //_backButton.OnClick += HandleBack;
-        //_toolBarPanel.AddChild(_backButton);
-        
-        _engine.RenderManager.FocusManager.Register(_backButton);
         _engine.Input.OnKeyPressed += HandleUserInput;
-        _engine.Camera.CameraSize = _engine.RootPanel().ScreenSize;
+        _engine.Camera.CameraSize = _mainPanel.Size;
 
         _cursor = new Cursor(0, 0);
         _editorPanel.AddChild(_cursor);
@@ -134,8 +120,11 @@ public class MapEditorScene : IGameScene
         
         _engine.RenderManager.OnWindowResized += (sender, args) =>
         {
-            _editorPanel.Size = _engine.RootPanel().ScreenSize;
-            _engine.Camera.CameraSize = _engine.RootPanel().ScreenSize;
+            _mainPanel.Size = _engine.RootPanel().ScreenSize;
+            _engine.Camera.CameraSize = _mainPanel.Size;
+            
+            _title.RelativePosition = new Point2D(_engine.RootPanel().ScreenSize.Width / 2
+                                                  - _title.Size.Width / 2, 0);
         };
     }
 
@@ -347,7 +336,7 @@ public class MapEditorScene : IGameScene
      */
     private void AddEntity(Mapper.DcmEntity entity, Mapper.DcmType dmType)
     {
-        Point2D targetPoint = _cursor.WorldPosition;
+        Point2D targetPoint = _cursor.RelativePosition;
         if (_mapper.IsPositionAcquired(targetPoint))
             return;
         
@@ -372,8 +361,9 @@ public class MapEditorScene : IGameScene
     
     private void MoveCursorBy(int x, int y)
     {
-        Point2D targetPoint = _cursor.WorldPosition + new Point2D(x, y);
-        _cursor.RelativePosition = targetPoint;
+        Point2D targetPoint = _cursor.RelativePosition + new Point2D(x, y);
+        _cursor.RelativePosition = targetPoint.Clamp(new Point2D(0, 0), 
+            _mainPanel.Size - 3);
         PlaceCursorOnTop();
     }
 
