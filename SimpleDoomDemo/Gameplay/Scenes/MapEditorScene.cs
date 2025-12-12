@@ -8,6 +8,7 @@ using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 using ConsoleGameEngine.Engine.System;
+using SimpleDoomDemo.Gameplay.UI;
 
 namespace SimpleDoomDemo.Gameplay.Scenes;
 
@@ -44,7 +45,7 @@ public class MapEditorScene : IGameScene
      */
     private ConsoleEngine _engine;
     private UiPanel _mainPanel;
-    private UiPanel _toolBarPanel;
+    private MapToolbar _toolBarPanel;
     private UiPanel _editorPanel;
     private UiLabel _title;
     private Cursor _cursor;
@@ -81,7 +82,6 @@ public class MapEditorScene : IGameScene
         _engine.RootPanel().AddChild(_mainPanel);
         
         int centerX = _engine.RootPanel().ScreenSize.Width / 2;
-        int centerY = _engine.RootPanel().ScreenSize.Height / 2;
         
         _title = new UiLabel()
         {
@@ -92,16 +92,11 @@ public class MapEditorScene : IGameScene
         
         _title.RelativePosition = new Point2D(centerX - _title.Size.Width / 2, 0);
         _mainPanel.AddChild(_title);
-        
-        
-        _toolBarPanel = new UiPanel()
-        {
-            RelativePosition = new Point2D(0, 0),
-            BackgroundColor = ConsoleColor.Gray,
-            ForegroundColor = ConsoleColor.Black,
-            Size = new Dimension2D(_engine.RootPanel().ScreenSize.Width, 5),
-            HasBorder = true
-        };
+
+
+        _toolBarPanel = new MapToolbar(100, 6);
+        _toolBarPanel.RelativePosition = new Point2D(centerX - 50, 
+            _mainPanel.Size.Height - 8);
         
         _editorPanel = new UiPanel()
         {
@@ -112,6 +107,7 @@ public class MapEditorScene : IGameScene
             HasBorder = false,
         };
         _mainPanel.AddChild(_editorPanel);
+        _editorPanel.AddChild(_toolBarPanel);
         
         _engine.Input.OnKeyPressed += HandleUserInput;
         _engine.Camera.CameraSize = _mainPanel.Size;
@@ -127,6 +123,9 @@ public class MapEditorScene : IGameScene
             
             _title.RelativePosition = new Point2D(_engine.RootPanel().ScreenSize.Width / 2
                                                   - _title.Size.Width / 2, 0);
+            
+            _toolBarPanel.RelativePosition = new Point2D(_engine.RootPanel().ScreenSize.Width / 2 - 50, 
+                _mainPanel.Size.Height - 8);
         };
     }
 
@@ -186,12 +185,17 @@ public class MapEditorScene : IGameScene
                 AddEntity(Mapper.DcmEntity.Player, Mapper.DcmType.Player);
                 break;
             
+            // Hide or show toolbar panel
+            case ConsoleKey.H:
+                _toolBarPanel.Visible = !_toolBarPanel.Visible;
+                break;
+            
             // Controls
             case ConsoleKey.Escape:
                 HandleExit();
                 break;
             case ConsoleKey.Backspace:
-                RemoveEntity(_cursor.WorldPosition);
+                RemoveEntity(_cursor.RelativePosition);
                 break;
         }
 
@@ -352,12 +356,9 @@ public class MapEditorScene : IGameScene
     private void RemoveEntity(Point2D point)
     {
         var removed = _mapper.RemoveObject(point);
-        if (removed != null)
-        {
-            _editorPanel.RemoveChild(removed);
-            _isSaved = false;
-        }
+        if (removed == null) return;
         
+        _editorPanel.RemoveChild(removed);
         _isEntityAdded = false;
         MarkStateUnsaved();
     }
@@ -476,7 +477,7 @@ public class MapEditorScene : IGameScene
         _engine.RootPanel().RemoveAllChildren();
     }
 
-    class Cursor : GraphicsComponent
+    private class Cursor : GraphicsComponent
     {
         public Cursor(int x, int y)
         {
@@ -494,4 +495,69 @@ public class MapEditorScene : IGameScene
                 new Cell(_glyph, ConsoleColor.Black, ConsoleColor.Green));
         }
     }
+    
+    /// <summary>
+    /// AI generated toolbar class
+    ///
+    /// The best way to use AI is doing boring, repetitive things like this
+    /// </summary>
+    private class MapToolbar : UiPanel
+    {
+        public MapToolbar(int width, int height)
+        {
+            // Configure panel
+            BackgroundColor = ConsoleColor.DarkGray;
+            ForegroundColor = ConsoleColor.White;
+            HasBorder = true;
+            BorderColor = ConsoleColor.Gray;
+            Size = new Dimension2D(width, height);
+
+            // Create labels for shortcuts
+            var titleLabel = new UiLabel
+            {
+                Text = "MAP EDITOR SHORTCUTS",
+                ForegroundColor = ConsoleColor.Yellow,
+                BackgroundColor = ConsoleColor.DarkGray,
+                RelativePosition = new Point2D(2, 0)
+            };
+            AddChild(titleLabel);
+
+            var gameItemsLabel = new UiLabel
+            {
+                Text = "Items: [W]Wall [T]Toxic [A]Ammo [M]MedKit [B]BFG [D]Door",
+                ForegroundColor = ConsoleColor.Green,
+                BackgroundColor = ConsoleColor.DarkGray,
+                RelativePosition = new Point2D(2, 1)
+            };
+            AddChild(gameItemsLabel);
+
+            var demonsLabel = new UiLabel
+            {
+                Text = "Demons: [Z]Zombieman [Shift+C]Mancubus [I]Imp  |  [P]Player",
+                ForegroundColor = ConsoleColor.Yellow,
+                BackgroundColor = ConsoleColor.DarkGray,
+                RelativePosition = new Point2D(2, 2)
+            };
+            AddChild(demonsLabel);
+
+            var controlsLabel = new UiLabel
+            {
+                Text = "Controls: [Arrows]Move [Backspace]Delete [Ctrl+S]Save [Ctrl+O]Open [Esc]Exit",
+                ForegroundColor = ConsoleColor.Cyan,
+                BackgroundColor = ConsoleColor.DarkGray,
+                RelativePosition = new Point2D(2, 3)
+            };
+            AddChild(controlsLabel);
+            
+            var infoLabel = new UiLabel
+            {
+                Text = "Press H to hide or show",
+                ForegroundColor = ConsoleColor.Black,
+                BackgroundColor = ConsoleColor.DarkGray,
+                RelativePosition = new Point2D(2, 4)
+            };
+            AddChild(infoLabel);
+        }
+    }
+
 }
