@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.IO;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer;
@@ -221,11 +222,27 @@ public class MapEditorScene : IGameScene
 
     private void OpenMap(string filename)
     {
-        _state = EditorState.OpeningFile;
-        _filePath = filename;
-        ReloadMap();
-        _editorPanel.AddChild(_cursor);
-        _engine.Input.OnKeyPressed += HandleUserInput;
+        // better to handle file existence and format mismatch in the mapper later
+        if (File.Exists(filename))
+        {
+            _state = EditorState.OpeningFile;
+            _filePath = filename;
+            ReloadMap();
+            _editorPanel.AddChild(_cursor);
+            _engine.Input.OnKeyPressed += HandleUserInput;
+        }
+        else
+        {
+            UiMsgBox msgBox = new UiMsgBox(_engine.RootPanel(),
+                _engine.RenderManager, _engine.Input,
+                "Failed to load", $"File '{filename}' not found");
+
+            msgBox.OnComplete += state =>
+            {
+                _editorPanel.AddChild(_cursor);
+                _engine.Input.OnKeyPressed += HandleUserInput;
+            };
+        }
     }
 
     private void ReloadMap()
