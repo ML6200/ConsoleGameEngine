@@ -365,7 +365,7 @@ class SimpleScene : IGameScene
 
     public void OnUpdate(double deltaTime)
     {
-        spritePanel2.RelativePosition.X += 1;
+        //spritePanel2.RelativePosition.X += 1;
     }
     
     private void OnKeyPressed(object? sender, KeyEventArgs e)
@@ -374,19 +374,19 @@ class SimpleScene : IGameScene
         switch (e.Key)
         {
             case ConsoleKey.UpArrow:
-                spritePanel.RelativePosition.Y -= 1;
+                //spritePanel.RelativePosition.Y -= 1;
                 break;
 
             case ConsoleKey.DownArrow:
-               spritePanel.RelativePosition.Y += 1;
+               //spritePanel.RelativePosition.Y += 1;
                 break;
             
             case ConsoleKey.LeftArrow:
-                spritePanel.RelativePosition.X += -1;
+                //spritePanel.RelativePosition.X += -1;
                 break;
             
             case ConsoleKey.RightArrow:
-                spritePanel.RelativePosition.X += 1;
+                //spritePanel.RelativePosition.X += 1;
                 break;
             case ConsoleKey.E:
                 spritePanel.Visible = !spritePanel.Visible;
