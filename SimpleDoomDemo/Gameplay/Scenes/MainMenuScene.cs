@@ -1,6 +1,7 @@
 using System;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
+using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 using NLog;
@@ -95,21 +96,26 @@ public class MainMenuScene : IGameScene
             msgBox.OnComplete += state =>
             {
                 DoomGameManager.IsTipShown = true;
-                RegisterButtons();
+                EnableButtons();
             };
         }
 
-        if (DoomGameManager.IsTipShown) RegisterButtons();
+        if (DoomGameManager.IsTipShown) EnableButtons();
 
         _engine.RenderManager.OnWindowResized += WindowResized;
     }
 
-    private void RegisterButtons()
+    private void EnableButtons()
     {
         _engine.RenderManager.FocusManager.Register(_playButton);
         _engine.RenderManager.FocusManager.Register(_settingsButton);
         _engine.RenderManager.FocusManager.Register(_mapEditButton);
         _engine.RenderManager.FocusManager.Register(_quitButton);
+    }
+
+    private void DisableButtons()
+    {
+        _engine.RenderManager.FocusManager.UnregisterAll();
     }
 
     private void WindowResized(object? sender, EventArgs e)
@@ -153,7 +159,6 @@ public class MainMenuScene : IGameScene
         {
             try
             {
-                //Mapper.LoadFromLegacyMap(_mapPath, gameScene.Items, gameScene.Demons, gameScene.Player);
                 Mapper mapper = new Mapper(_mapPath);
                 DoomGameScene gameScene = new DoomGameScene(mapper.GetPlayer(), 
                     mapper.CollectDemons(), 
@@ -169,8 +174,13 @@ public class MainMenuScene : IGameScene
         }
         else
         {
-            new UiMsgBox(_menuPanel, _engine.RenderManager, _engine.Input, 
+            DisableButtons();
+            UiMsgBox msgBox = new UiMsgBox(_menuPanel, _engine.RenderManager, _engine.Input, 
                 "File not found", "File " + _mapPath + " cannot be found!");
+            msgBox.OnComplete += state =>
+            {
+                EnableButtons();
+            };
         }
     }
 
