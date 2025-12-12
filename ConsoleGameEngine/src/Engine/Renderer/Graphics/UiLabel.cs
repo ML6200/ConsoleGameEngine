@@ -10,10 +10,7 @@ public class UiLabel : GraphicsComponent
 
     public string Text
     {
-        get
-        {
-            return _text;
-        }
+        get => _text;
         set
         {
             _text = value;
@@ -39,6 +36,7 @@ public class UiLabel : GraphicsComponent
     
     private void SetSize()
     {
+        Width = Text.Length;
         Height = 1;
     }
 
