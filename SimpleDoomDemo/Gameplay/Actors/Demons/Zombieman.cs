@@ -9,12 +9,7 @@ public class Zombieman : Demon
 {
     public Zombieman(int x, int y) : base(x, y)
     {
-        // FillingRatio = 0.4d;
-        // Health = 20;
-        // SightRange = 70;
-        // AttackRange = 3;
-        // _speed = 93;
-        FillingRatio = 0.4D;
+        FillingRatio = 4;
         Health = 60;
         SightRange = 70;
         AttackRange = 3;
@@ -24,8 +19,8 @@ public class Zombieman : Demon
     protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
         // Transform world coordinates to screen coordinates
-        Point2D? screenPos = camera.TransformPoint(WorldPosition);
-        if (screenPos == null) return; // Off-screen culling
+        Point2D screenPos = camera.TransformPoint(WorldPosition);
+        if (screenPos == Point2D.OutsideScreenPoint) return; // Off-screen culling
 
         //renderer.SetCell(screenPos.X, screenPos.Y,
         //    new Cell('o', ConsoleColor.Black, ConsoleColor.Red));

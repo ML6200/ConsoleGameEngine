@@ -38,7 +38,7 @@ public class ConsoleCamera
         CameraEndPoint = new Point2D(endX, endY);
     }
 
-    public Point2D? TransformPoint(Point2D worldPoint)
+    public Point2D TransformPoint(Point2D worldPoint)
     {
         // Transform from world space to screen space
         int screenX = worldPoint.X - CameraStartPoint.X;
@@ -49,7 +49,7 @@ public class ConsoleCamera
             screenX >= CameraSize.Width ||
             screenY >= CameraSize.Height)
         {
-            return null;
+            return Point2D.OutsideScreenPoint;
         }
 
         return new Point2D(screenX, screenY);
