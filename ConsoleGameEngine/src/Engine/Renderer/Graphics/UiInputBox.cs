@@ -22,7 +22,7 @@ public class UiInputBox : UiPanel
     private readonly ConsoleRenderManager _renderManager;
     private Logger _logger = LogManager.GetCurrentClassLogger();
     
-    public event Action<string>? OnComplete;
+    public event Action<string>? OnOk;
     public event EventHandler OnCancelled;
 
     public UiInputBox(GraphicsComponent parent, ConsoleRenderManager renderManager, 
@@ -68,7 +68,7 @@ public class UiInputBox : UiPanel
         
         _okButton.OnClick += (e, s) =>
         {
-            OnComplete?.Invoke(_inputField.Text);
+            OnOk?.Invoke(_inputField.Text);
             Close();
         };
         _cancelButton.OnClick += (e, s) =>
