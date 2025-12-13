@@ -92,6 +92,7 @@ public class DoomGameScene : IGameScene
 
         // Setup cleanup handlers
         Console.CancelKeyPress += (sender, e) => _audioEngine.StopAll();
+        AppDomain.CurrentDomain.UnhandledException += (sender, e) => _audioEngine.StopAll();
         AppDomain.CurrentDomain.ProcessExit += (sender, e) => _audioEngine.StopAll();
     }
 
@@ -153,9 +154,14 @@ public class DoomGameScene : IGameScene
         
     }
 
-    public void OnExit()
+    public void StopAllAudio()
     {
         _audioEngine.StopAll();
+    }
+    
+    public void OnExit()
+    {
+        StopAllAudio();
         _input.OnKeyPressed -= OnKeyPressed!;
 
         // Clean up all game entities from the root panel

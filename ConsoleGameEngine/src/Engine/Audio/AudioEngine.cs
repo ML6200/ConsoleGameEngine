@@ -61,6 +61,7 @@ public class AudioEngine : IDisposable
     {
         foreach (var player in _audioTasks.Values)
         {
+            player.Player.Pause();
             player.Player.Stop();
         }
         _audioTasks.Clear();

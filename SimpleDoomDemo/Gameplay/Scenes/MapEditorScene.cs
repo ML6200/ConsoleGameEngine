@@ -114,6 +114,7 @@ public class MapEditorScene : IGameScene
         
         _engine.Input.OnKeyPressed += HandleUserInput;
         _engine.Camera.CameraSize = _mainPanel.Size;
+        _engine.RootPanel().RelativePosition = new Point2D(0, 0);
 
         _cursor = new Cursor(0, 0);
         _editorPanel.AddChild(_cursor);
