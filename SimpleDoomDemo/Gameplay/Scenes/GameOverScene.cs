@@ -23,9 +23,11 @@ public class GameOverScene : IGameScene
     private readonly bool _levelComplete;
     private readonly bool _interrupted;
     private GameOverPanel _gameOverPanel;
+    private DoomGameScene _game;
 
-    public GameOverScene(Player player, bool playerDied, bool levelComplete, bool interrupted)
+    public GameOverScene(DoomGameScene game, Player player, bool playerDied, bool levelComplete, bool interrupted)
     {
+        _game = game;
         _player = player;
         _playerDied = playerDied;
         _levelComplete = levelComplete;
@@ -43,11 +45,11 @@ public class GameOverScene : IGameScene
         // Play appropriate sound effect
         if (_playerDied)
         {
-            AudioPlayer.PlaySound(System.IO.Path.Combine("assets", "sounds", "player_death.mp3"));
+            _game.PlaySoundEffect(SoundEffectType.PlayerDeath);
         }
         else if (_levelComplete)
         {
-            AudioPlayer.PlayMusic(System.IO.Path.Combine("assets", "sounds", "level_complete.mp3"));
+            _game.PlaySoundEffect(SoundEffectType.LevelComplete);
         }
 
         // Create game over panel

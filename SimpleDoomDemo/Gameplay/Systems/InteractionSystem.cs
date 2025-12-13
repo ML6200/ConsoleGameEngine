@@ -42,7 +42,7 @@ public class InteractionSystem : IGameSystem
                 case ItemType.LevelExit:
                     item.Interact();
                     _game.Exited = true;
-                    _game.PlaySoundEffect(SoundEffectType.LevelExit);
+                    _game.PlaySoundEffect(SoundEffectType.LevelComplete);
                     break;
             }
         }

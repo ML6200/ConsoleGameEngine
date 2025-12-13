@@ -1,3 +1,3 @@
 namespace SimpleDoomEngine;
 
-public enum SoundEffectType { BFG, Door, ItemPickup, Pain, PlayerDeath, Shotgun, LevelExit}
+public enum SoundEffectType { BFG, Door, ItemPickup, Pain, PlayerDeath, Shotgun, LevelComplete}

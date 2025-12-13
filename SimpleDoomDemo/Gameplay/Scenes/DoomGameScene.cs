@@ -284,7 +284,7 @@ public class DoomGameScene : IGameScene
     {
         _audioEngine.StopAll();
         // Create game over scene
-        var gameOverScene = new GameOverScene(Player, !Player.Alive, Exited, Interrupted);
+        var gameOverScene = new GameOverScene(this, Player, !Player.Alive, Exited, Interrupted);
         _engine.LoadScene(gameOverScene);
     }
 
@@ -310,7 +310,7 @@ public class DoomGameScene : IGameScene
             case SoundEffectType.Shotgun:
                 _audioEngine.Play(Path.Combine("assets", "sounds", "shotgun.mp3"), "6");
                 break;
-            case SoundEffectType.LevelExit:
+            case SoundEffectType.LevelComplete:
                 _audioEngine.Play(Path.Combine("assets", "sounds", "level_complete.mp3"), "7");
                 break;
         }
