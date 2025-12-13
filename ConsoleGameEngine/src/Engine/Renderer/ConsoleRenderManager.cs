@@ -157,7 +157,7 @@ public class ConsoleRenderManager : IDisposable
     
     public void Dispose()
     {
-        _renderer.CloseStdout();
         Stop();
+        _renderer.Dispose();
     }
 }
