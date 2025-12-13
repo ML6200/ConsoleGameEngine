@@ -101,13 +101,13 @@ public class Mapper
                     if (!ignoreMissing && !hasPlayer) 
                     {
                         _logger.Warn("No player found.");
-                        throw new PlayerNotFoundException("Player was not found in map file. " + 
+                        throw new PlayerNotFoundException("Player is not found in map file. " + 
                                                           "You can add it via map editor");
                     }
                     if (!ignoreMissing && !hasExit)
                     {
                         _logger.Warn("No player found.");
-                        throw new LevelExitNotFoundException("Level exit was not found in map file. " + 
+                        throw new LevelExitNotFoundException("Level exit is not found in map file. " + 
                                                           "You can add it via map editor");
                     }
                     
