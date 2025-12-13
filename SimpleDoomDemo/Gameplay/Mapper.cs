@@ -62,7 +62,7 @@ public class Mapper
         Unknown = 11
     }
 
-    public List<DcmFormat> DcmList = new();
+    public readonly List<DcmFormat> DcmList = new();
 
     public void LoadFromDcmfFile(string path)
     {
