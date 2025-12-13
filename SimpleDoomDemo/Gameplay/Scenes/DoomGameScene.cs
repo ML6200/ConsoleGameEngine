@@ -49,6 +49,8 @@ public class DoomGameScene : IGameScene
     // ============================= SYNCHRONIZATION ==============================
     private readonly Lock _visibilityLock = new();
     
+    private readonly AudioEngine _audioEngine = new();
+
     public DoomGameScene()
     {
         // Initialize entities
@@ -89,8 +91,8 @@ public class DoomGameScene : IGameScene
         _input.OnKeyPressed += OnKeyPressed;
 
         // Setup cleanup handlers
-        Console.CancelKeyPress += (sender, e) => AudioPlayer.StopMusic();
-        AppDomain.CurrentDomain.ProcessExit += (sender, e) => AudioPlayer.StopMusic();
+        Console.CancelKeyPress += (sender, e) => _audioEngine.StopAll();
+        AppDomain.CurrentDomain.ProcessExit += (sender, e) => _audioEngine.StopAll();
     }
 
     public void OnEnter()
@@ -124,7 +126,8 @@ public class DoomGameScene : IGameScene
         _rootPanel.AddChild(_hud);
 
         // Start music
-        AudioPlayer.PlayMusic(Path.Combine("assets", "sounds", "doom_music.mp3"));
+        //AudioPlayer.PlayMusic(Path.Combine("assets", "sounds", "doom_music.mp3"));
+        _audioEngine.Play(Path.Combine("assets", "sounds", "doom_music.mp3"), "main");
     }
 
     public void OnUpdate(double deltaTime)
@@ -152,7 +155,7 @@ public class DoomGameScene : IGameScene
 
     public void OnExit()
     {
-        AudioPlayer.StopMusic();
+        _audioEngine.StopAll();
         _input.OnKeyPressed -= OnKeyPressed!;
 
         // Clean up all game entities from the root panel
@@ -279,8 +282,7 @@ public class DoomGameScene : IGameScene
 
     private void HandleGameOver()
     {
-        AudioPlayer.StopMusic();
-
+        _audioEngine.StopAll();
         // Create game over scene
         var gameOverScene = new GameOverScene(Player, !Player.Alive, Exited, Interrupted);
         _engine.LoadScene(gameOverScene);
@@ -291,25 +293,25 @@ public class DoomGameScene : IGameScene
         switch (soundEffectType)
         {
             case SoundEffectType.Door:
-                AudioPlayer.PlaySound(Path.Combine("assets", "sounds", "door.mp3"));
+                _audioEngine.Play(Path.Combine("assets", "sounds", "door.mp3"), "1");
                 break;
             case SoundEffectType.BFG:
-                AudioPlayer.PlaySound(Path.Combine("assets", "sounds", "bfg.mp3"));
+                _audioEngine.Play(Path.Combine("assets", "sounds", "bfg.mp3"), "2");
                 break;
             case SoundEffectType.ItemPickup:
-                AudioPlayer.PlaySound(Path.Combine("assets", "sounds", "item_pickup.mp3"));
+                _audioEngine.Play(Path.Combine("assets", "sounds", "item_pickup.mp3"), "3");
                 break;
             case SoundEffectType.Pain:
-                AudioPlayer.PlaySound(Path.Combine("assets", "sounds", "pain.mp3"));
+                _audioEngine.Play(Path.Combine("assets", "sounds", "pain.mp3"), "4");
                 break;
             case SoundEffectType.PlayerDeath:
-                AudioPlayer.PlaySound(Path.Combine("assets", "sounds", "player_death.mp3"));
+                _audioEngine.Play(Path.Combine("assets", "sounds", "player_death.mp3"), "5");
                 break;
             case SoundEffectType.Shotgun:
-                AudioPlayer.PlaySound(Path.Combine("assets", "sounds", "shotgun.mp3"));
+                _audioEngine.Play(Path.Combine("assets", "sounds", "shotgun.mp3"), "6");
                 break;
             case SoundEffectType.LevelExit:
-                AudioPlayer.PlayMusic(Path.Combine("assets", "sounds", "level_complete.mp3"));
+                _audioEngine.Play(Path.Combine("assets", "sounds", "level_complete.mp3"), "7");
                 break;
         }
     }
