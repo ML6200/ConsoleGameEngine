@@ -15,7 +15,7 @@ namespace SimpleDoomDemo.Gameplay;
 
 public class Mapper
 {
-    private Logger _logger = LogManager.GetCurrentClassLogger();
+    private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
     public Mapper(string path)
     {
@@ -30,6 +30,13 @@ public class Mapper
     /*
      * PosX;PosY;Type;Val
      * 12;21;GI;A
+     *
+     * New Format idea for multiple levels:
+     *
+     * PosX;PosY;Type;Val;Param      <-header
+     * 12;   21;  GI; E;   nextLevel.dcmf
+     * ...
+     * 
      */
     public record struct DcmFormat
     {
