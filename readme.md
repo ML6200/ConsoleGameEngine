@@ -13,62 +13,29 @@ A modern 2D game engine for rendering games directly in the terminal using ANSI 
 - **Audio Support**: Integrated audio via NAudio library for Windows and afplay for Mac
 - **Camera System**: Viewport and camera support (in development)
 
-## Project Structure
-
-```
-ConsoleGameEngine-Separate/
-├── ConsoleGameEngine/          # Core engine library
-│   └── src/
-│       └── Engine/
-│           ├── ConsoleEngine.cs           # Main engine orchestrator
-│           └── Renderer/                  # Rendering subsystem
-│               ├── ConsoleRenderer2D.cs   # 2D rendering with ANSI
-│               ├── ConsoleCamera.cs       # Camera and viewport
-│               ├── Geometry/              # Point2D, Dimension2D, etc.
-│               └── Graphics/              # Components, panels, UI
-├── ConsoleGameEngine.Demo/     # Basic demo project
-├── ConsoleGameEngine.Tests/    # Unit tests
-└── SimpleDoomDemo/             # Doom-like game demo
-```
-
 ## Requirements
 
 - .NET 9.0 SDK
 - Terminal with ANSI color support (most modern terminals)
-- NAudio package (will be replaced with native api calls later)
+
+## Dependencies
+- NetCoreAudio package (NuGet)
+- NLog package (NuGet)
 
 ## Getting Started
 
 ### Building the Project
 
 ```bash
-dotnet build ConsoleGameEngine.sln
+dotnet build .
 ```
 
 ### Running the Demo
 
 ```bash
-# Run the basic demo
-dotnet run --project ConsoleGameEngine.Demo
-
 # Run the Doom-like demo
 dotnet run --project SimpleDoomDemo
 ```
-
-### Using the Engine in Your Project
-
-1. Add a reference to the ConsoleGameEngine project:
-   ```bash
-   dotnet add reference ../ConsoleGameEngine/ConsoleGameEngine.csproj
-   ```
-
-2. Create a basic game:
-   ```csharp
-   using ConsoleGameEngine;
-
-   var engine = new ConsoleEngine();
-   engine.Run();
-   ```
 
 ## Architecture Overview
 
@@ -90,6 +57,24 @@ Components follow a parent-child relationship model:
   - `RelativePosition`: Local coordinates relative to parent
   - `WorldPosition`: Calculated absolute position in world space
 - **Rendering**: Components recursively compute and render themselves and their children
+
+## Project Structure
+
+```
+ConsoleGameEngine-Separate/
+├── ConsoleGameEngine/          # Core engine library
+│   └── src/
+│       └── Engine/
+│           ├── ConsoleEngine.cs           # Main engine orchestrator
+│           └── Renderer/                  # Rendering subsystem
+│               ├── ConsoleRenderer2D.cs   # 2D rendering with ANSI
+│               ├── ConsoleCamera.cs       # Camera and viewport
+│               ├── Geometry/              # Point2D, Dimension2D, etc.
+│               └── Graphics/              # Components, panels, UI
+├── ConsoleGameEngine.Demo/     # Basic demo project
+├── ConsoleGameEngine.Tests/    # Unit tests
+└── SimpleDoomDemo/             # Doom-like game demo
+```
 
 ### Scene Management
 
@@ -122,15 +107,11 @@ The project includes one main demonstration:
 - ANSI color support
 - Input handling
 - Scene management
-
+- 
 ### In Development
-- Camera viewport system (works if implemented for an actor, implementation in progress)
-- World-to-screen coordinate transformation
-- Viewport culling for large worlds
-- Camera following and tracking
+- Camera viewport system (works if implemented for an actor, better implementation in progress)
 - More advanced audio system
-- Custom map editor
-- Settings management
+- Better settings management
 - Entity-Component-System (ECS) architecture support
 
 ## Development
