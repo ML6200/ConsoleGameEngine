@@ -14,15 +14,9 @@ public class UiLabel : GraphicsComponent
         set
         {
             _text = value;
-            UpdateSize();
+            SetSize();
         }
     }
-
-    private void UpdateSize()
-    {
-        SetSize();
-    }
-
     public UiLabel()
     {
         SetSize();
@@ -31,19 +25,38 @@ public class UiLabel : GraphicsComponent
     public UiLabel(string text)
     {
         Text = text;
-        UpdateSize();
+        SetSize();
     }
     
     private void SetSize()
     {
-        Width = Text.Length;
-        Height = 1;
+        string[] lines = Text.Split('\n');
+        Height = lines.Length;
+        Width = 0;
+        foreach (var line in lines)
+        {
+            // handle \r\n (Windows) endings
+            int lineWidth = line.TrimEnd('\r').Length;
+            if (lineWidth > Width)
+                Width = lineWidth;
+        }
     }
 
     protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
-        // UI labels render directly at world position (no camera transformation)
-        renderer.DrawText(WorldPosition.X, WorldPosition.Y, Text,
-            BackgroundColor, ForegroundColor);
+        if (_text.Contains("\n"))
+        {
+            string[] lines = _text.Split('\n');
+            for (int i = 0; i < lines.Length; i++)
+            {
+                renderer.DrawText(WorldPosition.X, WorldPosition.Y + i, lines[i].TrimEnd('\r'),
+                    BackgroundColor, ForegroundColor);
+            }
+        }
+        else
+        {
+            renderer.DrawText(WorldPosition.X, WorldPosition.Y, Text,
+                BackgroundColor, ForegroundColor);
+        }
     }
 }
