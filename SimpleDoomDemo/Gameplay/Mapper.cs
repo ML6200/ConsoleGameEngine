@@ -64,9 +64,11 @@ public class Mapper
 
     public readonly List<DcmFormat> DcmList = new();
 
-    public void LoadFromDcmfFile(string path)
+    public void LoadFromDcmfFile(string path, bool ignoreMissing = false)
     {
         bool hasPlayer = false;
+        bool hasExit = false;
+        
         if (FileUtil.FileHasExtension(path, ".dcmf"))
         {
             StreamReader reader;
@@ -91,17 +93,24 @@ public class Mapper
                         DcmEntity entity = ParseDcmEntity(columns[3]);
 
                         if (type == DcmType.Player) hasPlayer = true;
+                        if (entity == DcmEntity.LevelExit) hasExit = true;
 
                         AddObject(pos, type, entity);
                     }
                     
-                    if (!hasPlayer) 
+                    if (!ignoreMissing && !hasPlayer) 
                     {
                         _logger.Warn("No player found.");
                         throw new PlayerNotFoundException("Player was not found in map file. " + 
                                                           "You can add it via map editor");
                     }
-
+                    if (!ignoreMissing && !hasExit)
+                    {
+                        _logger.Warn("No player found.");
+                        throw new LevelExitNotFoundException("Level exit was not found in map file. " + 
+                                                          "You can add it via map editor");
+                    }
+                    
                     _logger.Info("Dcmf file loaded");
                 }
             }

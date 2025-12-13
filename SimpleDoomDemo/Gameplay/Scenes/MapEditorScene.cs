@@ -1,10 +1,14 @@
 using System;
+using System.IO;
+using System.Linq;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 using ConsoleGameEngine.Engine.System;
+using NLog;
+using SimpleDoomDemo.Gameplay.Scenes.Exceptions;
 
 namespace SimpleDoomDemo.Gameplay.Scenes;
 
@@ -53,6 +57,8 @@ public class MapEditorScene : IGameScene
     
     private EditorState _state = EditorState.Saved;
     private StateTrigger _stateTrigger = StateTrigger.NoTrigger;
+    
+    private Logger _logger = LogManager.GetCurrentClassLogger();
 
     public MapEditorScene(string mapPath)
     {
@@ -66,6 +72,7 @@ public class MapEditorScene : IGameScene
 
     public void OnEnter()
     {
+        const int offset = 2;
          _mainPanel = new UiPanel()
          {
              RelativePosition = new Point2D(0, 0),
@@ -90,16 +97,16 @@ public class MapEditorScene : IGameScene
         _mainPanel.AddChild(_title);
 
 
-        _toolBarPanel = new MapToolbar(100, 6);
+        _toolBarPanel = new MapToolbar();
         _toolBarPanel.RelativePosition = new Point2D(centerX - 50, 
-            _mainPanel.Size.Height - 8);
+            _mainPanel.Size.Height - _toolBarPanel.Size.Height - offset);
         
         _editorPanel = new UiPanel()
         {
             RelativePosition = new Point2D(1, 1),
             BackgroundColor = ConsoleColor.Black,
             ForegroundColor = ConsoleColor.White,
-            Size = _mainPanel.Size - 2,
+            Size = _mainPanel.Size - offset,
             HasBorder = false,
         };
         _mainPanel.AddChild(_editorPanel);
@@ -121,7 +128,7 @@ public class MapEditorScene : IGameScene
                                                   - _title.Size.Width / 2, 0);
             
             _toolBarPanel.RelativePosition = new Point2D(_engine.RootPanel().ScreenSize.Width / 2 - 50, 
-                _mainPanel.Size.Height - 8);
+                _mainPanel.Size.Height - _toolBarPanel.Size.Height - offset);
         };
     }
 
@@ -164,6 +171,9 @@ public class MapEditorScene : IGameScene
                 break;
             case ConsoleKey.D:
                 AddEntity(Mapper.DcmEntity.Door, Mapper.DcmType.GameItem);
+                break;
+            case ConsoleKey.E:
+                AddEntity(Mapper.DcmEntity.LevelExit, Mapper.DcmType.GameItem);
                 break;
             
             // Demons
@@ -246,16 +256,25 @@ public class MapEditorScene : IGameScene
         }
         catch (Exception e)
         {
-            UiMsgBox msgBox = new UiMsgBox(_engine.RootPanel(),
-                _engine.RenderManager, _engine.Input,
-                "Failed to load", e.Message);
-
-            msgBox.OnComplete += result =>
+            if (e is PlayerNotFoundException or LevelExitNotFoundException)
             {
-                _stateTrigger = StateTrigger.NoTrigger;
+                ReloadMap();
                 EnableEditor();
-                ReaddTools();
-            };
+                _stateTrigger = StateTrigger.NoTrigger;
+            }
+            else
+            {
+                UiMsgBox msgBox = new UiMsgBox(_engine.RootPanel(),
+                    _engine.RenderManager, _engine.Input,
+                    "Failed to load", e.Message);
+
+                msgBox.OnComplete += result =>
+                {
+                    _stateTrigger = StateTrigger.NoTrigger;
+                    EnableEditor();
+                    ReaddTools();
+                };   
+            }
         }
     }
 
@@ -275,7 +294,7 @@ public class MapEditorScene : IGameScene
     {
         _editorPanel.RemoveAllChildren();
         
-        if (trustDcmf) _mapper.LoadFromDcmfFile(_filePath);
+        if (trustDcmf) _mapper.LoadFromDcmfFile(_filePath, true);
         
         foreach (var dcm in _mapper.DcmList)
         {
@@ -510,7 +529,7 @@ public class MapEditorScene : IGameScene
     /// </summary>
     private class MapToolbar : UiPanel
     {
-        public MapToolbar(int width, int height)
+        public MapToolbar(int? width = null, int? height = null)
         {
             ConsoleColor panelBg = ConsoleColor.Black;
             ConsoleColor panelFg = ConsoleColor.White;
@@ -526,8 +545,8 @@ public class MapEditorScene : IGameScene
             ForegroundColor = panelFg;
             HasBorder = true;
             BorderColor = borderColor;
-            Size = new Dimension2D(width, height);
-
+            
+            int requiredWidth = 0;
             // Create labels for shortcuts
             var titleLabel = new UiLabel
             {
@@ -536,7 +555,6 @@ public class MapEditorScene : IGameScene
                 BackgroundColor = panelBg,
                 RelativePosition = new Point2D(2, 0)
             };
-            AddChild(titleLabel);
 
             var gameItemsLabel = new UiLabel
             {
@@ -545,7 +563,6 @@ public class MapEditorScene : IGameScene
                 BackgroundColor = panelBg,
                 RelativePosition = new Point2D(2, 1)
             };
-            AddChild(gameItemsLabel);
 
             var demonsLabel = new UiLabel
             {
@@ -554,17 +571,15 @@ public class MapEditorScene : IGameScene
                 BackgroundColor = panelBg,
                 RelativePosition = new Point2D(2, 2)
             };
-            AddChild(demonsLabel);
 
             string specific = SystemInfo.Os.IsWindows() ? "[Ctrl+Alt+S]Save" : "[Ctrl+S]Save";
             var controlsLabel = new UiLabel
             {
-                Text = "Controls: [Arrows]Move [Backspace]Delete "+ specific + " [Ctrl+O]Open [Esc]Exit",
+                Text = "Controls: [Arrows]Move [Backspace]Delete " + specific + " [Ctrl+O]Open [Esc]Exit",
                 ForegroundColor = controlsColor,
                 BackgroundColor = panelBg,
                 RelativePosition = new Point2D(2, 3)
             };
-            AddChild(controlsLabel);
             
             var infoLabel = new UiLabel
             {
@@ -573,7 +588,23 @@ public class MapEditorScene : IGameScene
                 BackgroundColor = panelBg,
                 RelativePosition = new Point2D(2, 4)
             };
-            AddChild(infoLabel);
+            
+            var labels = new[] { titleLabel, gameItemsLabel, demonsLabel, controlsLabel, infoLabel };
+
+            foreach (var label in labels)
+            {
+                AddChild(label);
+                requiredWidth = CompareSize(label, requiredWidth);
+            }
+            
+            Height = height ?? labels.Sum(l=> l.Size.Height) + 1; // +1 for border
+            
+            Width = width ?? requiredWidth + 4;
+        }
+
+        private static int CompareSize(UiLabel label, int requiredWidth)
+        {
+            return Math.Max(requiredWidth, label.Size.Width);
         }
     }
 }
