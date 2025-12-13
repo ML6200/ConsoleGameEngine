@@ -101,6 +101,7 @@ public class ConsoleRenderManager : IDisposable
             _graphicsThread.Join();
             //windowEventThread.Join();
             _cts.Dispose();
+            Dispose();
         }
     }
     
@@ -157,7 +158,7 @@ public class ConsoleRenderManager : IDisposable
     
     public void Dispose()
     {
-        _renderer.CloseStdout();
+        _renderer.Dispose();
         Stop();
     }
 }

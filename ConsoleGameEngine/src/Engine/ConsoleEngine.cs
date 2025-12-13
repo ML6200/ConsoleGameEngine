@@ -251,10 +251,6 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
 
         _renderManager.Stop();
         _currentScene?.OnExit();
-        Console.CursorVisible = true;
-        Console.Clear();
-        
-        _renderManager.Dispose();
         _inputManager.Dispose();
     }
 }

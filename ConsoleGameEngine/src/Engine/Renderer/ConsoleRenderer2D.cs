@@ -29,7 +29,7 @@ using ConsoleGameEngine.Engine.Renderer.Geometry;
  */
 namespace ConsoleGameEngine.Engine.Renderer;
 
-public class ConsoleRenderer2D
+public class ConsoleRenderer2D : IDisposable
 {
     private int _screenWidth;
     private int _screenHeight;
@@ -99,9 +99,17 @@ public class ConsoleRenderer2D
         FlushBuffer();
     }
 
-    public void CloseStdout()
+    public void Dispose()
     {
-        _stdOut.Close();
+        FlushBuffer();
+        
+        if (_stdOut?.CanWrite == true)
+        {
+            /* reset cursor and color */
+            byte[] cleanup = "\x1b[?25h\x1b[0m"u8.ToArray();
+            _stdOut.Write(cleanup, 0, cleanup.Length);
+            _stdOut.Flush();
+        }
     }
     
     private bool IsValidCoordinate(int x, int y)
