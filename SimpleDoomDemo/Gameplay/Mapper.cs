@@ -101,7 +101,7 @@ public class Mapper
             catch (Exception e)
             {
                 _logger.Error(e.Message);
-                throw new Exception("Dcmf file could not be loaded: " + e.Message, e);
+                throw new Exception("Dcmf file could not be loaded: \n" + e.Message, e);
             }
         }
         else

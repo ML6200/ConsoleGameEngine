@@ -1,7 +1,6 @@
 using System;
+using System.Text;
 using ConsoleGameEngine.Engine;
-using ConsoleGameEngine.Engine.Input;
-using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 using NLog;
@@ -167,9 +166,13 @@ public class MainMenuScene : IGameScene
         catch (Exception exception)
         {
             DisableButtons();
+            
+            string message = exception.Message;
+            message = WrapText(message);
+            
             UiMsgBox msgBox = new UiMsgBox(_engine.RootPanel(),
                 _engine.RenderManager, _engine.Input,
-                "Failed to load", exception.Message);
+                "Failed to load", message);
 
             msgBox.OnComplete += result =>
             {
@@ -177,6 +180,25 @@ public class MainMenuScene : IGameScene
             };
             _logger.Error(exception);
         }
+    }
+
+    // very dumb solution but works
+    private static string WrapText(string message)
+    {
+        if (message.Length > 100)
+        {
+            StringBuilder msg = new StringBuilder();
+            for (int i = 0; i < message.Length; i++)
+            {
+                if (i > 0 && i % 50 == 0)
+                    msg.AppendLine();
+                    
+                msg.Append(message[i]);
+            }
+            message = msg.ToString();
+        }
+
+        return message;
     }
 
     private void OnQuitClicked(object sender, EventArgs e)

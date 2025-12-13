@@ -1,14 +1,10 @@
 using System;
-using System.Drawing;
-using System.Globalization;
-using System.IO;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 using ConsoleGameEngine.Engine.System;
-using SimpleDoomDemo.Gameplay.UI;
 
 namespace SimpleDoomDemo.Gameplay.Scenes;
 
@@ -237,7 +233,7 @@ public class MapEditorScene : IGameScene
         _editorPanel.AddChild(_cursor);
         _isEntityAdded = false;
     }
-
+    
     private void OpenMap(string filename)
     {
         try

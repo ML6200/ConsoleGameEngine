@@ -68,10 +68,13 @@ public class SettingsScene : IGameScene
     {
         if (!_inputField.Text.EndsWith(".dcmf"))
         {
+            DisableButtons();
             UiMsgBox msgBox = new UiMsgBox(_settingsPanel, _engine.RenderManager, _engine.Input,
                 "Format mismatch", "Only DCMF is acceptable!");
             msgBox.OnComplete += state =>
-            { };
+            {
+                EnableButtons();
+            };
         }
         else
         {
@@ -110,15 +113,25 @@ public class SettingsScene : IGameScene
         };
         _settingsPanel.AddChild(_browseButton);
         
-        _engine.RenderManager.FocusManager.Register(_saveAndBackButton);
-        _engine.RenderManager.FocusManager.Register(_backButton);
-        _engine.RenderManager.FocusManager.Register(_inputField);
-        _engine.RenderManager.FocusManager.Register(_browseButton);
-        
+        EnableButtons();
+
         _saveAndBackButton.OnClick += SaveAndBack;
         _backButton.OnClick += Back;
         _engine.RenderManager.OnWindowResized += ResizePanel;
         _browseButton.OnClick += Browse;
+    }
+
+    private void EnableButtons()
+    {
+        _engine.RenderManager.FocusManager.Register(_saveAndBackButton);
+        _engine.RenderManager.FocusManager.Register(_backButton);
+        _engine.RenderManager.FocusManager.Register(_inputField);
+        _engine.RenderManager.FocusManager.Register(_browseButton);
+    }
+
+    private void DisableButtons()
+    {
+        _engine.RenderManager.FocusManager.UnregisterAll();
     }
 
     private void Browse(object? sender, EventArgs e)
