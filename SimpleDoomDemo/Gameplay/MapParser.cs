@@ -84,63 +84,63 @@ public class MapParser
     {
         bool hasPlayer = false;
         bool hasExit = false;
-        
-        if (FileUtil.FileHasExtension(path, ".dcmf"))
-        {
-            StreamReader reader;
-            string? line;
-            try
-            {
-                using (reader = new StreamReader(path))
-                {
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        if (line.StartsWith("#")) continue;
 
-                        string[] columns = line.Split(";");
-                        if (columns.Length != 4)
-                        {
-                            _logger.Error("Invalid Dcmf file format: " + line);
-                            throw new InvalidMapFormatException("Invalid map file format!");
-                        }
-
-                        Point2D pos = new Point2D(int.Parse(columns[0]), int.Parse(columns[1]));
-                        DcmType type = ParseDcmfType(columns[2]);
-                        DcmEntity entity = ParseDcmEntity(columns[3]);
-
-                        if (type == DcmType.Player) hasPlayer = true;
-                        if (entity == DcmEntity.LevelExit) hasExit = true;
-
-                        AddObject(pos, type, entity);
-                    }
-                    
-                    if (!ignoreMissing && !hasPlayer) 
-                    {
-                        _logger.Warn("No player found.");
-                        throw new PlayerNotFoundException("Player is not found in map file. " + 
-                                                          "You can add it via map editor");
-                    }
-                    if (!ignoreMissing && !hasExit)
-                    {
-                        _logger.Warn("No player found.");
-                        throw new LevelExitNotFoundException("Level exit is not found in map file. " + 
-                                                          "You can add it via map editor");
-                    }
-                    
-                    _logger.Info("Dcmf file loaded");
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.Error(e.Message);
-                throw new Exception("Dcmf file could not be loaded: \n" + e.Message, e);
-            }
-        }
-        else
+        if (!FileUtil.FileHasExtension(path, ".dcmf") &&
+            !FileUtil.FileHasExtension(path, ".dcmf"))
         {
             _logger.Warn("File does not have a propper extension." +
-                         "The extension should be *.dcmf'! ");
+                         "The extension should be '*.dcmf'! or '*.map'");
             throw new Exception("The extension should be .dcmf!");
+        }
+
+        StreamReader reader;
+        string? line;
+        try
+        {
+            using (reader = new StreamReader(path))
+            {
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.StartsWith("#")) continue;
+
+                    string[] columns = line.Split(";");
+                    if (columns.Length != 4)
+                    {
+                        _logger.Error("Invalid Dcmf file format: " + line);
+                        throw new InvalidMapFormatException("Invalid map file format!");
+                    }
+
+                    Point2D pos = new Point2D(int.Parse(columns[0]), int.Parse(columns[1]));
+                    DcmType type = ParseDcmfType(columns[2]);
+                    DcmEntity entity = ParseDcmEntity(columns[3]);
+
+                    if (type == DcmType.Player) hasPlayer = true;
+                    if (entity == DcmEntity.LevelExit) hasExit = true;
+
+                    AddObject(pos, type, entity);
+                }
+
+                if (!ignoreMissing && !hasPlayer)
+                {
+                    _logger.Warn("No player found.");
+                    throw new PlayerNotFoundException("Player is not found in map file. " +
+                                                      "You can add it via map editor");
+                }
+
+                if (!ignoreMissing && !hasExit)
+                {
+                    _logger.Warn("No player found.");
+                    throw new LevelExitNotFoundException("Level exit is not found in map file. " +
+                                                         "You can add it via map editor");
+                }
+
+                _logger.Info("Dcmf file loaded");
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e.Message);
+            throw new Exception("Dcmf file could not be loaded: \n" + e.Message, e);
         }
     }
 
@@ -375,11 +375,15 @@ public class MapParser
         
         return duplicateCount;
     }
-
+    
     public void SaveMap(string path)
     {
         try
         {
+            if (!FileUtil.FileHasExtension(path, ".dcmf") 
+                && !FileUtil.FileHasExtension(path, ".map")) 
+                throw new Exception("The extension should be '*.dcmf'! or '*.map'");
+            
             using StreamWriter sw = new StreamWriter(path);
             sw.WriteLine("#PX;PY;Typ;Val");
             foreach (var item in DcmList)
@@ -392,7 +396,7 @@ public class MapParser
         }
         catch (Exception e)
         {
-            throw new Exception("Error saving map", e);
+            throw new Exception("Error saving map:.\n" + e.Message);
         }
     }
     

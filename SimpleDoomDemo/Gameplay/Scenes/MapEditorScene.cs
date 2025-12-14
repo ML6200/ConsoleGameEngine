@@ -12,23 +12,23 @@ using SimpleDoomDemo.Gameplay.Scenes.Exceptions;
 
 namespace SimpleDoomDemo.Gameplay.Scenes;
 
+internal enum EditorState
+{
+    Saved,
+    Changed,
+    ChangedHasPath,
+}
+
+internal enum StateTrigger
+{
+    ManualSave,
+    Open,
+    Exit,
+    NoTrigger
+}
+
 public class MapEditorScene : IGameScene
 {
-    private enum EditorState
-    {
-        Saved,
-        Changed,
-        ChangedHasPath,
-    }
-    
-    private enum StateTrigger
-    {
-        ManualSave,
-        Open,
-        Exit,
-        NoTrigger
-    }
-    
     /*
      * +-----------------------------------
      * |
@@ -49,16 +49,36 @@ public class MapEditorScene : IGameScene
     private UiPanel _editorPanel;
     private UiLabel _title;
     private Cursor _cursor;
+    private StatusBar _statusBar;
+    
     private MapParser _mapParser;
 
     private string _mapPath;
     private string _filePath = "";
-    private bool _isSaved =  false;
-    
+    private bool _isSaved = false;
+
     private EditorState _state = EditorState.Saved;
     private StateTrigger _stateTrigger = StateTrigger.NoTrigger;
-    
+
     private Logger _logger = LogManager.GetCurrentClassLogger();
+
+    private void SetState(EditorState newState)
+    {
+        _state = newState;
+        string stateName = "";
+        switch (_state)
+        {
+            case EditorState.Saved:
+                stateName = "Saved";
+                break;
+            case EditorState.Changed:
+            case EditorState.ChangedHasPath:
+                stateName = "Changed";
+                break;
+        }
+        
+        _statusBar.SetStateLabel(stateName);
+    }
 
     public MapEditorScene(string mapPath)
     {
@@ -73,34 +93,34 @@ public class MapEditorScene : IGameScene
     public void OnEnter()
     {
         const int offset = 2;
-         _mainPanel = new UiPanel()
-         {
-             RelativePosition = new Point2D(0, 0),
-             BackgroundColor = ConsoleColor.Black,
-             ForegroundColor = ConsoleColor.White,
-             Size = _engine.RootPanel().ScreenSize,
-             HasBorder = true,
-             BorderColor = ConsoleColor.White,
-         };
+        _mainPanel = new UiPanel()
+        {
+            RelativePosition = new Point2D(0, 0),
+            BackgroundColor = ConsoleColor.Black,
+            ForegroundColor = ConsoleColor.White,
+            Size = _engine.RootPanel().ScreenSize,
+            HasBorder = true,
+            BorderColor = ConsoleColor.White,
+        };
         _engine.RootPanel().AddChild(_mainPanel);
-        
+
         int centerX = _engine.RootPanel().ScreenSize.Width / 2;
-        
+
         _title = new UiLabel()
         {
             Text = "Map Editor",
             ForegroundColor = ConsoleColor.White,
             BackgroundColor = ConsoleColor.Black,
         };
-        
+
         _title.RelativePosition = new Point2D(centerX - _title.Size.Width / 2, 0);
         _mainPanel.AddChild(_title);
 
 
         _toolBarPanel = new MapToolbar();
-        _toolBarPanel.RelativePosition = new Point2D(centerX - 50, 
+        _toolBarPanel.RelativePosition = new Point2D(centerX - 50,
             _mainPanel.Size.Height - _toolBarPanel.Size.Height - offset);
-        
+
         _editorPanel = new UiPanel()
         {
             RelativePosition = new Point2D(1, 1),
@@ -111,7 +131,7 @@ public class MapEditorScene : IGameScene
         };
         _mainPanel.AddChild(_editorPanel);
         _editorPanel.AddChild(_toolBarPanel);
-        
+
         _engine.Input.OnKeyPressed += HandleUserInput;
         _engine.Camera.CameraSize = _mainPanel.Size;
         _engine.RootPanel().RelativePosition = new Point2D(0, 0);
@@ -119,22 +139,29 @@ public class MapEditorScene : IGameScene
         _cursor = new Cursor(0, 0);
         _editorPanel.AddChild(_cursor);
         _mapParser = new MapParser();
-        
+
+
+        _statusBar = new StatusBar(_cursor.RelativePosition)
+        {
+            RelativePosition = new Point2D(2, 0)
+        };
+        _mainPanel.AddChild(_statusBar);
+
         _engine.RenderManager.OnWindowResized += (sender, args) =>
         {
             _mainPanel.Size = _engine.RootPanel().ScreenSize;
             _engine.Camera.CameraSize = _mainPanel.Size;
-            
+
             _title.RelativePosition = new Point2D(_engine.RootPanel().ScreenSize.Width / 2
                                                   - _title.Size.Width / 2, 0);
-            
-            _toolBarPanel.RelativePosition = new Point2D(_engine.RootPanel().ScreenSize.Width / 2 - 50, 
+
+            _toolBarPanel.RelativePosition = new Point2D(_engine.RootPanel().ScreenSize.Width / 2 - 50,
                 _mainPanel.Size.Height - _toolBarPanel.Size.Height - offset);
         };
     }
 
     private bool _isEntityAdded;
-    
+
     private void HandleUserInput(object? sender, KeyEventArgs e)
     {
         // Mono Keys
@@ -153,7 +180,7 @@ public class MapEditorScene : IGameScene
             case ConsoleKey.DownArrow:
                 MoveCursorBy(0, 1);
                 break;
-            
+
             // Game Items
             case ConsoleKey.W:
                 AddEntity(MapParser.DcmEntity.Wall, MapParser.DcmType.GameItem);
@@ -176,13 +203,13 @@ public class MapEditorScene : IGameScene
             case ConsoleKey.E:
                 AddEntity(MapParser.DcmEntity.LevelExit, MapParser.DcmType.GameItem);
                 break;
-            
+
             // Demons
             case ConsoleKey.Z:
                 AddEntity(MapParser.DcmEntity.Zombieman, MapParser.DcmType.Demon);
                 break;
             case ConsoleKey.C:
-                if (e.Shift) 
+                if (e.Shift)
                     AddEntity(MapParser.DcmEntity.Mancubus, MapParser.DcmType.Demon);
                 break;
             case ConsoleKey.I:
@@ -191,12 +218,12 @@ public class MapEditorScene : IGameScene
             case ConsoleKey.P:
                 AddEntity(MapParser.DcmEntity.Player, MapParser.DcmType.Player);
                 break;
-            
+
             // Hide or show toolbar panel
             case ConsoleKey.H:
                 _toolBarPanel.Visible = !_toolBarPanel.Visible;
                 break;
-            
+
             // Controls
             case ConsoleKey.Escape:
                 HandleExit();
@@ -224,7 +251,7 @@ public class MapEditorScene : IGameScene
                 case ConsoleKey.S:
                     if (SystemInfo.Os.IsWindows() && e.Alt)
                         _stateTrigger = StateTrigger.ManualSave;
-                    HandleSave();   
+                    HandleSave();
                     break;
                 case ConsoleKey.O:
                     _stateTrigger = StateTrigger.Open;
@@ -246,7 +273,7 @@ public class MapEditorScene : IGameScene
                 $"Map optimization complete:\nFound {count} duplicates.");
             msgBox.OnComplete += option =>
             {
-                _state = EditorState.ChangedHasPath;
+                SetState(EditorState.ChangedHasPath);
                 ReloadMap(false);
             };
         }
@@ -255,13 +282,13 @@ public class MapEditorScene : IGameScene
     private void MarkStateSaved(string filename)
     {
         _filePath = filename;
-        _state = EditorState.Saved;
+        SetState(EditorState.Saved);
     }
 
     private void MarkStateUnsaved()
     {
-        _state = string.IsNullOrEmpty(_filePath) ? 
-            EditorState.Changed : EditorState.ChangedHasPath;
+        SetState(string.IsNullOrEmpty(_filePath) ? 
+            EditorState.Changed : EditorState.ChangedHasPath);
     }
 
     private void PlaceCursorOnTop()
@@ -272,12 +299,12 @@ public class MapEditorScene : IGameScene
         _editorPanel.AddChild(_cursor);
         _isEntityAdded = false;
     }
-    
+
     private void OpenMap(string filename)
     {
         try
         {
-            _state = EditorState.Saved;
+            SetState(EditorState.Saved);
             _filePath = filename;
             ReloadMap();
             EnableEditor();
@@ -302,7 +329,7 @@ public class MapEditorScene : IGameScene
                     _stateTrigger = StateTrigger.NoTrigger;
                     EnableEditor();
                     ReaddTools();
-                };   
+                };
             }
         }
     }
@@ -312,7 +339,7 @@ public class MapEditorScene : IGameScene
         if (readdCursor) _editorPanel.AddChild(_cursor);
         _engine.Input.OnKeyPressed += HandleUserInput;
     }
-    
+
     private void DisableEditor()
     {
         _engine.RenderManager.FocusManager.UnregisterAll();
@@ -329,11 +356,12 @@ public class MapEditorScene : IGameScene
             _mapParser.LoadFromDcmfFile(_filePath, true);
         }
         //_mapParser.Optimize();
-        
+
         foreach (var dcm in _mapParser.DcmList)
         {
             _editorPanel.AddChild(dcm.Value);
         }
+
         ReaddTools();
     }
 
@@ -345,29 +373,46 @@ public class MapEditorScene : IGameScene
 
     private void SaveMap(string filename)
     {
-        if (_state is EditorState.ChangedHasPath)
-        {
-            _mapParser.SaveMap(filename);
-            MarkStateSaved(filename);
-            ReloadMap();
-        }
-        
-        if (_stateTrigger is StateTrigger.Exit 
-            && _state is EditorState.Saved)
-        {
-            _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath));
-            return;
-        }
+            if (_state is EditorState.ChangedHasPath)
+            {
+                try
+                {
+                    _mapParser.SaveMap(filename);
+                    MarkStateSaved(filename);
+                    ReloadMap();
+                }
+                catch (Exception e)
+                {
+                    SetState(EditorState.Changed);
+                    DisableEditor();
+                    UiMsgBox msgBox = new UiMsgBox(_mainPanel,
+                        _engine.RenderManager, _engine.Input,
+                        "Failed to load", e.Message);
+                    msgBox.OnComplete += result =>
+                    {
+                        ReloadMap(false);
+                        ReaddTools();
+                        EnableEditor();
+                    };
+                    return;
+                }
+            }
 
-        if (_stateTrigger is StateTrigger.Open 
-            && _state is EditorState.Saved)
-        {
-            HandleOpen();
-        }
-        
-        EnableEditor(false);
+            if (_stateTrigger is StateTrigger.Exit
+                && _state is EditorState.Saved)
+            {
+                _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath));
+                return;
+            }
+
+            if (_stateTrigger is StateTrigger.Open
+                && _state is EditorState.Saved)
+            {
+                HandleOpen();
+            }
+            EnableEditor(); 
     }
-    
+
     /*
      * PROBLEM:
      * If we add entities to the pane the cursor gets hidden
@@ -405,10 +450,10 @@ public class MapEditorScene : IGameScene
         Point2D targetPoint = _cursor.RelativePosition;
         if (_mapParser.IsPositionAcquired(targetPoint))
             return;
-        
+
         _mapParser.AddObject(targetPoint, dmType, entity);
-        _editorPanel.AddChild(_mapParser.DcmList[^1].Value); 
-        _isEntityAdded =  true;
+        _editorPanel.AddChild(_mapParser.DcmList[^1].Value);
+        _isEntityAdded = true;
         MarkStateUnsaved();
     }
 
@@ -416,18 +461,19 @@ public class MapEditorScene : IGameScene
     {
         var removed = _mapParser.RemoveObject(point);
         if (removed == null) return;
-        
+
         _editorPanel.RemoveChild(removed);
         _isEntityAdded = false;
         MarkStateUnsaved();
     }
-    
+
     private void MoveCursorBy(int x, int y)
     {
         Point2D targetPoint = _cursor.RelativePosition + new Point2D(x, y);
-        _cursor.RelativePosition = targetPoint.Clamp(new Point2D(0, 0), 
+        _cursor.RelativePosition = targetPoint.Clamp(new Point2D(0, 0),
             _mainPanel.Size - 3);
         PlaceCursorOnTop();
+        _statusBar.SetCursorPosition(_cursor.RelativePosition);
     }
 
     private void HandleExit()
@@ -444,7 +490,7 @@ public class MapEditorScene : IGameScene
             _stateTrigger = StateTrigger.Open;
             HandleUnsavedDialog();
         }
-        else 
+        else
             HandleOpenDialog();
     }
 
@@ -454,7 +500,7 @@ public class MapEditorScene : IGameScene
         UiInputBox msgBox2 = new UiInputBox(_editorPanel,
             _engine.RenderManager, _engine.Input,
             "Enter the path of the file to be opened:", "");
-            
+
         msgBox2.OnOk += OpenMap;
         msgBox2.OnCancelled += (sender, args) =>
         {
@@ -462,38 +508,39 @@ public class MapEditorScene : IGameScene
             EnableEditor(false);
         };
     }
-    
+
     private void HandleSave()
     {
         DisableEditor();
-        
+
         if (_state is EditorState.Changed)
         {
             if (_stateTrigger is StateTrigger.Exit or StateTrigger.Open)
                 HandleUnsavedDialog();
             else
                 HandleSaveDialog();
-        } else if (_state is EditorState.ChangedHasPath && _stateTrigger is StateTrigger.Exit)
+        }
+        else if (_state is EditorState.ChangedHasPath && _stateTrigger is StateTrigger.Exit)
         {
             HandleUnsavedDialog();
         }
         else
             SaveMap(_filePath);
     }
-    
+
     private void HandleUnsavedDialog()
     {
         DisableEditor();
         UiMsgBox msgBox = new UiMsgBox(_editorPanel,
             _engine.RenderManager, _engine.Input,
             "You have unsaved work!", "Do you want to save your work? " +
-                     "If you hit cancel all changes WILL BE LOST!");
+                                      "If you hit cancel all changes WILL BE LOST!");
 
         msgBox.OnComplete += result =>
         {
             if (result == MessageOptionState.Ok)
             {
-                if (_stateTrigger is StateTrigger.Exit 
+                if (_stateTrigger is StateTrigger.Exit
                     && _state is EditorState.ChangedHasPath)
                     SaveMap(_filePath);
                 else
@@ -503,11 +550,12 @@ public class MapEditorScene : IGameScene
             {
                 if (_stateTrigger is StateTrigger.Exit)
                 {
-                    _state = EditorState.Saved;
+                    SetState(EditorState.Saved);
                     SaveMap(_filePath);
-                } else if (_stateTrigger is StateTrigger.Open)
+                }
+                else if (_stateTrigger is StateTrigger.Open)
                 {
-                    _state = EditorState.Saved;
+                    SetState(EditorState.Saved);
                     HandleOpen();
                 }
                 else EnableEditor(false);
@@ -518,20 +566,19 @@ public class MapEditorScene : IGameScene
     private void HandleSaveDialog()
     {
         DisableEditor();
-        UiInputBox inpBox = new UiInputBox(_editorPanel, 
+        UiInputBox inpBox = new UiInputBox(_editorPanel,
             _engine.RenderManager, _engine.Input,
             "Enter the path of the file to be saved:", "");
         inpBox.OnOk += s =>
         {
-            _state = EditorState.ChangedHasPath;
+            SetState(EditorState.ChangedHasPath);
             SaveMap(s);
         };
-        inpBox.OnCancelled +=  (sender, args) => EnableEditor(false);
+        inpBox.OnCancelled += (sender, args) => EnableEditor(false);
     }
-    
+
     public void OnUpdate(double deltaTime)
     {
-        // Not used
     }
 
     public void OnExit()
@@ -539,114 +586,153 @@ public class MapEditorScene : IGameScene
         _engine.RenderManager.FocusManager.UnregisterAll();
         _engine.RootPanel().RemoveAllChildren();
     }
+}
 
-    private class Cursor : GraphicsComponent
+internal class Cursor : GraphicsComponent
+{
+    public Cursor(int x, int y)
     {
-        public Cursor(int x, int y)
-        {
-            RelativePosition = new Point2D(x, y);
-        }
-
-        private readonly char _glyph  = '⊡';
-
-        protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
-        {
-            Point2D screenPos = camera.TransformPoint(WorldPosition);
-            if (screenPos == Point2D.OutsideScreenPoint) return; // Off-screen culling
-
-            renderer.SetCell(screenPos.X, screenPos.Y,
-                new Cell(_glyph, ConsoleColor.Black, ConsoleColor.Green));
-        }
+        RelativePosition = new Point2D(x, y);
     }
-    
-    /// <summary>
-    /// AI generated toolbar class (ofc I had to intervene :D)
-    ///
-    /// The best way to use AI is doing boring, repetitive things like this
-    /// </summary>
-    private class MapToolbar : UiPanel
+
+    private readonly char _glyph = '⊡';
+
+    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
-        public MapToolbar(int? width = null, int? height = null)
+        Point2D screenPos = camera.TransformPoint(WorldPosition);
+        if (screenPos == Point2D.OutsideScreenPoint) return; // Off-screen culling
+
+        renderer.SetCell(screenPos.X, screenPos.Y,
+            new Cell(_glyph, ConsoleColor.Black, ConsoleColor.Green));
+    }
+}
+
+internal class StatusBar : UiPanel
+{
+    private UiLabel _posLabel;
+    private UiLabel _stateLabel;
+
+    public StatusBar(Point2D screenPos)
+    {
+        BackgroundColor = ConsoleColor.DarkGray;
+        HasBorder = false;
+
+        _posLabel = new UiLabel()
         {
-            ConsoleColor panelBg = ConsoleColor.Black;
-            ConsoleColor panelFg = ConsoleColor.White;
-            ConsoleColor borderColor = ConsoleColor.DarkGray;
-            ConsoleColor titleColor = ConsoleColor.White;
-            ConsoleColor itemsColor = ConsoleColor.DarkGreen;
-            ConsoleColor demonsColor = ConsoleColor.DarkYellow;
-            ConsoleColor controlsColor = ConsoleColor.DarkCyan;
-            ConsoleColor infoColor = ConsoleColor.DarkGray;
+            RelativePosition = new Point2D(1, 0),
+            ForegroundColor = ConsoleColor.Green,
+        };
+        SetCursorPosition(screenPos);
 
-            // Configure panel
-            BackgroundColor = panelBg;
-            ForegroundColor = panelFg;
-            HasBorder = true;
-            BorderColor = borderColor;
-            
-            int requiredWidth = 0;
-            // Create labels for shortcuts
-            var titleLabel = new UiLabel
-            {
-                Text = "MAP EDITOR SHORTCUTS",
-                ForegroundColor = titleColor,
-                BackgroundColor = panelBg,
-                RelativePosition = new Point2D(2, 0)
-            };
+        _stateLabel = new UiLabel()
+        {
+            RelativePosition = new Point2D(_posLabel.Size.Width + 4, 0),
+            ForegroundColor = ConsoleColor.Green,
+            Text = "Status",
+        };
 
-            var gameItemsLabel = new UiLabel
-            {
-                Text = "Items: [W]Wall [T]Toxic [A]Ammo [M]MedKit [B]BFG [D]Door",
-                ForegroundColor = itemsColor,
-                BackgroundColor = panelBg,
-                RelativePosition = new Point2D(2, 1)
-            };
+        Children.Add(_posLabel);
+        Children.Add(_stateLabel);
+    }
 
-            var demonsLabel = new UiLabel
-            {
-                Text = "Demons: [Z]Zombieman [Shift+C]Mancubus [I]Imp  |  [P]Player",
-                ForegroundColor = demonsColor,
-                BackgroundColor = panelBg,
-                RelativePosition = new Point2D(2, 2)
-            };
+    public void SetCursorPosition(Point2D pos)
+    {
+        _posLabel.Text = "Cursor Position: " + pos.X + ", " + pos.Y;
+    }
 
-            string specific = SystemInfo.Os.IsWindows() ? "[Ctrl+Alt+S]Save" : "[Ctrl+S]Save";
-            var controlsLabel = new UiLabel
-            {
-                Text = "Controls: [Arrows]Move [Backspace]Delete " + specific + " [Ctrl+O]Open [Esc]Exit",
-                ForegroundColor = controlsColor,
-                BackgroundColor = panelBg,
-                RelativePosition = new Point2D(2, 3)
-            };
-            var toolsLabel = new UiLabel
-            {
-                Text = "Tools: [Shift+O] Map Optimization",
-                ForegroundColor = controlsColor,
-                BackgroundColor = panelBg,
-                RelativePosition = new Point2D(2, 4)
-            };
-            
-            var infoLabel = new UiLabel
-            {
-                Text = "Press H to hide or show",
-                ForegroundColor = infoColor,
-                BackgroundColor = panelBg,
-                RelativePosition = new Point2D(2, 5)
-            };
-            
-            var labels = new[] { titleLabel, gameItemsLabel, demonsLabel, controlsLabel, toolsLabel, infoLabel };
-            foreach (var label in labels)
-            {
-                AddChild(label);
-                requiredWidth = CompareSize(label, requiredWidth);
-            }
-            
-            Height = height ?? labels.Sum(l=> l.Size.Height) + 1; // +1 for border
-            Width = width ?? requiredWidth + 4;
+    public void SetStateLabel(string stateName)
+    {
+        _stateLabel.Text = stateName;
+    }
+}
+
+/// <summary>
+/// AI generated toolbar class (ofc I had to intervene :D)
+///
+/// The best way to use AI is doing boring, repetitive things like this
+/// </summary>
+internal class MapToolbar : UiPanel
+{
+    public MapToolbar(int? width = null, int? height = null)
+    {
+        ConsoleColor panelBg = ConsoleColor.Black;
+        ConsoleColor panelFg = ConsoleColor.White;
+        ConsoleColor borderColor = ConsoleColor.DarkGray;
+        ConsoleColor titleColor = ConsoleColor.White;
+        ConsoleColor itemsColor = ConsoleColor.DarkGreen;
+        ConsoleColor demonsColor = ConsoleColor.DarkYellow;
+        ConsoleColor controlsColor = ConsoleColor.DarkCyan;
+        ConsoleColor infoColor = ConsoleColor.DarkGray;
+
+        // Configure panel
+        BackgroundColor = panelBg;
+        ForegroundColor = panelFg;
+        HasBorder = true;
+        BorderColor = borderColor;
+
+        int requiredWidth = 0;
+        // Create labels for shortcuts
+        var titleLabel = new UiLabel
+        {
+            Text = "MAP EDITOR SHORTCUTS",
+            ForegroundColor = titleColor,
+            BackgroundColor = panelBg,
+            RelativePosition = new Point2D(2, 0)
+        };
+
+        var gameItemsLabel = new UiLabel
+        {
+            Text = "Items: [W]Wall [T]Toxic [A]Ammo [M]MedKit [B]BFG [D]Door",
+            ForegroundColor = itemsColor,
+            BackgroundColor = panelBg,
+            RelativePosition = new Point2D(2, 1)
+        };
+
+        var demonsLabel = new UiLabel
+        {
+            Text = "Demons: [Z]Zombieman [Shift+C]Mancubus [I]Imp  |  [P]Player",
+            ForegroundColor = demonsColor,
+            BackgroundColor = panelBg,
+            RelativePosition = new Point2D(2, 2)
+        };
+
+        string specific = SystemInfo.Os.IsWindows() ? "[Ctrl+Alt+S]Save" : "[Ctrl+S]Save";
+        var controlsLabel = new UiLabel
+        {
+            Text = "Controls: [Arrows]Move [Backspace]Delete " + specific + " [Ctrl+O]Open [Esc]Exit",
+            ForegroundColor = controlsColor,
+            BackgroundColor = panelBg,
+            RelativePosition = new Point2D(2, 3)
+        };
+        var toolsLabel = new UiLabel
+        {
+            Text = "Tools: [Shift+O] Map Optimization",
+            ForegroundColor = controlsColor,
+            BackgroundColor = panelBg,
+            RelativePosition = new Point2D(2, 4)
+        };
+
+        var infoLabel = new UiLabel
+        {
+            Text = "Press H to hide or show",
+            ForegroundColor = infoColor,
+            BackgroundColor = panelBg,
+            RelativePosition = new Point2D(2, 5)
+        };
+
+        var labels = new[] { titleLabel, gameItemsLabel, demonsLabel, controlsLabel, toolsLabel, infoLabel };
+        foreach (var label in labels)
+        {
+            AddChild(label);
+            requiredWidth = CompareSize(label, requiredWidth);
         }
 
-        private static int CompareSize(UiLabel label, int requiredWidth)
-        {
-            return Math.Max(requiredWidth, label.Size.Width);
-        }
+        Height = height ?? labels.Sum(l => l.Size.Height) + 1; // +1 for border
+        Width = width ?? requiredWidth + 4;
+    }
+
+    private static int CompareSize(UiLabel label, int requiredWidth)
+    {
+        return Math.Max(requiredWidth, label.Size.Width);
     }
 }
