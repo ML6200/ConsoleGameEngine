@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
@@ -286,7 +287,6 @@ public class ConsoleRenderer2D : IDisposable
         if(_isResizing) return;
         
         int pos = 0;
-        
         for (int y = 0; y < _screenHeight; y++)
         {
             for (int x = 0; x < _screenWidth; x++)
@@ -338,14 +338,16 @@ public class ConsoleRenderer2D : IDisposable
          *
          * Btw we have more concerning things in terms of performance now
          */
-        for (int i = 0; i < str.Length; i++)
+        foreach (var c in str)
         {
-            pos = WriteCharToBuffer(buff, pos, str[i]);
+            pos = WriteCharToBuffer(buff, pos, c);
         }
-        
+
         return pos;
     }
 
+    // Caching precomputed char bytes with dict for fast access [o(1)]
+    private readonly Dictionary<char, byte[]> _charCache = new();
     private int WriteCharToBuffer(byte[] buff, int pos, char ch)
     {
         /*
@@ -360,9 +362,16 @@ public class ConsoleRenderer2D : IDisposable
             buff[pos++] = (byte) ch;
             return pos;
         }
-
-        int bytes = Encoding.UTF8.GetBytes([ch], 0, 1, buff, pos);
-        return pos + bytes;
+        
+        /* if the value is not computed yet */
+        if (!_charCache.TryGetValue(ch, out byte[] bytes))
+        {
+            bytes = Encoding.UTF8.GetBytes([ch]);
+            _charCache[ch] = bytes;
+        }
+        /* Copy the value to the byte buffer */
+        Array.Copy(bytes, 0, buff, pos, bytes.Length);
+        return pos + bytes.Length;
     }
     
     private int WriteIntToBuffer(byte[] buff, int pos, int num)
