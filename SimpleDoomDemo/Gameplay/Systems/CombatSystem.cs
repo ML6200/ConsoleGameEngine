@@ -53,7 +53,7 @@ public class CombatSystem : IGameSystem
         _game.Player.ShootBFG();
         _game.PlaySoundEffect(SoundEffectType.BFG);
         
-        var bfgAnim = AnimationTween.Blink(_game.Player, 200, loop: false);
+        var bfgAnim = AnimationTween.Blink(_game.Player, 0.2, loop: false);
         _game.Player.AddAnimation(bfgAnim);
 
         List<Demon> nearbyDemons = GetDemonsWithinRange(_game.Player.WorldPosition, _game.Player.SightRange);
