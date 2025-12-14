@@ -23,12 +23,11 @@
 
     <Target Name="CopyDebugFolder" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Debug'">
         <ItemGroup>
-            <!-- Replace "MyFolder" with your actual directory name -->
             <SourceFiles Include="assets\**\*.*" />
         </ItemGroup>
 
         <Copy SourceFiles="@(SourceFiles)"
-              DestinationFiles="@(SourceFiles->'$(TargetDir)MyFolder\%(RecursiveDir)%(Filename)%(Extension)')"
+              DestinationFiles="@(SourceFiles->'$(TargetDir)assets\%(RecursiveDir)%(Filename)%(Extension)')"
         />
     </Target>
 
