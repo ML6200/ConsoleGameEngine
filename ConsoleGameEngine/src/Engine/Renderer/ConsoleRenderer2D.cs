@@ -314,19 +314,25 @@ public class ConsoleRenderer2D : IDisposable
     private int WriteEscPosToBuffer(byte[] buff, int pos, int x, int y)
     {
         buff[pos++] = 0x1B; // ANSI escape char
-        buff[pos++] = (byte) '[';
+        pos = WriteCharToBuffer(buff, pos, '[');
         
         /* We need to put 'y' first bc. ANSI positioning has 'y' as primary coordinate */
         pos = WriteIntToBuffer(buff, pos, y + 1);
-        buff[pos++] = (byte)  ';';
+        pos = WriteCharToBuffer(buff, pos, ';');
         pos = WriteIntToBuffer(buff, pos, x + 1);
-        buff[pos++] = (byte)'H';
+        pos = WriteCharToBuffer(buff, pos, 'H');
         return pos;
     }
     
     private int WriteColorToBuffer(byte[] buff, int pos, ConsoleColor fg, ConsoleColor bg)
     {
-        return WriteStrToBuffer(buff, pos, GetAnsiColorCode(fg, bg));
+        buff[pos++] = 0x1B; // ANSI escape char
+        pos = WriteCharToBuffer(buff, pos, '[');
+        pos = WriteIntToBuffer(buff, pos, GetAnsiFgColorCode(fg));
+        pos = WriteCharToBuffer(buff, pos, ';');
+        pos = WriteIntToBuffer(buff, pos, GetAnsiBgColorCode(bg));
+        pos = WriteCharToBuffer(buff, pos, 'm');
+        return pos;
     }
     
     private int WriteStrToBuffer(byte[] buff, int pos, string str)
@@ -417,53 +423,56 @@ public class ConsoleRenderer2D : IDisposable
 
         return endPos;
     }
+    
+    // BAse color codes 
+    private readonly int[] _foregroundColorCodes =
+    [
+        30, // Black = 0
+        34, // DarkBlue = 1
+        32, // DarkGreen = 2
+        36, // DarkCyan = 3
+        31, // DarkRed = 4
+        35, // DarkMagenta = 5
+        33, // DarkYellow = 6
+        37, // Gray = 7
+        90, // DarkGray = 8
+        94, // Blue = 9
+        92, // Green = 10
+        96, // Cyan = 11
+        91, // Red = 12
+        95, // Magenta = 13
+        93, // Yellow = 14
+        97 // White = 15
+    ];
+    
+    private readonly int[] _backgroundColorCodes =
+    [
+        40,  // Black = 0
+        44,  // DarkBlue = 1
+        42,  // DarkGreen = 2
+        46,  // DarkCyan = 3
+        41,  // DarkRed = 4
+        45,  // DarkMagenta = 5
+        43,  // DarkYellow = 6
+        47,  // Gray = 7
+        100, // DarkGray = 8
+        104, // Blue = 9
+        102, // Green = 10
+        106, // Cyan = 11
+        101, // Red = 12
+        105, // Magenta = 13
+        103, // Yellow = 14
+        107 // White = 15
+    ];
 
-    private string GetAnsiColorCode(ConsoleColor fg, ConsoleColor bg)
+    private int GetAnsiFgColorCode(ConsoleColor fg)
     {
-        // Convert ConsoleColor to ANSI escape codes
-        int fgCode = fg switch
-        {
-            ConsoleColor.Black => 30,
-            ConsoleColor.DarkBlue => 34,
-            ConsoleColor.DarkGreen => 32,
-            ConsoleColor.DarkCyan => 36,
-            ConsoleColor.DarkRed => 31,
-            ConsoleColor.DarkMagenta => 35,
-            ConsoleColor.DarkYellow => 33,
-            ConsoleColor.Gray => 37,
-            ConsoleColor.DarkGray => 90,
-            ConsoleColor.Blue => 94,
-            ConsoleColor.Green => 92,
-            ConsoleColor.Cyan => 96,
-            ConsoleColor.Red => 91,
-            ConsoleColor.Magenta => 95,
-            ConsoleColor.Yellow => 93,
-            ConsoleColor.White => 97,
-            _ => 37
-        };
+        return _foregroundColorCodes[(int)fg];
+    }
 
-        int bgCode = bg switch
-        {
-            ConsoleColor.Black => 40,
-            ConsoleColor.DarkBlue => 44,
-            ConsoleColor.DarkGreen => 42,
-            ConsoleColor.DarkCyan => 46,
-            ConsoleColor.DarkRed => 41,
-            ConsoleColor.DarkMagenta => 45,
-            ConsoleColor.DarkYellow => 43,
-            ConsoleColor.Gray => 47,
-            ConsoleColor.DarkGray => 100,
-            ConsoleColor.Blue => 104,
-            ConsoleColor.Green => 102,
-            ConsoleColor.Cyan => 106,
-            ConsoleColor.Red => 101,
-            ConsoleColor.Magenta => 105,
-            ConsoleColor.Yellow => 103,
-            ConsoleColor.White => 107,
-            _ => 40
-        };
-
-        return "\x1b[" + fgCode + ";" + bgCode + "m";
+    private int GetAnsiBgColorCode(ConsoleColor bg)
+    {
+        return _backgroundColorCodes[(int)bg];
     }
 
     private static class RenderSpecCharacters
