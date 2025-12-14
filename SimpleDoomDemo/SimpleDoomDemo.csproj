@@ -21,4 +21,14 @@
       </Content>
     </ItemGroup>
 
+    <Target Name="CopyDebugFolder" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Debug'">
+        <ItemGroup>
+            <SourceFiles Include="**\*.*" />
+        </ItemGroup>
+        
+        <Copy SourceFiles="@(SourceFiles)" 
+              DestinationFiles="@(SourceFiles->'$(TargetDir)%(RecursiveDir)%(Filename)%(Extension)')"
+        />
+    </Target>
+
 </Project>

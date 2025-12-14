@@ -10,17 +10,12 @@ namespace SimpleDoomEngine.Engine;
 
 public class AudioEngine : IDisposable
 {
-    private struct AudioTask
+    private struct AudioTask(Task task, Player player)
     {
-        public Task Task;
-        public Player Player;
-
-        public AudioTask( Task task,  Player player)
-        {
-            Task = task;
-            Player = player;
-        }
+        public Task Task = task;
+        public Player Player = player;
     }
+    
     private readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly ConcurrentDictionary<string, AudioTask> _audioTasks = new();
 

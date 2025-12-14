@@ -85,7 +85,7 @@ public class DoomGameManager
         private static readonly GameSettings DefaultGameSettings = new()
         {
             DefaultMap = "map.dcmf",
-            AssetsPath = "assets",
+            AudioAssetsPath = "assets/audio",
         };
     }
 }

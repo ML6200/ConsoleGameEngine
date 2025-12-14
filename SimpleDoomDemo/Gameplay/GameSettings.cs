@@ -4,6 +4,6 @@ namespace SimpleDoomDemo.Gameplay;
 
 public class GameSettings
 {
-    public string AssetsPath { get; set; }
+    public string AudioAssetsPath { get; set; }
     public string DefaultMap {get; set;}
 }
