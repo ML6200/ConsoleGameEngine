@@ -156,10 +156,10 @@ public class MainMenuScene : IGameScene
         // Load game scene
         try
         {
-            Mapper mapper = new Mapper(_mapPath);
-            DoomGameScene gameScene = new DoomGameScene(mapper.GetPlayer(), 
-                mapper.CollectDemons(), 
-                mapper.CollectItems());
+            MapParser mapParser = new MapParser(_mapPath);
+            DoomGameScene gameScene = new DoomGameScene(mapParser.GetPlayer(), 
+                mapParser.CollectDemons(), 
+                mapParser.CollectItems());
         
             _engine.LoadScene(gameScene);
         }

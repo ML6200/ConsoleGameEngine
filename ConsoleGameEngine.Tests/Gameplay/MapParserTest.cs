@@ -7,24 +7,24 @@ using SimpleDoomDemo.Gameplay;
 namespace ConsoleGameEngine.Tests.Gameplay;
 
 [TestClass]
-[TestSubject(typeof(Mapper))]
-public class MapperTest
+[TestSubject(typeof(MapParser))]
+public class MapParserTest
 {
 
     [TestMethod]
     public void TestLoadAndSaveMap()
     {
-        Mapper mapper = new();
-        mapper.LoadFromLegacy("pmp_arena.txt");
-        mapper.SaveMap("pmp_arenax.dcmf");
+        MapParser mapParser = new();
+        mapParser.LoadFromLegacy("pmp_arena.txt");
+        mapParser.SaveMap("pmp_arenax.dcmf");
         Assert.IsTrue(File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "pmp_arenax.dcmf")));
     }
     
     [TestMethod]
     public void TestLoadMap()
     {
-        Mapper mapper = new("pmp_arenax.dcmf");
-        foreach (var v in mapper.CollectDemons())
+        MapParser mapParser = new("pmp_arenax.dcmf");
+        foreach (var v in mapParser.CollectDemons())
         {
             Console.WriteLine(v.State);
         }

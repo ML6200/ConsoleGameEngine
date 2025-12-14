@@ -13,16 +13,16 @@ using SimpleDoomEngine.Gameplay.Items;
 
 namespace SimpleDoomDemo.Gameplay;
 
-public class Mapper
+public class MapParser
 {
     private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-    public Mapper(string path)
+    public MapParser(string path)
     {
         LoadFromDcmfFile(path);
     }
 
-    public Mapper()
+    public MapParser()
     {
     }
     
@@ -38,12 +38,28 @@ public class Mapper
      * ...
      * 
      */
-    public record struct DcmFormat
+    public struct DcmFormat : IEquatable<DcmFormat>
     {
         public Point2D Position;
         public DcmType Type;
         public DcmEntity Entity;
         public GraphicsComponent Value;
+
+
+        public bool Equals(DcmFormat other)
+        {
+            return Position.Equals(other.Position) && Type == other.Type && Entity == other.Entity && Value.Equals(other.Value);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is DcmFormat other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Position, (int)Type, (int)Entity, Value);
+        }
     }
 
     public enum DcmType
@@ -338,6 +354,26 @@ public class Mapper
         }
 
         return null;
+    }
+
+    // Deduplication
+    public int Optimize()
+    {
+        HashSet<Point2D> seen = new HashSet<Point2D>();
+        List<DcmFormat> deduplicated = new List<DcmFormat>();
+
+        foreach (var item in DcmList)
+        {
+            if (seen.Add(item.Position))
+            {
+                deduplicated.Add(item);
+            }
+        }
+        int duplicateCount = DcmList.Count - deduplicated.Count;
+        DcmList.Clear();
+        DcmList.AddRange(deduplicated);
+        
+        return duplicateCount;
     }
 
     public void SaveMap(string path)
