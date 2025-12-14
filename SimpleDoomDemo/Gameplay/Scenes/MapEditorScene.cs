@@ -709,9 +709,10 @@ internal class MapToolbar : UiPanel
         };
 
         string specific = SystemInfo.Os.IsWindows() ? "[Ctrl+Alt+S]Save" : "[Ctrl+S]Save";
+        string specific2 = SystemInfo.Os.IsWindows() ? "[Ctrl+Alt+O]Save" : "[Ctrl+O]Open";
         var controlsLabel = new UiLabel
         {
-            Text = "Controls: [Arrows]Move [Backspace]Delete " + specific + " [Ctrl+O]Open [Esc]Exit",
+            Text = "Controls: [Arrows]Move [Backspace]Delete " + specific + " " + specific2 + " [Esc]Exit",
             ForegroundColor = controlsColor,
             BackgroundColor = panelBg,
             RelativePosition = new Point2D(2, 3)
