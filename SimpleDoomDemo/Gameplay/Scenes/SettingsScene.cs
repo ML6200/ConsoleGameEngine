@@ -37,7 +37,6 @@ public class SettingsScene : IGameScene
         };
         _settingsPanel.AddChild(_titleLabel);
         
-        
         _saveAndBackButton = new UiButton("Save")
         {
             RelativePosition = new Point2D(3, 1),
@@ -66,11 +65,11 @@ public class SettingsScene : IGameScene
 
     private void SaveAndBack(object? sender, EventArgs e)
     {
-        if (!_inputField.Text.EndsWith(".dcmf"))
+        if (!MapParser.HasCorrectExtension(_inputField.Text))
         {
             DisableButtons();
             UiMsgBox msgBox = new UiMsgBox(_settingsPanel, _engine.RenderManager, _engine.Input,
-                "Format mismatch", "Only DCMF is acceptable!");
+                "Format mismatch", "Only '.dcmf' or '.map' is acceptable!");
             msgBox.OnComplete += state =>
             {
                 EnableButtons();

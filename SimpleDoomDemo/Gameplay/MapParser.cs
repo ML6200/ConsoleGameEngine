@@ -85,12 +85,11 @@ public class MapParser
         bool hasPlayer = false;
         bool hasExit = false;
 
-        if (!FileUtil.FileHasExtension(path, ".dcmf") &&
-            !FileUtil.FileHasExtension(path, ".dcmf"))
+        if (!HasCorrectExtension(path))
         {
             _logger.Warn("File does not have a propper extension." +
                          "The extension should be '*.dcmf'! or '*.map'");
-            throw new Exception("The extension should be .dcmf or map!");
+            throw new Exception("The extension should be .dcmf or .map!");
         }
 
         StreamReader reader;
@@ -140,6 +139,12 @@ public class MapParser
             _logger.Error(e.Message);
             throw new Exception("Dcmf file could not be loaded: \n" + e.Message, e);
         }
+    }
+
+    public static bool HasCorrectExtension(string path)
+    {
+        return FileUtil.FileHasExtension(path, ".dcmf") || 
+               FileUtil.FileHasExtension(path, ".map");
     }
 
     private GraphicsComponent GetEntityComponentByType(Point2D pos, DcmType type, DcmEntity entity)
@@ -378,8 +383,7 @@ public class MapParser
     {
         try
         {
-            if (!FileUtil.FileHasExtension(path, ".dcmf") 
-                && !FileUtil.FileHasExtension(path, ".map")) 
+            if (!HasCorrectExtension(path)) 
                 throw new Exception("The extension should be '*.dcmf'! or '*.map'");
             
             using StreamWriter sw = new StreamWriter(path);
