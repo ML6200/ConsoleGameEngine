@@ -16,11 +16,9 @@ public class MainMenuScene : IGameScene
     private UiButton _quitButton;
     private UiButton _settingsButton;
     private UiButton _mapEditButton;
-    private string _mapPath;
 
-    public MainMenuScene(string mapPath)
+    public MainMenuScene()
     {
-        _mapPath = mapPath;
     }
 
     public void Initialize(ConsoleEngine consoleEngine)
@@ -136,7 +134,7 @@ public class MainMenuScene : IGameScene
 
     private void EditMap(object? sender, EventArgs e)
     {
-        _engine.LoadScene(new MapEditorScene(_mapPath));
+        _engine.LoadScene(new MapEditorScene());
     }
 
     public void OnUpdate(double deltaTime)
@@ -156,7 +154,7 @@ public class MainMenuScene : IGameScene
         // Load game scene
         try
         {
-            MapParser mapParser = new MapParser(_mapPath);
+            MapParser mapParser = new MapParser(DoomGameManager.GameSettings.DefaultMap);
             DoomGameScene gameScene = new DoomGameScene(mapParser.GetPlayer(), 
                 mapParser.CollectDemons(), 
                 mapParser.CollectItems());

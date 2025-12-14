@@ -80,9 +80,8 @@ public class MapEditorScene : IGameScene
         _statusBar.SetStateLabel(stateName);
     }
 
-    public MapEditorScene(string mapPath)
+    public MapEditorScene()
     {
-        _mapPath = mapPath;
     }
 
     public void Initialize(ConsoleEngine consoleEngine)
@@ -413,7 +412,7 @@ public class MapEditorScene : IGameScene
             if (_stateTrigger is StateTrigger.Exit
                 && _state is EditorState.Saved)
             {
-                _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath));
+                _engine.LoadScene(new MainMenuScene());
                 return;
             }
 

@@ -11,9 +11,13 @@ public class SettingsScene : IGameScene
     private UiButton _backButton;
     private UiButton _saveAndBackButton;
     
-    private UiInputField _inputField;
-    private UiLabel _titleLabel;
     private UiLabel _mapLabel;
+    private UiInputField _mapField;
+    
+    private UiLabel _assetsLabel;
+    private UiInputField _assetsField;
+    
+    private UiLabel _titleLabel;
     private UiButton _browseButton;
     private ConsoleEngine _engine;
     
@@ -60,12 +64,12 @@ public class SettingsScene : IGameScene
 
     private void Back(object? sender, EventArgs e)
     {
-        _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath));
+        _engine.LoadScene(new MainMenuScene());
     }
 
     private void SaveAndBack(object? sender, EventArgs e)
     {
-        if (!MapParser.HasCorrectExtension(_inputField.Text))
+        if (!MapParser.HasCorrectExtension(_mapField.Text))
         {
             DisableButtons();
             UiMsgBox msgBox = new UiMsgBox(_settingsPanel, _engine.RenderManager, _engine.Input,
@@ -77,8 +81,10 @@ public class SettingsScene : IGameScene
         }
         else
         {
-            DoomGameManager.DefaultMapPath = _inputField.Text;
-            _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath));    
+            DoomGameManager.GameSettings.DefaultMap = _mapField.Text;
+            DoomGameManager.GameSettings.AssetsPath = _assetsField.Text;
+            DoomGameManager.SaveSettings();
+            _engine.LoadScene(new MainMenuScene());    
         }
     }
 
@@ -93,24 +99,42 @@ public class SettingsScene : IGameScene
         };
         _settingsPanel.AddChild(_mapLabel);
         
-        _inputField = new UiInputField(DoomGameManager.DefaultMapPath)
+        _mapField = new UiInputField(DoomGameManager.GameSettings.DefaultMap)
         {
             RelativePosition = new Point2D(3, 4),
             Size = new Dimension2D(40, 1),
             BackgroundColor = ConsoleColor.DarkYellow,
             ForegroundColor = ConsoleColor.Blue,
         };
-        _settingsPanel.AddChild(_inputField);
+        _settingsPanel.AddChild(_mapField);
+        
+        // music assets
+        _assetsLabel = new UiLabel("Music assets path(folder):")
+        {
+            RelativePosition = new Point2D(3, 6),
+            BackgroundColor = ConsoleColor.DarkBlue,
+            ForegroundColor = ConsoleColor.Yellow,
+        };
+        _settingsPanel.AddChild(_assetsLabel);
+        
+        _assetsField = new UiInputField(DoomGameManager.GameSettings.AssetsPath)
+        {
+            RelativePosition = new Point2D(3, 7),
+            Size = new Dimension2D(40, 1),
+            BackgroundColor = ConsoleColor.DarkYellow,
+            ForegroundColor = ConsoleColor.Blue,
+        };
+        _settingsPanel.AddChild(_assetsField);
+        
 
         _browseButton = new UiButton("Browse")
         {
-            RelativePosition = new Point2D(_inputField.Size.Width + 4, 4),
+            RelativePosition = new Point2D(_mapField.Size.Width + 4, 4),
             BackgroundColor = ConsoleColor.Blue,
             ForegroundColor = ConsoleColor.Yellow,
             FocusedBgColor = ConsoleColor.Yellow,
             FocusedFgColor = ConsoleColor.Blue
         };
-        _settingsPanel.AddChild(_browseButton);
         
         EnableButtons();
 
@@ -124,8 +148,9 @@ public class SettingsScene : IGameScene
     {
         _engine.RenderManager.FocusManager.Register(_saveAndBackButton);
         _engine.RenderManager.FocusManager.Register(_backButton);
-        _engine.RenderManager.FocusManager.Register(_inputField);
-        _engine.RenderManager.FocusManager.Register(_browseButton);
+        _engine.RenderManager.FocusManager.Register(_mapField);
+        _engine.RenderManager.FocusManager.Register(_assetsField);
+        //_engine.RenderManager.FocusManager.Register(_browseButton);
     }
 
     private void DisableButtons()

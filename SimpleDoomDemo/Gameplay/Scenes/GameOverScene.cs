@@ -85,7 +85,7 @@ public class GameOverScene : IGameScene
 
     private void OnKeyPressed(object sender, KeyEventArgs e)
     {
-        _engine.LoadScene(new MainMenuScene(DoomGameManager.DefaultMapPath)); // later we fix this by adding settings
+        _engine.LoadScene(new MainMenuScene()); // later we fix this by adding settings
     }
 }
 
