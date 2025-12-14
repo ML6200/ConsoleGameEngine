@@ -49,7 +49,7 @@ public class MapEditorScene : IGameScene
     private UiPanel _editorPanel;
     private UiLabel _title;
     private Cursor _cursor;
-    private Mapper _mapper;
+    private MapParser _mapParser;
 
     private string _mapPath;
     private string _filePath = "";
@@ -118,7 +118,7 @@ public class MapEditorScene : IGameScene
 
         _cursor = new Cursor(0, 0);
         _editorPanel.AddChild(_cursor);
-        _mapper = new Mapper();
+        _mapParser = new MapParser();
         
         _engine.RenderManager.OnWindowResized += (sender, args) =>
         {
@@ -156,40 +156,40 @@ public class MapEditorScene : IGameScene
             
             // Game Items
             case ConsoleKey.W:
-                AddEntity(Mapper.DcmEntity.Wall, Mapper.DcmType.GameItem);
+                AddEntity(MapParser.DcmEntity.Wall, MapParser.DcmType.GameItem);
                 break;
             case ConsoleKey.T:
-                AddEntity(Mapper.DcmEntity.ToxicWaste, Mapper.DcmType.GameItem);
+                AddEntity(MapParser.DcmEntity.ToxicWaste, MapParser.DcmType.GameItem);
                 break;
             case ConsoleKey.A:
-                AddEntity(Mapper.DcmEntity.Ammo, Mapper.DcmType.GameItem);
+                AddEntity(MapParser.DcmEntity.Ammo, MapParser.DcmType.GameItem);
                 break;
             case ConsoleKey.M:
-                AddEntity(Mapper.DcmEntity.MedKit, Mapper.DcmType.GameItem);
+                AddEntity(MapParser.DcmEntity.MedKit, MapParser.DcmType.GameItem);
                 break;
             case ConsoleKey.B:
-                AddEntity(Mapper.DcmEntity.BfgCell, Mapper.DcmType.GameItem);
+                AddEntity(MapParser.DcmEntity.BfgCell, MapParser.DcmType.GameItem);
                 break;
             case ConsoleKey.D:
-                AddEntity(Mapper.DcmEntity.Door, Mapper.DcmType.GameItem);
+                AddEntity(MapParser.DcmEntity.Door, MapParser.DcmType.GameItem);
                 break;
             case ConsoleKey.E:
-                AddEntity(Mapper.DcmEntity.LevelExit, Mapper.DcmType.GameItem);
+                AddEntity(MapParser.DcmEntity.LevelExit, MapParser.DcmType.GameItem);
                 break;
             
             // Demons
             case ConsoleKey.Z:
-                AddEntity(Mapper.DcmEntity.Zombieman, Mapper.DcmType.Demon);
+                AddEntity(MapParser.DcmEntity.Zombieman, MapParser.DcmType.Demon);
                 break;
             case ConsoleKey.C:
                 if (e.Shift) 
-                    AddEntity(Mapper.DcmEntity.Mancubus, Mapper.DcmType.Demon);
+                    AddEntity(MapParser.DcmEntity.Mancubus, MapParser.DcmType.Demon);
                 break;
             case ConsoleKey.I:
-                AddEntity(Mapper.DcmEntity.Imp, Mapper.DcmType.Demon);
+                AddEntity(MapParser.DcmEntity.Imp, MapParser.DcmType.Demon);
                 break;
             case ConsoleKey.P:
-                AddEntity(Mapper.DcmEntity.Player, Mapper.DcmType.Player);
+                AddEntity(MapParser.DcmEntity.Player, MapParser.DcmType.Player);
                 break;
             
             // Hide or show toolbar panel
@@ -204,6 +204,16 @@ public class MapEditorScene : IGameScene
             case ConsoleKey.Backspace:
                 RemoveEntity(_cursor.RelativePosition);
                 break;
+        }
+
+        if (e.Shift)
+        {
+            switch (e.Key)
+            {
+                case ConsoleKey.O:
+                    OptimizeMap();
+                    break;
+            }
         }
 
         // Keybindings
@@ -222,6 +232,20 @@ public class MapEditorScene : IGameScene
                     break;
             }
         }
+    }
+
+    private void OptimizeMap()
+    {
+        int count = _mapParser.Optimize();
+        UiMsgBox msgBox = new UiMsgBox(_mainPanel,
+            _engine.RenderManager,
+            _engine.Input,
+            "Map optimization",
+            $"Map optimization complete:\nFound {count} duplicates.");
+        msgBox.OnComplete += option =>
+        {
+            ReloadMap(false);
+        } ;
     }
 
     private void MarkStateSaved(string filename)
@@ -294,10 +318,15 @@ public class MapEditorScene : IGameScene
     private void ReloadMap(bool trustDcmf = true)
     {
         _editorPanel.RemoveAllChildren();
+
+        if (trustDcmf)
+        {
+            _mapParser.ClearObjects();
+            _mapParser.LoadFromDcmfFile(_filePath, true);
+        }
+        //_mapParser.Optimize();
         
-        if (trustDcmf) _mapper.LoadFromDcmfFile(_filePath, true);
-        
-        foreach (var dcm in _mapper.DcmList)
+        foreach (var dcm in _mapParser.DcmList)
         {
             _editorPanel.AddChild(dcm.Value);
         }
@@ -314,7 +343,7 @@ public class MapEditorScene : IGameScene
     {
         if (_state is EditorState.ChangedHasPath)
         {
-            _mapper.SaveMap(filename);
+            _mapParser.SaveMap(filename);
             MarkStateSaved(filename);
             ReloadMap();
         }
@@ -363,23 +392,25 @@ public class MapEditorScene : IGameScene
      *
      * Therefore its trivial that we set more to high priority
      * the last setting would be the highest
-     * 
+     *
+     *
+     * For now we just readd the cursor each time to keep it on top
      */
-    private void AddEntity(Mapper.DcmEntity entity, Mapper.DcmType dmType)
+    private void AddEntity(MapParser.DcmEntity entity, MapParser.DcmType dmType)
     {
         Point2D targetPoint = _cursor.RelativePosition;
-        if (_mapper.IsPositionAcquired(targetPoint))
+        if (_mapParser.IsPositionAcquired(targetPoint))
             return;
         
-        _mapper.AddObject(targetPoint, dmType, entity);
-        _editorPanel.AddChild(_mapper.DcmList[^1].Value); 
+        _mapParser.AddObject(targetPoint, dmType, entity);
+        _editorPanel.AddChild(_mapParser.DcmList[^1].Value); 
         _isEntityAdded =  true;
         MarkStateUnsaved();
     }
 
     private void RemoveEntity(Point2D point)
     {
-        var removed = _mapper.RemoveObject(point);
+        var removed = _mapParser.RemoveObject(point);
         if (removed == null) return;
         
         _editorPanel.RemoveChild(removed);
@@ -421,8 +452,9 @@ public class MapEditorScene : IGameScene
             "Enter the path of the file to be opened:", "");
             
         msgBox2.OnOk += OpenMap;
-        msgBox2.OnCancelled += (sender, args) => 
+        msgBox2.OnCancelled += (sender, args) =>
         {
+            _stateTrigger = StateTrigger.NoTrigger;
             EnableEditor(false);
         };
     }
@@ -591,7 +623,6 @@ public class MapEditorScene : IGameScene
             };
             
             var labels = new[] { titleLabel, gameItemsLabel, demonsLabel, controlsLabel, infoLabel };
-
             foreach (var label in labels)
             {
                 AddChild(label);
@@ -599,7 +630,6 @@ public class MapEditorScene : IGameScene
             }
             
             Height = height ?? labels.Sum(l=> l.Size.Height) + 1; // +1 for border
-            
             Width = width ?? requiredWidth + 4;
         }
 

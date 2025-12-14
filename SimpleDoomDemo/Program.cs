@@ -8,9 +8,9 @@ class Program
 {
     static void ConvertMap(string path)
     {
-        Mapper mapper  = new Mapper();
-        mapper.LoadFromLegacy(path);
-        mapper.SaveMap("arena.dcmf");
+        MapParser mapParser  = new MapParser();
+        mapParser.LoadFromLegacy(path);
+        mapParser.SaveMap("arena.dcmf");
     }
     static void Main(string[] args)
     {
