@@ -90,7 +90,7 @@ public class MapParser
         {
             _logger.Warn("File does not have a propper extension." +
                          "The extension should be '*.dcmf'! or '*.map'");
-            throw new Exception("The extension should be .dcmf!");
+            throw new Exception("The extension should be .dcmf or map!");
         }
 
         StreamReader reader;
