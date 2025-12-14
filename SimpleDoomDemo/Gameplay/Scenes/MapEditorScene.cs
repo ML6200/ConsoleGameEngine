@@ -55,7 +55,7 @@ public class MapEditorScene : IGameScene
 
     private string _mapPath;
     private string _filePath = "";
-    private bool _isSaved = false;
+    private bool _isLegacy = false;
 
     private EditorState _state = EditorState.Saved;
     private StateTrigger _stateTrigger = StateTrigger.NoTrigger;
@@ -240,17 +240,26 @@ public class MapEditorScene : IGameScene
                 case ConsoleKey.O:
                     OptimizeMap();
                     break;
+                case ConsoleKey.L:
+                    _isLegacy = true;
+                    HandleOpen();
+                    break;
             }
         }
 
+        bool mask = true;
+        if (SystemInfo.Os.IsWindows())
+        {
+            mask = e.Alt;
+        } 
+
         // Keybindings
-        if (e.Control)
+        if (e.Control && mask)
         {
             switch (e.Key)
             {
                 case ConsoleKey.S:
-                    if (SystemInfo.Os.IsWindows() && e.Alt)
-                        _stateTrigger = StateTrigger.ManualSave;
+                    _stateTrigger = StateTrigger.ManualSave;
                     HandleSave();
                     break;
                 case ConsoleKey.O:
@@ -304,7 +313,8 @@ public class MapEditorScene : IGameScene
     {
         try
         {
-            SetState(EditorState.Saved);
+            SetState(!_isLegacy ? EditorState.Saved : EditorState.Changed);
+
             _filePath = filename;
             ReloadMap();
             EnableEditor();
@@ -353,7 +363,8 @@ public class MapEditorScene : IGameScene
         if (trustDcmf)
         {
             _mapParser.ClearObjects();
-            _mapParser.LoadFromDcmfFile(_filePath, true);
+            if (_isLegacy) _mapParser.LoadFromLegacy(_filePath);
+            else _mapParser.LoadFromDcmfFile(_filePath, true);
         }
         //_mapParser.Optimize();
 
@@ -362,6 +373,7 @@ public class MapEditorScene : IGameScene
             _editorPanel.AddChild(dcm.Value);
         }
 
+        _isLegacy = false;
         ReaddTools();
     }
 
@@ -662,6 +674,7 @@ internal class MapToolbar : UiPanel
         ConsoleColor itemsColor = ConsoleColor.DarkGreen;
         ConsoleColor demonsColor = ConsoleColor.DarkYellow;
         ConsoleColor controlsColor = ConsoleColor.DarkCyan;
+        ConsoleColor toolsColor = ConsoleColor.DarkMagenta;
         ConsoleColor infoColor = ConsoleColor.DarkGray;
 
         // Configure panel
@@ -706,8 +719,8 @@ internal class MapToolbar : UiPanel
         };
         var toolsLabel = new UiLabel
         {
-            Text = "Tools: [Shift+O] Map Optimization",
-            ForegroundColor = controlsColor,
+            Text = "Tools: [Shift+O] Map Optimization [Shift+L] Load legacy map",
+            ForegroundColor = toolsColor,
             BackgroundColor = panelBg,
             RelativePosition = new Point2D(2, 4)
         };
