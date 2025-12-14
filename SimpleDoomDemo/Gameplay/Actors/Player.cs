@@ -2,7 +2,6 @@ using System;
 using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
-using SimpleDoomEngine.Engine;
 
 namespace SimpleDoomEngine.Gameplay.Actors;
 

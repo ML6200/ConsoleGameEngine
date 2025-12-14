@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using ConsoleGameEngine.Engine;
+using ConsoleGameEngine.Engine.Audio;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
@@ -11,7 +12,6 @@ using SimpleDoomDemo.Gameplay.Actors.Demons;
 using SimpleDoomDemo.Gameplay.Systems;
 using SimpleDoomDemo.Gameplay.UI;
 using SimpleDoomEngine;
-using SimpleDoomEngine.Engine;
 using SimpleDoomEngine.Gameplay.Actors;
 using SimpleDoomEngine.Gameplay.Items;
 
@@ -132,7 +132,6 @@ public class DoomGameScene : IGameScene
             Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, 
                 "mark_lor-war_of_sirens.mp3"), 
             "main",
-            false,
             true
         );
         //_audioEngine.SetVolume("main", 20);

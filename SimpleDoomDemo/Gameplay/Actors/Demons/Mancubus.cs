@@ -1,7 +1,6 @@
 using System;
 using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
-using SimpleDoomEngine.Engine;
 
 namespace SimpleDoomDemo.Gameplay.Actors.Demons;
 
