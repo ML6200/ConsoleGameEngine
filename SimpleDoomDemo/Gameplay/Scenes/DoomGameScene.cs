@@ -131,7 +131,9 @@ public class DoomGameScene : IGameScene
         _audioEngine.Play(
             Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, 
                 "mark_lor-war_of_sirens.mp3"), 
-            "main"
+            "main",
+            false,
+            true
         );
         //_audioEngine.SetVolume("main", 20);
     }
