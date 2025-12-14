@@ -107,7 +107,7 @@ public class MapParser
                     if (columns.Length != 4)
                     {
                         _logger.Error("Invalid Dcmf file format: " + line);
-                        throw new InvalidMapFormatException("Invalid map file format!");
+                        throw new InvalidMapFormatException();
                     }
 
                     Point2D pos = new Point2D(int.Parse(columns[0]), int.Parse(columns[1]));
@@ -123,15 +123,13 @@ public class MapParser
                 if (!ignoreMissing && !hasPlayer)
                 {
                     _logger.Warn("No player found.");
-                    throw new PlayerNotFoundException("Player is not found in map file. " +
-                                                      "You can add it via map editor");
+                    throw new PlayerNotFoundException();
                 }
 
                 if (!ignoreMissing && !hasExit)
                 {
                     _logger.Warn("No player found.");
-                    throw new LevelExitNotFoundException("Level exit is not found in map file. " +
-                                                         "You can add it via map editor");
+                    throw new LevelExitNotFoundException();
                 }
 
                 _logger.Info("Dcmf file loaded");

@@ -2,4 +2,5 @@ using System;
 
 namespace SimpleDoomDemo.Gameplay.Scenes.Exceptions;
 
-public class InvalidMapFormatException(string message) : Exception(message);
+public class InvalidMapFormatException() : Exception("Invalid map format.");
+
