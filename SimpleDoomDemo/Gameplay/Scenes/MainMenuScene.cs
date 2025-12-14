@@ -65,7 +65,7 @@ public class MainMenuScene : IGameScene
         _settingsButton.OnClick += Settings;
         _menuPanel.AddChild(_settingsButton);
         
-        _mapEditButton = new UiButton("✎ Edit Map")
+        _mapEditButton = new UiButton("✎ Map editor")
         {
             RelativePosition = new Point2D(centerX - 10, centerY),
             Size = new Dimension2D(20, 3),
