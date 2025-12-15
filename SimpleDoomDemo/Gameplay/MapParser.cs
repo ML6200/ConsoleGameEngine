@@ -101,7 +101,8 @@ public class MapParser
                 while ((line = reader.ReadLine()) != null)
                 {
                     if (line.StartsWith("#")) continue;
-
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+                    
                     string[] columns = line.Split(";");
                     if (columns.Length != 4)
                     {
