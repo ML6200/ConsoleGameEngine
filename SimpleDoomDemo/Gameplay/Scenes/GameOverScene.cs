@@ -74,6 +74,7 @@ public class GameOverScene : IGameScene
 
     public void OnExit()
     {
+        _engine.Input.OnKeyPressed -= OnKeyPressed;
         _game.StopAllAudio();
         _engine.RenderManager.FocusManager.UnregisterAll();
         _engine.Input.OnKeyPressed -= OnKeyPressed;
