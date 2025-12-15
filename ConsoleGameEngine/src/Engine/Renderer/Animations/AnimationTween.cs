@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 
@@ -60,9 +61,16 @@ public static class AnimationTween
      * or more precisely: x = (1-t) * v0 + t * v1
      * 
      */
-    private static int LerpForScalar(int v0, int v1, float t)
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int LerpForScalar(int v0, int v1, float t)
     {
         // SOURCE: https://en.wikipedia.org/wiki/Linear_interpolation
         return (int) (v0 * (1 - t)+  v1 * t);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float LerpForScalar(float v0, float v1, float t)
+    {
+        return v0 * (1 - t) + v1 * t;
     }
 }

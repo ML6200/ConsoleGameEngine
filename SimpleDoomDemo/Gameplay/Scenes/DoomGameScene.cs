@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Audio;
 using ConsoleGameEngine.Engine.Input;
+using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 using NLog;
@@ -49,8 +50,13 @@ public class DoomGameScene : IGameScene
 
     // ============================= SYNCHRONIZATION ==============================
     private readonly Lock _visibilityLock = new();
-    
+
     private readonly AudioEngine _audioEngine = new();
+
+    // ============================= CAMERA ==============================
+    private float _cameraX;
+    private float _cameraY;
+    private const float CameraSmoothSpeed = 8.0f; // Higher = faster camera movement
 
     public DoomGameScene()
     {
@@ -86,8 +92,6 @@ public class DoomGameScene : IGameScene
         WorldSize = new Dimension2D(worldWidth, worldHeight);
         _engine.Camera.WorldSize = WorldSize;
 
-        _engine.Camera.SetCameraPosition(new Point2D(worldWidth / 2, worldHeight / 2));
-
         // Subscribe to input events
         _input.OnKeyPressed += OnKeyPressed;
 
@@ -99,12 +103,50 @@ public class DoomGameScene : IGameScene
 
     public void OnEnter()
     {
-        // Add all game entities to root panel (they will use camera transformation)
-        if (Player is null)
+        if (LoadEntities()) return;
+
+        AddHud();
+
+        InitializeCamera();
+
+        // Start music
+        //AudioPlayer.PlayMusic(Path.Combine("assets", "sounds", "doom_music.mp3"));
+        _audioEngine.Play(
+            Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, 
+                "mark_lor-war_of_sirens.mp3"), 
+            "main",
+            true,
+            true
+        );
+        _audioEngine.SetVolume("main", 0);
+    }
+
+    private void InitializeCamera()
+    {
+        // Initialize camera position centered on player 
+        // this prevents lerping from wrong position on scene start
+        int initialCameraX = Player.WorldPosition.X - _engine.Camera.CameraSize.Width / 2;
+        int initialCameraY = Player.WorldPosition.Y - _engine.Camera.CameraSize.Height / 2;
+        _cameraX = initialCameraX;
+        _cameraY = initialCameraY;
+        _engine.Camera.SetCameraPosition(new Point2D(initialCameraX, initialCameraY));
+    }
+
+    private void AddHud()
+    {
+        // Create and add HUD (positioned at bottom of screen)
+        int hudWidth = Console.WindowWidth;
+        int hudHeight = 1;
+        _hud = new GameHud(_engine, Player, hudWidth, hudHeight)
         {
-            _logger.Error("Player is null");
-            return;
-        }
+            RelativePosition = new Point2D(0, Console.WindowHeight - 1)
+        };
+        _rootPanel.AddChild(_hud);
+    }
+
+    private bool LoadEntities()
+    {
+        // Add all game entities to root panel (they will use camera transformation)
         _rootPanel.AddChild(Player);
 
         foreach (var item in Items)
@@ -118,25 +160,7 @@ public class DoomGameScene : IGameScene
             demon.UpdateVisibility(Player.WorldPosition, Player.SightRange);
         }
 
-        // Create and add HUD (positioned at bottom of screen)
-        int hudWidth = Console.WindowWidth;
-        int hudHeight = 1;
-        _hud = new GameHud(_engine, Player, hudWidth, hudHeight)
-        {
-            RelativePosition = new Point2D(0, Console.WindowHeight - 1)
-        };
-        _rootPanel.AddChild(_hud);
-
-        // Start music
-        //AudioPlayer.PlayMusic(Path.Combine("assets", "sounds", "doom_music.mp3"));
-        _audioEngine.Play(
-            Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, 
-                "mark_lor-war_of_sirens.mp3"), 
-            "main",
-            true,
-            true
-        );
-        //_audioEngine.SetVolume("main", 20);
+        return false;
     }
 
     public void OnUpdate(double deltaTime)
@@ -148,10 +172,8 @@ public class DoomGameScene : IGameScene
             HandleGameOver();
             return;
         }
-        
-        int cameraX = Player.WorldPosition.X - _engine.Camera.CameraSize.Width / 2;
-        int cameraY = Player.WorldPosition.Y - _engine.Camera.CameraSize.Height / 2;
-        _engine.Camera.SetCameraPosition(new Point2D(cameraX, cameraY));
+
+        CameraFollow(deltaTime);
 
         if (_gameOverHandled)
         {
@@ -159,7 +181,25 @@ public class DoomGameScene : IGameScene
         }
         
         UpdateGameLogic(deltaTime);
+    }
+
+    private void CameraFollow(double deltaTime)
+    {
+        // Smooth camera follow using lerp
+        int px = Player.WorldPosition.X;
+        int py = Player.WorldPosition.Y;
+        int cw = _engine.Camera.CameraSize.Width;
+        int ch = _engine.Camera.CameraSize.Height;
         
+        float targetCameraX = px - cw / 4.0f;
+        float targetCameraY = py - ch / 4.0f;
+
+        // Lerp camera position towards target (smoothing)
+        float multiplier = CameraSmoothSpeed * (float)deltaTime;
+        _cameraX = AnimationTween.LerpForScalar(_cameraX, targetCameraX, multiplier);
+        _cameraY = AnimationTween.LerpForScalar(_cameraY, targetCameraY, multiplier);
+
+        _engine.Camera.SetCameraPosition(new Point2D((int)_cameraX, (int)_cameraY));
     }
 
     public void StopAllAudio()
