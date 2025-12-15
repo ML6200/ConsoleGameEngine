@@ -252,7 +252,7 @@ public class MapEditorScene : IGameScene
             }
         }
 
-        bool mask = true;
+        bool mask = !e.Alt;
         if (SystemInfo.Os.IsWindows())
         {
             mask = e.Alt;
@@ -270,6 +270,10 @@ public class MapEditorScene : IGameScene
                 case ConsoleKey.O:
                     _stateTrigger = StateTrigger.Open;
                     HandleOpen();
+                    break;
+                case ConsoleKey.X:
+                    _stateTrigger = StateTrigger.Open;
+                    OpenMap(DoomGameManager.GameSettings.DefaultMap);
                     break;
             }
         }
@@ -406,13 +410,13 @@ public class MapEditorScene : IGameScene
                 progressBar.SetStatus($"Loading entities... {currentItem}/{totalItems}");
 
                 // Small delay to allow render thread to catch up
-                System.Threading.Thread.Sleep(30);
+                System.Threading.Thread.Sleep(20);
             }
         }
 
         progressBar.SetProgress(0.95f);
         progressBar.SetStatus("Finalizing...");
-        System.Threading.Thread.Sleep(50);
+        System.Threading.Thread.Sleep(30);
 
         _isLegacy = false;
         ReaddTools();
@@ -757,10 +761,14 @@ internal class MapToolbar : UiPanel
         };
 
         string specific = SystemInfo.Os.IsWindows() ? "[Ctrl+Alt+S]Save" : "[Ctrl+S]Save";
-        string specific2 = SystemInfo.Os.IsWindows() ? "[Ctrl+Alt+O]Save" : "[Ctrl+O]Open";
+        string specific2 = SystemInfo.Os.IsWindows() ? "[Ctrl+Alt+O]Open" : "[Ctrl+O]Open";
+        string specific3 = SystemInfo.Os.IsWindows() ? "[Ctrl+Alt+X]Open default" : "[Ctrl+X]Open default";
         var controlsLabel = new UiLabel
         {
-            Text = "Controls: [Arrows]Move [Backspace]Delete " + specific + " " + specific2 + " [Esc]Exit",
+            Text = "Controls: [Arrows]Move [Backspace]Delete " + 
+                   specific + " " + 
+                   specific2 + " " + 
+                   specific3 + " [Esc]Exit",
             ForegroundColor = controlsColor,
             BackgroundColor = panelBg,
             RelativePosition = new Point2D(2, 3)
