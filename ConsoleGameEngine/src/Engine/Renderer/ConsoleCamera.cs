@@ -118,10 +118,19 @@ public class ConsoleCamera
         
         // clamping value to avoid jitter
         float multiplier = Math.Min(CameraSmoothSpeed * (float)deltaTime, 1.0f);
-        
-        // Lerp camera position towards target (smoothing)
-        _cameraX = AnimationTween.LerpForScalar(_cameraX, targetCameraX, multiplier);
-        _cameraY = AnimationTween.LerpForScalar(_cameraY, targetCameraY, multiplier);
+
+        if (Math.Abs(targetCameraX - _cameraX) < 0.1f
+            && Math.Abs(targetCameraY - _cameraY) < 0.1f)
+        {
+            _cameraX = targetCameraX;
+            _cameraY = targetCameraY;
+        }
+        else
+        {
+            // Lerp camera position towards target (smoothing)
+            _cameraX = AnimationTween.LerpForScalar(_cameraX, targetCameraX, multiplier);
+            _cameraY = AnimationTween.LerpForScalar(_cameraY, targetCameraY, multiplier);
+        }
 
         SetCameraPosition(new Point2D((int)_cameraX, (int)_cameraY));
     }
