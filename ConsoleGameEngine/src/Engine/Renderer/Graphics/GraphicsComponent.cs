@@ -322,10 +322,11 @@ public abstract class GraphicsComponent : IRenderable
     {
         for (int i = Animations.Count - 1; i >= 0; i--)
         {
-            Animations[i].OnUpdate(deltaTime);
-            if (Animations[i].IsComplete)
+            var animation = Animations[i];
+            animation.OnUpdate(deltaTime);
+            if (animation.IsComplete)
             {
-                Animations.Remove(Animations[i]);
+                Animations.Remove(animation);
             }
         }
         
