@@ -52,12 +52,7 @@ public class DoomGameScene : IGameScene
     private readonly Lock _visibilityLock = new();
 
     private readonly AudioEngine _audioEngine = new();
-
-    // ============================= CAMERA ==============================
-    private float _cameraX;
-    private float _cameraY;
-    private const float CameraSmoothSpeed = 8.0f; // Higher = faster camera movement
-
+    
     public DoomGameScene()
     {
         // Initialize entities
@@ -84,13 +79,8 @@ public class DoomGameScene : IGameScene
         _engine = consoleEngine;
         _rootPanel = _engine.RootPanel();
         _input = _engine.Input;
-
-        // Setup world size and camera
-        int worldWidth = _engine.RootPanel().ScreenSize.Width * 3;
-        int worldHeight =_engine.RootPanel().ScreenSize.Height * 3;
-
-        WorldSize = new Dimension2D(worldWidth, worldHeight);
-        _engine.Camera.WorldSize = WorldSize;
+        
+        WorldSize = _engine.Camera.WorldSize;
 
         // Subscribe to input events
         _input.OnKeyPressed += OnKeyPressed;
@@ -107,7 +97,7 @@ public class DoomGameScene : IGameScene
 
         AddHud();
 
-        InitializeCamera();
+        _engine.Camera.FollowObject(Player);
 
         // Start music
         //AudioPlayer.PlayMusic(Path.Combine("assets", "sounds", "doom_music.mp3"));
@@ -119,17 +109,6 @@ public class DoomGameScene : IGameScene
             true
         );
         _audioEngine.SetVolume("main", 0);
-    }
-
-    private void InitializeCamera()
-    {
-        // Initialize camera position centered on player 
-        // this prevents lerping from wrong position on scene start
-        int initialCameraX = Player.WorldPosition.X - _engine.Camera.CameraSize.Width / 2;
-        int initialCameraY = Player.WorldPosition.Y - _engine.Camera.CameraSize.Height / 2;
-        _cameraX = initialCameraX;
-        _cameraY = initialCameraY;
-        _engine.Camera.SetCameraPosition(new Point2D(initialCameraX, initialCameraY));
     }
 
     private void AddHud()
@@ -172,34 +151,13 @@ public class DoomGameScene : IGameScene
             HandleGameOver();
             return;
         }
-
-        CameraFollow(deltaTime);
-
+        
         if (_gameOverHandled)
         {
             return;
         }
         
         UpdateGameLogic(deltaTime);
-    }
-
-    private void CameraFollow(double deltaTime)
-    {
-        // Smooth camera follow using lerp
-        int px = Player.WorldPosition.X;
-        int py = Player.WorldPosition.Y;
-        int cw = _engine.Camera.CameraSize.Width;
-        int ch = _engine.Camera.CameraSize.Height;
-        
-        float targetCameraX = px - cw / 4.0f;
-        float targetCameraY = py - ch / 4.0f;
-
-        // Lerp camera position towards target (smoothing)
-        float multiplier = CameraSmoothSpeed * (float)deltaTime;
-        _cameraX = AnimationTween.LerpForScalar(_cameraX, targetCameraX, multiplier);
-        _cameraY = AnimationTween.LerpForScalar(_cameraY, targetCameraY, multiplier);
-
-        _engine.Camera.SetCameraPosition(new Point2D((int)_cameraX, (int)_cameraY));
     }
 
     public void StopAllAudio()

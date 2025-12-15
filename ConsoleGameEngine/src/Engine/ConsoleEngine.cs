@@ -78,7 +78,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         _rootComponent = new RootComponent(rootPane);
 
         // Initialize camera after _rootComponent is created
-        Camera = new ConsoleCamera(
+        Camera = new ConsoleCamera(this,
             new Dimension2D(width, height),  
             new Point2D(0, 0),
             new Dimension2D(width, height)
@@ -151,6 +151,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
                 _currentScene.OnEnter();
             }
         }
+        Camera.Follow(deltaTime);
         // update all components
         RootPanel().Update(deltaTime);
         _currentScene?.OnUpdate(deltaTime);
@@ -172,7 +173,8 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     }
     
     private readonly Stopwatch _updateTimer = Stopwatch.StartNew();
-    public void UpdateLoop()
+
+    private void UpdateLoop()
     {
         if (!_isInitialized)
         {
