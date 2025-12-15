@@ -80,8 +80,8 @@ public abstract class GraphicsComponent : IRenderable
     private List<Animation> Animations { get; } = new();
     public List<GraphicsComponent> Children { get; } = new();
     private IRenderable? Parent { get; set; }
-    
-    private GraphicsComponent[] _cachedChildren;
+
+    private GraphicsComponent[] _cachedChildren = [];
     private Point2D _relativePosition = new(0, 0);
     private Point2D _cachedWorldPosition = new(0, 0);
     private bool _isPositionDirty = true;
