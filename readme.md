@@ -128,4 +128,10 @@ dotnet run --project SimpleDoomDemo/SimpleDoomDemo.csproj
 - **Implicit Usings**: Disabled for explicit namespace control
 - **Nullable**: Enabled for better null-safety
 
-Note: Claude Sonnet 4.5 was partially used for brainstorming and acceleating develoment.
+
+## Background
+
+This project was originally inspired by a university assignment and
+was later expanded into a standalone project for learning and experimentation.
+
+Claude Sonnet 4.5 was partially used for brainstorming and acceleating develoment.
