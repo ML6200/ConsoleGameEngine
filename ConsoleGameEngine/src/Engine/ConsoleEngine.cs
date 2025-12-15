@@ -29,6 +29,8 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     
     private int _targetUpdatesPerSecond = 60; // A jatek logikahoz
     private int _targetRenderFps = 60; // rendereléshez
+    
+    private ManualResetEvent _exitEvent = new ManualResetEvent(false);
 
     public int TargetUpdatesPerSecond
     {
@@ -168,14 +170,6 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
             _pendingScene.Initialize(this);
         }
     }
-
-    public void Dispose()
-    {
-        Stop();
-        _cancellationTokenSource?.Dispose();
-        _renderManager.Dispose();
-        _inputManager.Dispose();
-    }
     
     private readonly Stopwatch _updateTimer = Stopwatch.StartNew();
     public void UpdateLoop()
@@ -211,6 +205,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
                 CurrentUpdateRate = 1000.0D / updateTime;
             }
         }
+        _exitEvent.Set();
     }
     
     public UiPanel RootPanel()
@@ -251,6 +246,19 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
 
         _renderManager.Stop();
         _currentScene?.OnExit();
+        _inputManager.Dispose();
+    }
+    
+    public void WaitForExit()
+    {
+        _exitEvent.WaitOne(); 
+    }
+
+    public void Dispose()
+    {
+        Stop();
+        _cancellationTokenSource?.Dispose();
+        _renderManager.Dispose();
         _inputManager.Dispose();
     }
 }

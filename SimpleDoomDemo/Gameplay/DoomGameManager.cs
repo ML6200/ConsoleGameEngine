@@ -33,12 +33,7 @@ public class DoomGameManager
     {
         _engine.SetInitialScene(_menuScene);
         _engine.OnStart();
-        
-        while (_engine.IsRunning)
-        {
-            Thread.Sleep(100);
-        }
-        
+        _engine.WaitForExit();
         _engine.Dispose();
     }
 
