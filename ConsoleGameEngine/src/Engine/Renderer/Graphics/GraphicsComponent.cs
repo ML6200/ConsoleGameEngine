@@ -71,8 +71,6 @@ public abstract class GraphicsComponent : IRenderable
 {
     protected int Width;
     protected int Height;
-
-    private Point2D _relativePosition = new(0, 0);
     public virtual bool Visible { get; set; } = true;
     
     public ConsoleColor BackgroundColor { get; set; }
@@ -81,8 +79,13 @@ public abstract class GraphicsComponent : IRenderable
 
     private List<Animation> Animations { get; } = new();
     public List<GraphicsComponent> Children { get; } = new();
-    private IRenderable Parent { get; set; }
+    private IRenderable? Parent { get; set; }
     
+    private GraphicsComponent[] _cachedChildren;
+    private Point2D _relativePosition = new(0, 0);
+    private Point2D _cachedWorldPosition = new(0, 0);
+    private bool _isPositionDirty = true;
+    private bool _childrenDirty = true;
     private readonly Lock _childrenLock = new();
     
     
@@ -161,34 +164,73 @@ public abstract class GraphicsComponent : IRenderable
     {
         get
         {
-            if (Parent is GraphicsComponent parent)
+            if (_isPositionDirty)
             {
-                return parent.WorldPosition + _relativePosition;
+                UpdateWorldPosition();
             }
-            return _relativePosition;
+            return _cachedWorldPosition;
         }
         set
         {
-            SetAbsolutePosition(value);
+            if (value != _cachedWorldPosition)
+            {
+                SetWorldPosition(value);
+            }
         }
     }
 
-    public void SetAbsolutePosition(Point2D absolutePoint)
+    private void SetWorldPosition(Point2D worldPosition)
+    {
+        Point2D newRelative;
+        if (Parent is GraphicsComponent parent)
+        {
+            newRelative = worldPosition - parent.WorldPosition;
+        } else newRelative = worldPosition;
+
+        if (newRelative != _relativePosition)
+        {
+            _relativePosition = newRelative;
+            _cachedWorldPosition = worldPosition;
+            _isPositionDirty = false;
+        }
+    }
+
+    private void UpdateWorldPosition()
     {
         if (Parent is GraphicsComponent parent)
         {
-            _relativePosition = absolutePoint - parent.WorldPosition;
+            _cachedWorldPosition = parent.WorldPosition + _relativePosition;
         }
-        else
-        {
-            _relativePosition = absolutePoint;
-        }
+        else _cachedWorldPosition = _relativePosition;
+        
+        _isPositionDirty = false;
     }
 
     public Point2D RelativePosition
     {
         get => _relativePosition;
-        set => _relativePosition = value;
+        set
+        {
+            if (_relativePosition != value)
+            {
+                _relativePosition = value;
+                MarkWorldPositionDirty();
+            }
+        }
+    }
+
+    private void MarkWorldPositionDirty()
+    {
+        _isPositionDirty = true;
+        MarkChildrenDirty();
+    }
+
+    private void MarkChildrenDirty()
+    {
+        foreach (var child in Children)
+        {
+            child.MarkWorldPositionDirty();
+        }
     }
     // ======================END-POSITIONING=======================
 
@@ -211,7 +253,9 @@ public abstract class GraphicsComponent : IRenderable
         lock (_childrenLock)
         {
             Children.Add(child);
+            _childrenDirty = true;
             child.Parent = this;
+            MarkWorldPositionDirty();
         }
     }
 
@@ -220,6 +264,9 @@ public abstract class GraphicsComponent : IRenderable
         lock (_childrenLock)
         {
             Children.Remove(child);
+            _childrenDirty = true;
+            child.Parent = null;
+            child.MarkWorldPositionDirty();
         }
     }
 
@@ -228,15 +275,28 @@ public abstract class GraphicsComponent : IRenderable
         lock (_childrenLock)
         {
             Children.Clear();
+
+            foreach (var child in Children)
+            {
+                RemoveChild(child);
+            }
         }
     }
 
-    public List<GraphicsComponent> GetChildrenSnapshot()
+    private GraphicsComponent[] GetChildrenSnapshot()
     {
-        lock (_childrenLock)
+        if (_childrenDirty)
         {
-            return Children.ToList();
+            lock (_childrenLock)
+            {
+                if (_childrenDirty)
+                {
+                    _cachedChildren =  Children.ToArray();
+                    _childrenDirty = false;    
+                }
+            }
         }
+        return _cachedChildren;
     }
     // ============================PARENTING-END====================
 
@@ -247,7 +307,7 @@ public abstract class GraphicsComponent : IRenderable
         
         RenderSelf(renderer, camera);
         
-        var childrenSnapshot = Children.ToList();
+        var childrenSnapshot = GetChildrenSnapshot();
         foreach (var child in childrenSnapshot)
         {
             child.Compute(renderer,  camera);
@@ -260,16 +320,16 @@ public abstract class GraphicsComponent : IRenderable
 
     public void Update(double deltaTime)
     {
-        foreach (var anim in Animations.ToList())
+        for (int i = Animations.Count - 1; i >= 0; i--)
         {
-            anim.OnUpdate(deltaTime);
-            if (anim.IsComplete)
+            Animations[i].OnUpdate(deltaTime);
+            if (Animations[i].IsComplete)
             {
-                Animations.Remove(anim);
+                Animations.Remove(Animations[i]);
             }
         }
         
-        var childrenSnapshot = Children.ToList();
+        var childrenSnapshot = GetChildrenSnapshot();
         foreach (var child in childrenSnapshot)
         {
             child.Update(deltaTime);

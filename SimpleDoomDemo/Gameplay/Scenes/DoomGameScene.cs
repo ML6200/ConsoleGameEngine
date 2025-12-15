@@ -267,7 +267,7 @@ public class DoomGameScene : IGameScene
 
     private void MovePlayerBy(int x, int y)
     {
-        Point2D targetPoint = Player.WorldPosition + new Point2D(x, y);
+        Point2D targetPoint = Player.RelativePosition + new Point2D(x, y);
         _movementSystem.MovePlayer(targetPoint);
     }
 

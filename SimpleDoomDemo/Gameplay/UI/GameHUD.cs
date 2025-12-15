@@ -27,9 +27,9 @@ public class GameHud : UiPanel
         Size = new Dimension2D(width, height);
     }
 
-    public void UpdateHUD(Point2D absolutePoint)
+    public void UpdateHUD(Point2D worldPosition)
     {
-        SetAbsolutePosition(absolutePoint);
+        WorldPosition = worldPosition;
     }
 
     protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
