@@ -29,4 +29,10 @@ The MIT License above does NOT apply to the following:
 - SimpleDoomDemo/Assets/ directory and all its contents
 
 These assets are proprietary content owned by the copyright holder and are NOT
-licensed under the MIT License. All rights reserved.
+licensed under the MIT License.
+
+LIMITED USE: The assets may only be used within the SimpleDoomDemo project
+for running, testing, or modifying this specific demo. The assets may NOT be
+redistributed separately, used in other projects, or included in derivative
+works outside of this project. See SimpleDoomDemo/Assets/ASSETS_LICENSE.txt
+for full details.

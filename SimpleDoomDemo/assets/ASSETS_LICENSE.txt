@@ -6,11 +6,20 @@ All Rights Reserved.
 The files in this directory (SimpleDoomDemo/Assets/) are proprietary content
 and are NOT covered by the MIT License that applies to the rest of this repository.
 
-No permission is granted to use, copy, modify, or distribute these assets
-without explicit written permission from the copyright holder.
+LIMITED USE PERMISSION:
+These assets may ONLY be used within the SimpleDoomDemo project as part of
+running, testing, or modifying this specific demo application.
+
+RESTRICTIONS:
+- These assets may NOT be redistributed separately from this project
+- These assets may NOT be used in other projects or applications
+- These assets may NOT be modified and redistributed
+- These assets may NOT be included in derivative works outside of this project
 
 This includes but is not limited to:
 - Audio files (music, sound effects)
+- Map files
 - Any other asset files in this directory
 
-For licensing inquiries, please contact the repository owner.
+For any use beyond running the SimpleDoomDemo project, please contact the
+repository owner for explicit written permission.
