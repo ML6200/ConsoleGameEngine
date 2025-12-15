@@ -324,6 +324,7 @@ public class MapEditorScene : IGameScene
         {
             SetState(!_isLegacy ? EditorState.Saved : EditorState.Changed);
 
+            _title.Text = Path.GetFileNameWithoutExtension(filename);
             _filePath = filename;
             ReloadMap();
             EnableEditor();
