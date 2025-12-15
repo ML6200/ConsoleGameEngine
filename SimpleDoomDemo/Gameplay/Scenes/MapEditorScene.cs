@@ -51,10 +51,9 @@ public class MapEditorScene : IGameScene
     private UiLabel _title;
     private Cursor _cursor;
     private StatusBar _statusBar;
-    
+
     private MapParser _mapParser;
 
-    private string _mapPath;
     private string _filePath = "";
     private bool _isLegacy = false;
 
@@ -79,7 +78,7 @@ public class MapEditorScene : IGameScene
                 stateName = "Unsaved";
                 break;
         }
-        
+
         _statusBar.SetStateLabel(stateName);
     }
 
@@ -139,13 +138,13 @@ public class MapEditorScene : IGameScene
         _engine.Input.OnKeyPressed += HandleUserInput;
         _engine.Camera.CameraSize = _mainPanel.Size;
         _engine.Camera.SetCameraPosition(new Point2D(0, 0));
-        
+
         _cursor = new Cursor(0, 0);
         _editorPanel.AddChild(_cursor);
         _mapParser = new MapParser();
-        
+
         _engine.Camera.FollowObject(_cursor);
-        
+
         _statusBar = new StatusBar(_cursor.RelativePosition)
         {
             RelativePosition = new Point2D(2, 0)
@@ -256,7 +255,7 @@ public class MapEditorScene : IGameScene
         if (SystemInfo.Os.IsWindows())
         {
             mask = e.Alt;
-        } 
+        }
 
         // Keybindings
         if (e.Control && mask)
@@ -292,7 +291,7 @@ public class MapEditorScene : IGameScene
             msgBox.OnComplete += option =>
             {
                 SetState(EditorState.ChangedHasPath);
-                ReloadMap(false);
+                ReloadEditor(false);
             };
         }
     }
@@ -305,8 +304,7 @@ public class MapEditorScene : IGameScene
 
     private void MarkStateUnsaved()
     {
-        SetState(string.IsNullOrEmpty(_filePath) ? 
-            EditorState.Changed : EditorState.ChangedHasPath);
+        SetState(string.IsNullOrEmpty(_filePath) ? EditorState.Changed : EditorState.ChangedHasPath);
     }
 
     private void PlaceCursorOnTop()
@@ -326,7 +324,7 @@ public class MapEditorScene : IGameScene
 
             _title.Text = Path.GetFileNameWithoutExtension(filename);
             _filePath = filename;
-            ReloadMap();
+            ReloadEditor();
             EnableEditor();
             _stateTrigger = StateTrigger.NoTrigger;
         }
@@ -334,24 +332,29 @@ public class MapEditorScene : IGameScene
         {
             if (e is PlayerNotFoundException or LevelExitNotFoundException)
             {
-                ReloadMap();
+                ReloadEditor();
                 EnableEditor();
                 _stateTrigger = StateTrigger.NoTrigger;
             }
             else
             {
-                UiMsgBox msgBox = new UiMsgBox(_engine.RootPanel(),
-                    _engine.RenderManager, _engine.Input,
-                    "Failed to load", e.Message);
-
-                msgBox.OnComplete += result =>
-                {
-                    _stateTrigger = StateTrigger.NoTrigger;
-                    EnableEditor();
-                    ReaddTools();
-                };
+                ErrorMessage(e);
             }
         }
+    }
+
+    private void ErrorMessage(Exception e)
+    {
+        UiMsgBox msgBox = new UiMsgBox(_engine.RootPanel(),
+            _engine.RenderManager, _engine.Input,
+            "Failed to load", e.Message);
+
+        msgBox.OnComplete += result =>
+        {
+            _stateTrigger = StateTrigger.NoTrigger;
+            EnableEditor();
+            ReaddTools();
+        };
     }
 
     private void EnableEditor(bool readdCursor = true)
@@ -369,67 +372,77 @@ public class MapEditorScene : IGameScene
         _engine.Input.OnKeyPressed -= HandleUserInput;
     }
 
-    private void ReloadMap(bool trustDcmf = true)
+    private void ReloadEditor(bool trustDcmf = true)
     {
-        // Show progress bar overlay
         UiProgressBarOverlay progressBar = new UiProgressBarOverlay(_mainPanel, "Loading Map...");
-        progressBar.SetProgress(0.1f);
-        progressBar.SetStatus("Clearing editor...");
-
-        // Allow render thread to display initial progress
-        System.Threading.Thread.Sleep(50);
-
-        _editorPanel.RemoveAllChildren();
-
-        if (trustDcmf)
+        try
         {
-            progressBar.SetProgress(0.2f);
-            progressBar.SetStatus("Parsing map file...");
+            progressBar.SetProgress(0.1f);
+            progressBar.SetStatus("Clearing editor...");
+
+            // Allow render thread to display initial progress
             System.Threading.Thread.Sleep(50);
 
-            _mapParser.ClearObjects();
-            if (_isLegacy) _mapParser.LoadFromLegacy(_filePath);
-            else _mapParser.LoadFromDcmfFile(_filePath, true);
-        }
-        //_mapParser.Optimize();
+            _editorPanel.RemoveAllChildren();
 
-        progressBar.SetProgress(0.4f);
-        progressBar.SetStatus("Loading entities...");
-        System.Threading.Thread.Sleep(50);
-
-        int totalItems = _mapParser.DcmList.Count;
-        int currentItem = 0;
-        int updateInterval = Math.Max(1, totalItems / 20); // Update progress bar 20 times max
-
-        foreach (var dcm in _mapParser.DcmList)
-        {
-            _editorPanel.AddChild(dcm.Value);
-            currentItem++;
-
-            // Update progress every updateInterval items to reduce overhead
-            if (currentItem % updateInterval == 0 || currentItem == totalItems)
+            if (trustDcmf)
             {
-                float progress = 0.4f + (0.5f * currentItem / totalItems);
-                progressBar.SetProgress(progress);
-                progressBar.SetStatus($"Loading entities... {currentItem}/{totalItems}");
+                progressBar.SetProgress(0.2f);
+                progressBar.SetStatus("Parsing map file...");
+                System.Threading.Thread.Sleep(50);
 
-                // Small delay to allow render thread to catch up
-                System.Threading.Thread.Sleep(20);
+                _mapParser.ClearObjects();
+                if (_isLegacy) _mapParser.LoadFromLegacy(_filePath);
+                else _mapParser.LoadFromDcmfFile(_filePath, true);
             }
+            //_mapParser.Optimize();
+
+            progressBar.SetProgress(0.4f);
+            progressBar.SetStatus("Loading entities...");
+            System.Threading.Thread.Sleep(50);
+
+            int totalItems = _mapParser.DcmList.Count;
+            int currentItem = 0;
+            int updateInterval = Math.Max(1, totalItems / 20); // Update progress bar 20 times max
+
+            foreach (var dcm in _mapParser.DcmList)
+            {
+                _editorPanel.AddChild(dcm.Value);
+                currentItem++;
+
+                // Update progress every updateInterval items to reduce overhead
+                if (currentItem % updateInterval == 0 || currentItem == totalItems)
+                {
+                    float progress = 0.4f + (0.5f * currentItem / totalItems);
+                    progressBar.SetProgress(progress);
+                    progressBar.SetStatus($"Loading entities... {currentItem}/{totalItems}");
+
+                    // Small delay to allow render thread to catch up
+                    System.Threading.Thread.Sleep(20);
+                }
+            }
+
+            progressBar.SetProgress(0.95f);
+            progressBar.SetStatus("Finalizing...");
+            System.Threading.Thread.Sleep(30);
+
+            progressBar.SetProgress(1.0f);
+            progressBar.SetStatus("Complete!");
+
+            // Give user a moment to see completion
+            System.Threading.Thread.Sleep(300);
+            progressBar.Close();
         }
-
-        progressBar.SetProgress(0.95f);
-        progressBar.SetStatus("Finalizing...");
-        System.Threading.Thread.Sleep(30);
-
-        progressBar.SetProgress(1.0f);
-        progressBar.SetStatus("Complete!");
-
-        // Give user a moment to see completion
-        System.Threading.Thread.Sleep(300);
-        progressBar.Close();
-        _isLegacy = false;
-        ReaddTools();
+        catch (Exception e)
+        {
+            progressBar.Close();
+            ErrorMessage(e);
+            _logger.Error(e.Message);
+        }
+        finally
+        {
+            _isLegacy = false;
+        }
     }
 
     private void ReaddTools()
@@ -440,44 +453,45 @@ public class MapEditorScene : IGameScene
 
     private void SaveMap(string filename)
     {
-            if (_state is EditorState.ChangedHasPath)
+        if (_state is EditorState.ChangedHasPath)
+        {
+            try
             {
-                try
-                {
-                    _mapParser.SaveMap(filename);
-                    MarkStateSaved(filename);
-                    ReloadMap();
-                }
-                catch (Exception e)
-                {
-                    SetState(EditorState.Changed);
-                    DisableEditor();
-                    UiMsgBox msgBox = new UiMsgBox(_mainPanel,
-                        _engine.RenderManager, _engine.Input,
-                        "Failed to load", e.Message);
-                    msgBox.OnComplete += result =>
-                    {
-                        ReloadMap(false);
-                        ReaddTools();
-                        EnableEditor();
-                    };
-                    return;
-                }
+                _mapParser.SaveMap(filename);
+                MarkStateSaved(filename);
+                ReloadEditor();
             }
-
-            if (_stateTrigger is StateTrigger.Exit
-                && _state is EditorState.Saved)
+            catch (Exception e)
             {
-                _engine.LoadScene(new MainMenuScene());
+                SetState(EditorState.Changed);
+                DisableEditor();
+                UiMsgBox msgBox = new UiMsgBox(_mainPanel,
+                    _engine.RenderManager, _engine.Input,
+                    "Failed to load", e.Message);
+                msgBox.OnComplete += result =>
+                {
+                    ReloadEditor(false);
+                    ReaddTools();
+                    EnableEditor();
+                };
                 return;
             }
+        }
 
-            if (_stateTrigger is StateTrigger.Open
-                && _state is EditorState.Saved)
-            {
-                HandleOpen();
-            }
-            EnableEditor(); 
+        if (_stateTrigger is StateTrigger.Exit
+            && _state is EditorState.Saved)
+        {
+            _engine.LoadScene(new MainMenuScene());
+            return;
+        }
+
+        if (_stateTrigger is StateTrigger.Open
+            && _state is EditorState.Saved)
+        {
+            HandleOpen();
+        }
+
+        EnableEditor();
     }
 
     /*
@@ -768,9 +782,9 @@ internal class MapToolbar : UiPanel
         string specific3 = SystemInfo.Os.IsWindows() ? "[Ctrl+Alt+X]Open default" : "[Ctrl+X]Open default";
         var controlsLabel = new UiLabel
         {
-            Text = "Controls: [Arrows]Move [Backspace]Delete " + 
-                   specific + " " + 
-                   specific2 + " " + 
+            Text = "Controls: [Arrows]Move [Backspace]Delete " +
+                   specific + " " +
+                   specific2 + " " +
                    specific3 + " [Esc]Exit",
             ForegroundColor = controlsColor,
             BackgroundColor = panelBg,
