@@ -413,7 +413,7 @@ public class MapEditorScene : IGameScene
                 // Update progress every updateInterval items to reduce overhead
                 if (currentItem % updateInterval == 0 || currentItem == totalItems)
                 {
-                    float progress = 0.4f + (0.5f * currentItem / totalItems);
+                    float progress = 0.9f * currentItem / totalItems;
                     progressBar.SetProgress(progress);
                     progressBar.SetStatus($"Loading entities... {currentItem}/{totalItems}");
 
@@ -442,6 +442,7 @@ public class MapEditorScene : IGameScene
         finally
         {
             _isLegacy = false;
+            ReaddTools();
         }
     }
 

@@ -34,7 +34,7 @@ public class ConsoleCamera
     
     private float _cameraX;
     private float _cameraY;
-    private const float CameraSmoothSpeed = 8.0f;
+    private const float CameraSmoothSpeed = 10.0f;
     
 
     public ConsoleCamera(ConsoleEngine engine, 
