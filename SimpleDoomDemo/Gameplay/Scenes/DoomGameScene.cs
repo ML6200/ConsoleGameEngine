@@ -309,25 +309,46 @@ public class DoomGameScene : IGameScene
         switch (soundEffectType)
         {
             case SoundEffectType.Door:
-                _audioEngine.Play(Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, "gs_door.mp3"), soundId);
+                _audioEngine.Play(
+                    Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, "gs_door.mp3"), 
+                    soundId, 
+                    cooldownMs: 500);  // 500ms cooldown
                 break;
             case SoundEffectType.BFG:
-                _audioEngine.Play(Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, "gs_bfg.mp3"), soundId);
+                _audioEngine.Play(
+                    Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, "gs_bfg.mp3"), 
+                    soundId, 
+                    cooldownMs: 300);
                 break;
             case SoundEffectType.ItemPickup:
-                _audioEngine.Play(Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, "gs_pickup.mp3"), soundId);
+                _audioEngine.Play(
+                    Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, "gs_pickup.mp3"), 
+                    soundId, 
+                    cooldownMs: 200);
                 break;
             case SoundEffectType.Pain:
-                _audioEngine.Play(Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, "gs_pain.mp3"), soundId);
+                _audioEngine.Play(
+                    Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, "gs_pain.mp3"), 
+                    soundId, 
+                    cooldownMs: 400);
                 break;
             case SoundEffectType.PlayerDeath:
-                _audioEngine.Play(Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, "gs_death.mp3"), soundId);
+                _audioEngine.Play(
+                    Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, "gs_death.mp3"), 
+                    soundId, 
+                    cooldownMs: 1000);
                 break;
             case SoundEffectType.Shotgun:
-                _audioEngine.Play(Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, "gs_shotgun.mp3"), soundId);
+                _audioEngine.Play(
+                    Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, "gs_shotgun.mp3"), 
+                    soundId, 
+                    cooldownMs: 50);
                 break;
             case SoundEffectType.LevelComplete:
-                _audioEngine.Play(Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, "mark_lor-war_of_sirens.mp3"), soundId);
+                _audioEngine.Play(
+                    Path.Combine(DoomGameManager.GameSettings.AudioAssetsPath, "mark_lor-war_of_sirens.mp3"), 
+                    soundId, 
+                    stopIfPlaying: true);
                 break;
         }
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,8 +19,9 @@ public class AudioEngine : IDisposable
     {
         public SoundPlayer Player;
         public StreamDataProvider Provider;
+        public long LastPlayedTicks;
     }
-
+    
     private readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly MiniAudioEngine _engine;
     private readonly AudioPlaybackDevice _playbackDevice;
@@ -34,7 +36,7 @@ public class AudioEngine : IDisposable
             _engine = new MiniAudioEngine();
             _playbackDevice = _engine.InitializePlaybackDevice(null, _format);
             _playbackDevice.Start();
-
+            
             _logger.Info("SoundFlow audio engine initialized");
         }
         catch (Exception e)
@@ -43,17 +45,36 @@ public class AudioEngine : IDisposable
             throw;
         }
     }
-
-    public async Task Play(string file, string id, bool stopIfPlaying = false, bool loop = false)
+    
+    // Asynchronous playback
+    public async Task<bool> PlayAsync(string file, string id, bool stopIfPlaying = false, bool loop = false, int cooldownMs = 0)
     {
         if (string.IsNullOrEmpty(file) || string.IsNullOrEmpty(id))
         {
             _logger.Warn("Play called with empty file or id");
-            return;
+            return false;
         }
 
         try
         {
+            // cooldown check
+            if (cooldownMs > 0)
+            {
+                lock (_lock)
+                {
+                    if (_tracks.TryGetValue(id, out var existingTrack))
+                    {
+                        var elapsedMs = (Stopwatch.GetTimestamp() - existingTrack.LastPlayedTicks) * 1000 / Stopwatch.Frequency;
+                        if (elapsedMs < cooldownMs)
+                        {
+                            _logger.Debug("Sound {0} on cooldown, {1}ms remaining", id, cooldownMs - elapsedMs);
+                            return false;  // Still on cooldown
+                        }
+                    }
+                }
+            }
+
+            // Stop existing if needed
             if (stopIfPlaying)
             {
                 lock (_lock)
@@ -63,7 +84,8 @@ public class AudioEngine : IDisposable
                 }
             }
 
-            var (stream, dataProvider, player) = await Task.Run(() =>
+            // Offload file I/O to background thread
+            var (_, dataProvider, player) = await Task.Run(() =>
             {
                 var fileStream = File.OpenRead(file);
                 var provider = new StreamDataProvider(_engine, fileStream);
@@ -74,22 +96,50 @@ public class AudioEngine : IDisposable
                 return (fileStream, provider, soundPlayer);
             });
 
+            // Add to mixer and start
             lock (_lock)
             {
                 _tracks[id] = new AudioTrack
                 {
                     Player = player,
-                    Provider = dataProvider
+                    Provider = dataProvider,
+                    LastPlayedTicks = Stopwatch.GetTimestamp()
                 };
                 
                 _playbackDevice.MasterMixer.AddComponent(player);
                 player.Play();
+                
+                _logger.Debug("Playing audio: {0} with id: {1}, loop: {2}", file, id, loop);
             }
+            
+            return true;
         }
         catch (Exception e)
         {
             _logger.Error(e, "Error occurred: {0}", e.Message);
+            return false;
         }
+    }
+    
+    // Synchronous playback
+    public void Play(string file, string id, bool stopIfPlaying = false, bool loop = false, int cooldownMs = 0)
+    {
+        if (cooldownMs > 0)
+        {
+            lock (_lock)
+            {
+                if (_tracks.TryGetValue(id, out var existingTrack))
+                {
+                    var elapsedMs = (Stopwatch.GetTimestamp() - existingTrack.LastPlayedTicks) * 1000 / Stopwatch.Frequency;
+                    if (elapsedMs < cooldownMs)
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+        
+        _ = PlayAsync(file, id, stopIfPlaying, loop, 0); 
     }
 
     public void Stop(string id)
@@ -102,11 +152,11 @@ public class AudioEngine : IDisposable
                 {
                     track.Player.Stop();
                     _playbackDevice.MasterMixer.RemoveComponent(track.Player);
-
+                    
                     track.Player.Dispose();
                     track.Provider.Dispose();
                     _tracks.Remove(id);
-
+                    
                     _logger.Debug("Stopped audio: {0}", id);
                 }
             }
@@ -128,7 +178,6 @@ public class AudioEngine : IDisposable
                 track.Player.Dispose();
                 track.Provider.Dispose();
             }
-
             _tracks.Clear();
             _logger.Debug("Stopped all audio");
         }
