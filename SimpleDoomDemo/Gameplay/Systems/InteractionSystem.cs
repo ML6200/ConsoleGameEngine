@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using SimpleDoomDemo.Gameplay.Actors.Demons;
@@ -87,7 +88,7 @@ public class InteractionSystem : IGameSystem
                     break;
 
                 case ItemType.ToxicWaste:
-                    _game.Player.TakeDamage(1);
+                    _game.Player.TakeDamage(2);
                     _game.PlaySoundEffect(SoundEffectType.Pain);
 
                     var toxicAnim = AnimationTween.Blink(_game.Player, 0.5, false);
