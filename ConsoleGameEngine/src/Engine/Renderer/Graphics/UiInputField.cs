@@ -130,7 +130,7 @@ public class UiInputField : GraphicsComponent, IFocusable
         }
         
         renderer.DrawText(textX, textY, Text, bgColor, fgColor);
-        renderer.SetCell(textX + CursorPosition, textY, 
-            new ('_', bgColor, fgColor));
+        if (IsFocused)
+            renderer.SetCell(textX + CursorPosition, textY, new ('█', bgColor, fgColor));
     }
 }
