@@ -19,7 +19,7 @@ A modern 2D game engine for rendering games directly in the terminal using ANSI 
 - Terminal with ANSI color support (most modern terminals)
 
 ## Dependencies
-- NetCoreAudio package (NuGet)
+- SoundFlow (NuGet)
 - NLog package (NuGet)
 
 ## Getting Started
