@@ -10,7 +10,7 @@ A modern 2D game engine for rendering games directly in the terminal using ANSI 
 - **Scene Management**: Clean lifecycle management with `Initialize`, `OnEnter`, `OnUpdate`, and `OnExit` callbacks
 - **Optimized Rendering**: Utilized stdout with byte buffer for faster access and culling for optimized rendering
 - **Input Handling**: Event-based input system for responsive controls
-- **Audio Support**: Integrated audio via NAudio library for Windows and afplay for Mac
+- **Audio Support**: Integrated SoundFlow library for cross-platform audio
 - **Camera System**: Viewport and camera support (in development)
 
 ## Requirements
