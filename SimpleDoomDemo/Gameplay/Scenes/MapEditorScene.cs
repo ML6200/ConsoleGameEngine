@@ -599,14 +599,13 @@ public class MapEditorScene : IGameScene
     }
 }
 
-internal class Cursor : GraphicsComponent
+internal sealed class Cursor : GraphicsComponent
 {
     public Cursor(int x, int y)
     {
         RelativePosition = new Point2D(x, y);
+        Visible = true;
     }
-
-    private readonly char _glyph = '⊡';
 
     protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
@@ -614,7 +613,7 @@ internal class Cursor : GraphicsComponent
         if (screenPos == Point2D.OutsideScreenPoint) return; // Off-screen culling
 
         renderer.SetCell(screenPos.X, screenPos.Y,
-            new Cell(_glyph, ConsoleColor.Black, ConsoleColor.Green));
+            new Cell('⊡', ConsoleColor.Black, ConsoleColor.Green));
     }
 }
 
