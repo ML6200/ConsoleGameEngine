@@ -22,17 +22,16 @@ SOFTWARE.
 
 ---
 
-EXCLUSIONS:
+ASSET EXCLUSIONS:
 
 The MIT License above does NOT apply to the following:
 
-- SimpleDoomDemo/assets/ directory and all its contents
+- assets/ directory and all its contents (sprites, sounds, music, textures, etc.)
 
-These assets are proprietary content owned by the copyright holder and are NOT
-licensed under the MIT License.
+These assets are proprietary and NOT licensed under the MIT License.
 
-LIMITED USE: The assets may only be used within the SimpleDoomDemo project
-for running, testing, or modifying this specific demo. The assets may NOT be
-redistributed separately, used in other projects, or included in derivative
-works outside of this project. See SimpleDoomDemo/Assets/ASSETS_LICENSE.txt
-for full details.
+ASSET USAGE TERMS: The assets may only be used for running, testing, 
+modifying, or creating derivative works of the SimpleDoomDemo project. 
+The assets may NOT be extracted and used in unrelated projects or 
+redistributed separately from this codebase. See assets/ASSETS_LICENSE.txt 
+for complete terms.
