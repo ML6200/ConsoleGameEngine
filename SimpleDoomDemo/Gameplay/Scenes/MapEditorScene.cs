@@ -72,8 +72,10 @@ public class MapEditorScene : IGameScene
                 stateName = "Saved";
                 break;
             case EditorState.Changed:
-            case EditorState.ChangedHasPath:
                 stateName = "Changed";
+                break;
+            case EditorState.ChangedHasPath:
+                stateName = "Unsaved";
                 break;
         }
         
