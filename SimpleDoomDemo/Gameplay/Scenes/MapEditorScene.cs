@@ -357,6 +357,9 @@ public class MapEditorScene : IGameScene
     private void EnableEditor(bool readdCursor = true)
     {
         if (readdCursor) _editorPanel.AddChild(_cursor);
+
+        // Unsubscribe first to prevent multiple subscriptions
+        _engine.Input.OnKeyPressed -= HandleUserInput;
         _engine.Input.OnKeyPressed += HandleUserInput;
     }
 
@@ -419,15 +422,14 @@ public class MapEditorScene : IGameScene
         progressBar.SetStatus("Finalizing...");
         System.Threading.Thread.Sleep(30);
 
-        _isLegacy = false;
-        ReaddTools();
-
         progressBar.SetProgress(1.0f);
         progressBar.SetStatus("Complete!");
 
         // Give user a moment to see completion
         System.Threading.Thread.Sleep(300);
         progressBar.Close();
+        _isLegacy = false;
+        ReaddTools();
     }
 
     private void ReaddTools()
