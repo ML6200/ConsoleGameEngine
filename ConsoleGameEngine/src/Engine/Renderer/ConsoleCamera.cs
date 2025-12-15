@@ -94,13 +94,13 @@ public class ConsoleCamera
     {
         _followedComponent = followedComponent;
         
-        // Initialize camera position centered on player 
+        // Initialize camera position centered on player
         // this prevents lerping from wrong position on scene start
         int initialCameraX = _followedComponent.WorldPosition.X - CameraSize.Width / 2;
-        int initialCameraY = _followedComponent.WorldPosition.Y - CameraSize.Width / 2;
+        int initialCameraY = _followedComponent.WorldPosition.Y - CameraSize.Height / 2;
         _cameraX = initialCameraX;
         _cameraY = initialCameraY;
-       SetCameraPosition(new Point2D(initialCameraX, initialCameraY));
+        SetCameraPosition(new Point2D(initialCameraX, initialCameraY));
     }
     
     public void Follow(double deltaTime)
