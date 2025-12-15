@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ConsoleGameEngine.Engine;
@@ -362,23 +363,66 @@ public class MapEditorScene : IGameScene
 
     private void ReloadMap(bool trustDcmf = true)
     {
+        // Show progress bar overlay
+        UiProgressBarOverlay progressBar = new UiProgressBarOverlay(_mainPanel, "Loading Map...");
+        progressBar.SetProgress(0.1f);
+        progressBar.SetStatus("Clearing editor...");
+
+        // Allow render thread to display initial progress
+        System.Threading.Thread.Sleep(50);
+
         _editorPanel.RemoveAllChildren();
 
         if (trustDcmf)
         {
+            progressBar.SetProgress(0.2f);
+            progressBar.SetStatus("Parsing map file...");
+            System.Threading.Thread.Sleep(50);
+
             _mapParser.ClearObjects();
             if (_isLegacy) _mapParser.LoadFromLegacy(_filePath);
             else _mapParser.LoadFromDcmfFile(_filePath, true);
         }
         //_mapParser.Optimize();
 
+        progressBar.SetProgress(0.4f);
+        progressBar.SetStatus("Loading entities...");
+        System.Threading.Thread.Sleep(50);
+
+        int totalItems = _mapParser.DcmList.Count;
+        int currentItem = 0;
+        int updateInterval = Math.Max(1, totalItems / 20); // Update progress bar 20 times max
+
         foreach (var dcm in _mapParser.DcmList)
         {
             _editorPanel.AddChild(dcm.Value);
+            currentItem++;
+
+            // Update progress every updateInterval items to reduce overhead
+            if (currentItem % updateInterval == 0 || currentItem == totalItems)
+            {
+                float progress = 0.4f + (0.5f * currentItem / totalItems);
+                progressBar.SetProgress(progress);
+                progressBar.SetStatus($"Loading entities... {currentItem}/{totalItems}");
+
+                // Small delay to allow render thread to catch up
+                System.Threading.Thread.Sleep(30);
+            }
         }
+
+        progressBar.SetProgress(0.95f);
+        progressBar.SetStatus("Finalizing...");
+        System.Threading.Thread.Sleep(50);
 
         _isLegacy = false;
         ReaddTools();
+
+        progressBar.SetProgress(1.0f);
+        progressBar.SetStatus("Complete!");
+
+        // Give user a moment to see completion
+        System.Threading.Thread.Sleep(300);
+        progressBar.Close();
     }
 
     private void ReaddTools()
