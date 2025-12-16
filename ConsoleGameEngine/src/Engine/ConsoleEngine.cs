@@ -6,6 +6,7 @@ using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
+using ConsoleGameEngine.Engine.System;
 using NLog;
 
 namespace ConsoleGameEngine.Engine;
@@ -14,9 +15,6 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
 {
     private Logger _logger = LogManager.GetCurrentClassLogger();
     private InputManager _inputManager;
-    private readonly ConsoleRenderManager _renderManager;
-    private readonly ConsoleRenderer2D _renderer;
-    private readonly RootComponent _rootComponent;
     
     private Thread? _updateThread;
     private CancellationTokenSource? _cancellationTokenSource;
@@ -25,12 +23,17 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     
     private IGameScene? _currentScene;
     private IGameScene? _pendingScene;
-    private readonly object _sceneLock = new object();
     
     private int _targetUpdatesPerSecond = 60; // A jatek logikahoz
     private int _targetRenderFps = 60; // rendereléshez
     
-    private ManualResetEvent _exitEvent = new ManualResetEvent(false);
+    private Monitoring _monitoring;
+    
+    private readonly ConsoleRenderManager _renderManager;
+    private readonly ConsoleRenderer2D _renderer;
+    private readonly RootComponent _rootComponent;
+    private readonly Lock _sceneLock = new();
+    private readonly ManualResetEvent _exitEvent = new(false);
 
     public int TargetUpdatesPerSecond
     {
@@ -99,6 +102,8 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         _renderManager.SubsribeFocusEventsToInput(_inputManager);
         _isInitialized = true;
         _logger.Info("Engine initialized");
+        
+        _monitoring = new(_targetUpdatesPerSecond);
     }
 
     public void OnStart()
@@ -138,6 +143,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     private readonly Stopwatch _updateDeltaTimer = Stopwatch.StartNew();
     public void OnUpdate()
     {
+        _monitoring.StartTimer();
         double deltaTime = _updateDeltaTimer.Elapsed.TotalSeconds;
         _updateDeltaTimer.Restart();
         
@@ -155,6 +161,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         // update all components
         RootPanel().Update(deltaTime);
         _currentScene?.OnUpdate(deltaTime);
+        _monitoring.StopTimer();
     }
     
     public void LoadScene(IGameScene? scene)
