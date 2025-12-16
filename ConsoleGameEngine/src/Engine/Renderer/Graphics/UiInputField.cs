@@ -18,7 +18,7 @@ public class UiInputField : GraphicsComponent, IFocusable
         set
         {
             OnTextChanged?.Invoke(this, EventArgs.Empty);
-            _text = value.TrimEnd();
+            _text = value;
             UpdateSize(); //for growth later
         }
     }
