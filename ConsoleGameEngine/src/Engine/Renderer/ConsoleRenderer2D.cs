@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 
@@ -114,9 +115,10 @@ public class ConsoleRenderer2D : IDisposable
         }
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsValidCoordinate(int x, int y)
     {
-        return x >= 0 && x < _screenWidth && y >= 0 && y < _screenHeight;
+        return (uint) x < _screenWidth && (uint) y < _screenHeight;
     }
 
     public void FlushBuffer()
