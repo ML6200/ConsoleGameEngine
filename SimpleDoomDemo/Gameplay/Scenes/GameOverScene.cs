@@ -203,12 +203,9 @@ public class GameOverPanel : UiPanel
         mainPanel.AddChild(_bottomSeparatorLabel);
         mainPanel.AddChild(_promptLabel);
         AddChild(mainPanel);
-
-        if (levelComplete)
-        {
-            mainPanel.RelativePosition = new Point2D(0, -Console.WindowHeight);
-            mainPanel.AddAnimation(AnimationTween.MoveTo(mainPanel, new Point2D(0, 0), 0.6));
-        }
+        
+        mainPanel.RelativePosition = new Point2D(0, -Console.WindowHeight);
+        mainPanel.AddAnimation(AnimationTween.MoveTo(mainPanel, new Point2D(0, 0), 0.5));
         BackgroundColor = bgColor;
         ForegroundColor = fgColor;
     }
