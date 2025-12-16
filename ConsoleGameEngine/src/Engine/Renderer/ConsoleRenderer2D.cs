@@ -147,9 +147,7 @@ public class ConsoleRenderer2D : IDisposable
         }
     }
     
-#if PERFORMANCE_MODE
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+    [OptionalInline(MethodImplOptions.AggressiveInlining)]
     public void SetCell(int x, int y, Cell cell)
     {
         if (_isResizing)  return;

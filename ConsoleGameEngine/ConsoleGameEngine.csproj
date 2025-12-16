@@ -22,8 +22,10 @@
         </Content>
     </ItemGroup>
 
-    <PropertyGroup>
-        <DefineConstants>PERFORMANCE_MODE</DefineConstants>
+    <!-- dotnet build -c Performance-->
+    <PropertyGroup Condition="'$(Configuration)' == 'Performance'">
+        <DefineConstants>$(DefineConstants);PERFORMANCE_MODE</DefineConstants>
+        <Optimize>true</Optimize>
     </PropertyGroup>
 
 </Project>
