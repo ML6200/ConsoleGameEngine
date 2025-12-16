@@ -22,4 +22,8 @@
         </Content>
     </ItemGroup>
 
+    <PropertyGroup>
+        <DefineConstants>PERFORMANCE_MODE</DefineConstants>
+    </PropertyGroup>
+
 </Project>
