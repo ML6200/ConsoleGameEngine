@@ -93,12 +93,11 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     
     private void AddStats()
     {
-        _statsPanel = new StatsPanel(this, "Press X to close")
+        _statsPanel = new StatsPanel(this, "Press-X-to-hide")
         {
             RelativePosition = new Point2D(0, 0)
         };
         RootPanel().AddChild(_statsPanel);
-        
     }
 
 
@@ -208,6 +207,9 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
                 _currentScene = _pendingScene;
                 _pendingScene = null;
                 _currentScene.OnEnter();
+                
+                RootPanel().RemoveChild(_statsPanel);
+                RootPanel().AddChild(_statsPanel);
             }
         }
         Camera.Follow(deltaTime);
