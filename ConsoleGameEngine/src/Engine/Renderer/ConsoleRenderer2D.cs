@@ -35,6 +35,7 @@ public class ConsoleRenderer2D : IDisposable
     private int _screenWidth;
     private int _screenHeight;
     private Cell[,] _renderBuffer;
+    private bool[,] _dirtyMarks;
     private bool _isResizing;
     private Stream _stdOut;
     
@@ -70,6 +71,7 @@ public class ConsoleRenderer2D : IDisposable
         _screenWidth = width;
         _screenHeight = height;
         _renderBuffer = new Cell[_screenWidth, _screenHeight];
+        _dirtyMarks = new bool[_screenWidth, _screenHeight];
         _writeBuffer= new byte[BytesPerCell * width * height];
         _isResizing = false;
     }
@@ -94,8 +96,7 @@ public class ConsoleRenderer2D : IDisposable
         Console.Clear();
         
         _stdOut = Console.OpenStandardOutput();
-        _renderBuffer = new Cell[_screenWidth, _screenHeight];
-        _writeBuffer= new byte[BytesPerCell * _screenWidth * _screenHeight];
+        SetDimension(_screenWidth, _screenHeight);
 
         FlushBuffer();
     }
@@ -126,6 +127,7 @@ public class ConsoleRenderer2D : IDisposable
         {
             for (int j = 0; j < _screenWidth; j++)
             {
+                _dirtyMarks[j, i] = true;
                 _renderBuffer[j, i] = Cell.Empty;
             }
         }
@@ -138,6 +140,7 @@ public class ConsoleRenderer2D : IDisposable
         if (IsValidCoordinate(x, y) 
             && !_renderBuffer[x, y].Equals(cell))
         {
+            _dirtyMarks[x, y] = true;
             _renderBuffer[x, y] = cell;
         }
     }
@@ -292,19 +295,23 @@ public class ConsoleRenderer2D : IDisposable
             for (int x = 0; x < _screenWidth; x++)
             {
                 Cell cell = _renderBuffer[x, y];
-                pos = WriteEscPosToBuffer(_writeBuffer, pos, x, y);
-
-                if (cell.ForegroundColor != _lastFg || cell.BackgroundColor != _lastBg)
+                if (_dirtyMarks[x, y])
                 {
-                    pos = WriteColorToBuffer(_writeBuffer, pos, 
-                        cell.ForegroundColor, 
-                        cell.BackgroundColor);
-                    
-                    _lastFg = cell.ForegroundColor;
-                    _lastBg = cell.BackgroundColor;
+                    pos = WriteEscPosToBuffer(_writeBuffer, pos, x, y);
+
+                    if (cell.ForegroundColor != _lastFg || cell.BackgroundColor != _lastBg)
+                    {
+                        pos = WriteColorToBuffer(_writeBuffer, pos,
+                            cell.ForegroundColor,
+                            cell.BackgroundColor);
+
+                        _lastFg = cell.ForegroundColor;
+                        _lastBg = cell.BackgroundColor;
+                    }
+
+                    pos = WriteCharToBuffer(_writeBuffer, pos, cell.Character);
+                    _dirtyMarks[x, y] = false;
                 }
-                
-                pos = WriteCharToBuffer(_writeBuffer, pos, cell.Character);
             }
         }
         

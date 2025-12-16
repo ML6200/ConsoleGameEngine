@@ -123,7 +123,7 @@ public class ConsoleRenderManager : IDisposable
             }
             else
             {
-                _renderer.FlushBuffer();
+                //_renderer.FlushBuffer();
                 _rootComponent.Compute(_renderer, _camera);
                 _renderer.Render();
             }

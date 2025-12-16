@@ -204,6 +204,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
             if (_pendingScene != null)
             {
                 _currentScene?.OnExit();
+                _renderer.FlushBuffer();
                 _currentScene = _pendingScene;
                 _pendingScene = null;
                 _currentScene.OnEnter();
