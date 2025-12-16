@@ -131,7 +131,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
 
     private void HandleInput(object? sender, KeyEventArgs e)
     {
-        if (e.Key == ConsoleKey.X)
+        if (e.Key == ConsoleKey.X && e is { Control: false, Alt: false, Shift: false })
         {
             _statsPanel.Visible = !_statsPanel.Visible;
         }
