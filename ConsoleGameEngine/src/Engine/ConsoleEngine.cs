@@ -299,7 +299,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         _isRunning = false;
         _cancellationTokenSource?.Cancel();
 
-        // timeout for canceled theread
+        // timeout for canceled thread
         if (_updateThread != null && _updateThread.IsAlive)
         {
             _updateThread.Join(1000);
