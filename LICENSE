@@ -19,19 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-ASSET EXCLUSIONS:
-
-The MIT License above does NOT apply to the following:
-
-- assets/ directory and all its contents (sprites, sounds, music, textures, etc.)
-
-These assets are proprietary and NOT licensed under the MIT License.
-
-ASSET USAGE TERMS: The assets may only be used for running, testing, 
-modifying, or creating derivative works of the SimpleDoomDemo project. 
-The assets may NOT be extracted and used in unrelated projects or 
-redistributed separately from this codebase. See assets/ASSETS_LICENSE.txt 
-for complete terms.

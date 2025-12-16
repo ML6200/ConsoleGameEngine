@@ -135,3 +135,20 @@ This project was originally inspired by a university assignment and
 was later expanded into a standalone project for learning and experimentation.
 
 Claude Sonnet 4.5 was partially used for brainstorming and acceleating develoment.
+
+## License
+
+### Code License (MIT)
+
+The source code in this project is licensed under the MIT License.
+
+**EXCEPTION:** The following are NOT covered by the MIT License:
+- `assets/` directory and all its contents
+
+### Assets License
+
+All assets (ex. music, sounds) in the `assets/` directory are proprietary
+and NOT licensed for redistribution.
+
+See `SimpleDoomDemo/assets/ASSETS_LICENSE.txt` for full details.
+```

@@ -11,15 +11,23 @@ These assets may ONLY be used within the SimpleDoomDemo project as part of
 running, testing, or modifying this specific demo application.
 
 RESTRICTIONS:
-- These assets may NOT be redistributed separately from this project
-- These assets may NOT be used in other projects or applications
+- These assets may NOT be extracted and redistributed as standalone files
+- These assets may NOT be used in other projects or applications  
 - These assets may NOT be modified and redistributed
-- These assets may NOT be included in derivative works outside of this project
+- These assets may NOT be included in derivative works
+- Forking this repository and removing this assets/ directory is permitted
 
 This includes but is not limited to:
 - Audio files (music, sound effects)
-- Map files
+- Map files  
 - Any other asset files in this directory
+
+PERMITTED USE:
+- Running and testing the SimpleDoomDemo project as-is
+- Forking the repository and removing the assets/ directory to use only the MIT-licensed code
+- Replacing these assets with your own for your personal fork
+
+For any other use, please contact the repository owner for explicit written permission.
 
 For any use beyond running the SimpleDoomDemo project, please contact the
 repository owner for explicit written permission.
