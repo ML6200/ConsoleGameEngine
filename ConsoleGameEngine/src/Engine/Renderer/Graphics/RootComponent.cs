@@ -26,6 +26,13 @@ public sealed class RootComponent : IRenderable
         _graphicsComponent.Compute(renderer, camera);
     }
 
+    public void Update(double deltaTime)
+    {
+        if (!Visible) return;
+        
+        _graphicsComponent.Update(deltaTime);
+    }
+
     public RootComponent(GraphicsComponent graphicsComponent)
     {
         _graphicsComponent = graphicsComponent;

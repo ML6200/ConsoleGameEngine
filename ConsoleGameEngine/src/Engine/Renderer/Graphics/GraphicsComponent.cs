@@ -330,11 +330,17 @@ public abstract class GraphicsComponent : IRenderable
             }
         }
         
+        UpdateSelf();
+        
         var childrenSnapshot = GetChildrenSnapshot();
         foreach (var child in childrenSnapshot)
         {
             child.Update(deltaTime);
         }
+    }
+    
+    protected virtual void UpdateSelf()
+    {
     }
     // ============================RENDERING-END========================
 }
