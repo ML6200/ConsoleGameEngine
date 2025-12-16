@@ -77,7 +77,7 @@ public abstract class GraphicsComponent : IRenderable
     public ConsoleColor ForegroundColor { get; set; }
     public ConsoleColor BorderColor { get; set; }
 
-    private List<Animation> Animations { get; } = new();
+    public List<Animation> Animations { get; } = new();
     public List<GraphicsComponent> Children { get; } = new();
     private IRenderable? Parent { get; set; }
 

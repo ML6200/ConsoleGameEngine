@@ -3,6 +3,7 @@ using System.Drawing;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer;
+using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 using SimpleDoomEngine;
@@ -90,7 +91,7 @@ public class GameOverScene : IGameScene
 }
 
 /// <summary>
-/// Custom panel for rendering game over screen.
+/// Custom panel for rendering game over screen using UI component building blocks.
 /// </summary>
 public class GameOverPanel : UiPanel
 {
@@ -99,6 +100,12 @@ public class GameOverPanel : UiPanel
     private readonly bool _levelComplete;
     private readonly bool _interrupted;
 
+    private UiLabel _titleLabel;
+    private UiLabel _separatorLabel;
+    private UiLabel _statsLabel;
+    private UiLabel _bottomSeparatorLabel;
+    private UiLabel _promptLabel;
+
     public GameOverPanel(Player player, bool playerDied, bool levelComplete, bool interrupted)
     {
         _player = player;
@@ -106,56 +113,103 @@ public class GameOverPanel : UiPanel
         _levelComplete = levelComplete;
         _interrupted = interrupted;
 
-        BackgroundColor = ConsoleColor.Red;
-        ForegroundColor = ConsoleColor.White;
-        
         HasBorder = false;
-    }
 
-    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
-    {
-        // Full screen UI overlay - don't use camera transformation
-        int centerX = ScreenSize.Width / 2;
-        int centerY = ScreenSize.Height / 2;
+        // Determine title text and colors based on game over reason
+        string titleText;
+        ConsoleColor bgColor;
+        ConsoleColor fgColor = ConsoleColor.White;
 
-        ConsoleColor color;
-
-        // Fill entire screen based on game over reason
         if (_playerDied)
         {
-            color = ConsoleColor.DarkRed;
-            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color);
-            renderer.DrawText(centerX - 5, centerY - 5, "YOU DIED!", color);
+            titleText = "YOU DIED!";
+            bgColor = ConsoleColor.DarkRed;
         }
         else if (_interrupted)
         {
-            color = ConsoleColor.DarkBlue;
-            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color);
-            renderer.DrawText(centerX - 3, centerY - 5, "EXITED", color, ConsoleColor.Yellow);
+            titleText = "EXITED";
+            bgColor = ConsoleColor.DarkBlue;
+            fgColor = ConsoleColor.Yellow;
         }
         else if (_levelComplete)
         {
-            color = ConsoleColor.DarkGreen;
-            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color);
-            renderer.DrawText(centerX - 8, centerY - 5, "LEVEL COMPLETE!", color);
+            titleText = "LEVEL COMPLETE!";
+            bgColor = ConsoleColor.DarkGreen;
         }
         else
         {
-            color = ConsoleColor.Red;
-            renderer.FillRect(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, ' ', color);
+            titleText = "";
+            bgColor = ConsoleColor.Red;
         }
 
-        // Draw separator
-        renderer.DrawText(centerX - 10, centerY - 2, "═══════════════════", color);
+        // Create UI components
+        int centerX = Console.WindowWidth / 2;
+        int centerY = Console.WindowHeight / 2;
 
-        // Draw stats
-        renderer.DrawText(centerX - 10, centerY, $"Final XP: {_player.CombatPoints}", color);
-        renderer.DrawText(centerX - 10, centerY + 1, $"Demons Killed: {_player.CombatPoints / 2}", color);
+        // Title label
+        _titleLabel = new UiLabel(titleText)
+        {
+            RelativePosition = new Point2D(centerX - titleText.Length / 2, centerY - 5),
+            BackgroundColor = bgColor,
+            ForegroundColor = fgColor
+        };
 
-        // Draw bottom separator
-        renderer.DrawText(centerX - 10, centerY + 3, "═══════════════════", color);
+        // Top separator
+        _separatorLabel = new UiLabel("═══════════════════")
+        {
+            RelativePosition = new Point2D(centerX - 10, centerY - 2),
+            BackgroundColor = bgColor,
+            ForegroundColor = fgColor
+        };
 
-        // Draw exit prompt
-        renderer.DrawText(centerX - 12, centerY + 5, "Press any key to exit...", color);
+        // Stats label
+        string statsText = $"Final XP: {_player.CombatPoints}\nDemons Killed: {_player.CombatPoints / 2}";
+        _statsLabel = new UiLabel(statsText)
+        {
+            RelativePosition = new Point2D(centerX - 10, centerY),
+            BackgroundColor = bgColor,
+            ForegroundColor = fgColor
+        };
+
+        // Bottom separator
+        _bottomSeparatorLabel = new UiLabel("═══════════════════")
+        {
+            RelativePosition = new Point2D(centerX - 10, centerY + 3),
+            BackgroundColor = bgColor,
+            ForegroundColor = fgColor
+        };
+
+        // Exit prompt
+        _promptLabel = new UiLabel("Press any key to exit...")
+        {
+            RelativePosition = new Point2D(centerX - 12, centerY + 5),
+            BackgroundColor = bgColor,
+            ForegroundColor = fgColor
+        };
+        
+        UiPanel mainPanel = new UiPanel()
+        {
+            RelativePosition = new Point2D(0, 0),
+            Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight),
+            BackgroundColor = bgColor,
+            ForegroundColor = fgColor,
+            HasBorder = false
+        };
+
+        // Add all children
+        mainPanel.AddChild(_titleLabel);
+        mainPanel.AddChild(_separatorLabel);
+        mainPanel.AddChild(_statsLabel);
+        mainPanel.AddChild(_bottomSeparatorLabel);
+        mainPanel.AddChild(_promptLabel);
+        AddChild(mainPanel);
+
+        if (levelComplete)
+        {
+            mainPanel.RelativePosition = new Point2D(0, -Console.WindowHeight);
+            mainPanel.AddAnimation(AnimationTween.MoveTo(mainPanel, new Point2D(0, 0), 0.6));
+        }
+        BackgroundColor = bgColor;
+        ForegroundColor = fgColor;
     }
 }
