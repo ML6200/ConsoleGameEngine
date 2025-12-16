@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using ConsoleGameEngine.Engine;
+using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 using NLog;
@@ -100,6 +101,9 @@ public class MainMenuScene : IGameScene
         if (DoomGameManager.IsTipShown) EnableButtons();
 
         _engine.RenderManager.OnWindowResized += WindowResized;
+        
+        _menuPanel.RelativePosition = new Point2D(0, -_engine.RootPanel().ScreenSize.Height);
+        _menuPanel.AddAnimation(AnimationTween.MoveTo(_menuPanel, new Point2D(0, 0), 0.6));
     }
 
     private void EnableButtons()
