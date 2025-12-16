@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -28,17 +29,23 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     private int _targetRenderFps = 60; // rendereléshez
     
     private Monitoring _monitoring;
+    private StatsPanel _statsPanel;
     
     private readonly ConsoleRenderManager _renderManager;
     private readonly ConsoleRenderer2D _renderer;
     private readonly RootComponent _rootComponent;
     private readonly Lock _sceneLock = new();
     private readonly ManualResetEvent _exitEvent = new(false);
-
+    
+    private readonly Queue<double> _updateSamples = new();
+    private readonly Queue<double> _renderSamples = new();
+    
+    public Monitoring Monitoring => _monitoring;
+        
     public int TargetUpdatesPerSecond
     {
         get => _targetUpdatesPerSecond;
-        set { _targetUpdatesPerSecond = value != 0 ? value : 60; }
+        set => _targetUpdatesPerSecond = value != 0 ? value : 60;
     }
 
     public int TargetRenderFps
@@ -60,6 +67,39 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     public ConsoleCamera Camera {get; set;}
     
     public double CurrentUpdateRate { get; private set; }
+    
+
+    public double GetAverageUpdateRate()
+    {
+        double current = CurrentUpdateRate;
+        _updateSamples.Enqueue(current);
+
+        if (_updateSamples.Count > _targetUpdatesPerSecond)
+            _updateSamples.Dequeue();
+        
+        return current;
+    }
+    
+    public double GetAverageFrameRate()
+    {
+        double current = _renderManager.CurrentFps;
+        _renderSamples.Enqueue(current);
+
+        if (_renderSamples.Count > _targetRenderFps)
+            _renderSamples.Dequeue();
+        
+        return current;
+    }
+    
+    private void AddStats()
+    {
+        _statsPanel = new StatsPanel(this, "Press X to close")
+        {
+            RelativePosition = new Point2D(0, 0)
+        };
+        RootPanel().AddChild(_statsPanel);
+        
+    }
 
 
     public ConsoleEngine(int? windowWidth = null, int? windowHeight = null)
@@ -89,7 +129,15 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
 
         _renderManager = new ConsoleRenderManager(_renderer, Camera, _rootComponent, _targetUpdatesPerSecond);
     }
-    
+
+    private void HandleInput(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == ConsoleKey.X)
+        {
+            _statsPanel.Visible = !_statsPanel.Visible;
+        }
+    }
+
     public void Initialize()
     {
         if (_isInitialized)
@@ -104,6 +152,10 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         _logger.Info("Engine initialized");
         
         _monitoring = new(_targetUpdatesPerSecond);
+        
+        AddStats();
+        
+        _inputManager.OnKeyPressed += HandleInput;
     }
 
     public void OnStart()
@@ -159,7 +211,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         }
         Camera.Follow(deltaTime);
         // update all components
-        RootPanel().Update(deltaTime);
+        _rootComponent.Update(deltaTime);
         _currentScene?.OnUpdate(deltaTime);
         _monitoring.StopTimer();
     }
@@ -265,6 +317,8 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
 
     public void Dispose()
     {
+        _inputManager.OnKeyPressed -= HandleInput;
+        
         Stop();
         _cancellationTokenSource?.Dispose();
         _renderManager.Dispose();

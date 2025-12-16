@@ -42,10 +42,8 @@ public class GameHud : UiPanel
         string hudText = $"HP: {_player.Health}/{_player.MaxHealth}  " +
                          $"Ammo: {_player.Ammo}/{_player.MaxAmmo}  " +
                          $"BFG: {_player.BfgCells}/{_player.MaxBfgCells}  " +
-                         $"XP: {_player.CombatPoints}  " +
-                         $"Framerate: {Math.Round(_engine.RenderManager.CurrentFps, 2)} FPS" +
-                         $"Update rate: {Math.Round(_engine.CurrentUpdateRate, 2)} UPS";
-
+                         $"XP: {_player.CombatPoints}  ";
+                         
         renderer.DrawText(x, y, hudText, ConsoleColor.White, ConsoleColor.Black);
     }
 }
