@@ -21,7 +21,6 @@ public class DoomGameManager
 
     public DoomGameManager()
     {
-        RenderConfig.EnablePerformanceMode = true;
         IsTipShown = false;
         Console.OutputEncoding = Encoding.UTF8;
         _engine= new ConsoleEngine();
