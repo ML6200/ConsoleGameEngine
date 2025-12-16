@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Runtime.InteropServices.ComTypes;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using NLog;
@@ -45,7 +43,7 @@ public class UiInputBox : UiPanel
             ForegroundColor = ConsoleColor.White,
             BackgroundColor = this.BackgroundColor,
         };
-        _inputField = new UiInputField("")
+        _inputField = new UiInputField("", inputManager)
         {
             ForegroundColor = ConsoleColor.White,
             BackgroundColor = this.BackgroundColor,

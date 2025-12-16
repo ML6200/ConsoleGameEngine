@@ -6,6 +6,7 @@ namespace ConsoleGameEngine.Engine.Input;
 
 public class InputManager: IDisposable
 {
+    // idea: We could use observables for better separation of concerns
     public event EventHandler<KeyEventArgs> OnKeyPressed;
     public event EventHandler OnEscapePressed;
     public event EventHandler OnEnterPressed;

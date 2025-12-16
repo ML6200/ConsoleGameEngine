@@ -99,7 +99,7 @@ public class SettingsScene : IGameScene
         };
         _settingsPanel.AddChild(_mapLabel);
         
-        _mapField = new UiInputField(DoomGameManager.GameSettings.DefaultMap)
+        _mapField = new UiInputField(DoomGameManager.GameSettings.DefaultMap, _engine.Input)
         {
             RelativePosition = new Point2D(3, 4),
             Size = new Dimension2D(40, 1),
@@ -117,7 +117,7 @@ public class SettingsScene : IGameScene
         };
         _settingsPanel.AddChild(_assetsLabel);
         
-        _assetsField = new UiInputField(DoomGameManager.GameSettings.AudioAssetsPath)
+        _assetsField = new UiInputField(DoomGameManager.GameSettings.AudioAssetsPath, _engine.Input)
         {
             RelativePosition = new Point2D(3, 7),
             Size = new Dimension2D(40, 1),

@@ -34,9 +34,10 @@ public class UiInputField : GraphicsComponent, IFocusable
     
     private InputManager _inputManager;
     
-    public UiInputField(string text)
+    public UiInputField(string text, InputManager inputManager)
     {
         Text = text;
+        _inputManager = inputManager;
     }
 
     public UiInputField(InputManager inputManager)
@@ -48,11 +49,21 @@ public class UiInputField : GraphicsComponent, IFocusable
     public void OnFocusGained()
     {
         HasBorder = true;
+        _inputManager.OnKeyPressed += HandleInput;
+    }
+
+    private void HandleInput(object? sender, KeyEventArgs e)
+    {
+        if (e is { Key: ConsoleKey.X, Control: true })
+        {
+            Text = "";
+        }
     }
 
     public void OnFocusLost()
     {
         HasBorder = false;
+        _inputManager.OnKeyPressed -= HandleInput;
     }
 
     public void OnFocusActivate(KeyEventArgs? param)
@@ -62,12 +73,12 @@ public class UiInputField : GraphicsComponent, IFocusable
             && param.Key != ConsoleKey.Enter
             && param.Key != ConsoleKey.Escape
             && param.Key != ConsoleKey.DownArrow
-            && param.Key != ConsoleKey.UpArrow)
+            && param.Key != ConsoleKey.UpArrow )
         {
             _isDeleting = false;
             Text += param.KeyChar;
         }
-        else if (param.Key == ConsoleKey.Backspace)
+        else if (param is { Key:ConsoleKey.Backspace })
         {
             if (Text.Length > 0)
             {
@@ -85,7 +96,7 @@ public class UiInputField : GraphicsComponent, IFocusable
         int newWidth = Math.Max(minWidth, Size.Width);
         int newHeight = Math.Max(minHeight, Size.Height);
         
-        Width   = newWidth;
+        Width = newWidth;
         Height = newHeight;
     }
 
