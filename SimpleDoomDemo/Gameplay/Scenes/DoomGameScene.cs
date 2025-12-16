@@ -173,12 +173,45 @@ public class DoomGameScene : IGameScene
         // Clean up all game entities from the root panel
         _rootPanel.RemoveChild(Player);
 
-        CleanupEntities();
+        CleanupAllEntities();
 
-        if (_hud != null)
+        _rootPanel.RemoveChild(_hud);
+    }
+
+    private void CleanupAllEntities()
+    {
+        foreach (var demon in Demons)
         {
-            _rootPanel.RemoveChild(_hud);
+            _rootPanel.RemoveChild(demon);
         }
+
+        foreach (var item in Items)
+        {
+            _rootPanel.RemoveChild(item);
+        }
+    }
+    
+    private void CleanupDeadEntities()
+    {
+        // Remove unavailable items from rendering
+        foreach (var item in Items)
+        {
+            if (!item.Available)
+            {
+                _rootPanel.RemoveChild(item);
+            }
+        }
+        Items.RemoveAll(item => !item.Available);
+
+        // Remove dead demons from rendering
+        foreach (var demon in Demons)
+        {
+            if (!demon.Alive)
+            {
+                _rootPanel.RemoveChild(demon);
+            }
+        }
+        Demons.RemoveAll(demon => !demon.Alive);
     }
 
     private void UpdateGameLogic(double deltaTime)
@@ -194,7 +227,7 @@ public class DoomGameScene : IGameScene
         _hud.UpdateHud(new Point2D(0, _rootPanel.ScreenSize.Height - 1));
 
         // Cleanup dead entities
-        CleanupEntities();
+        CleanupDeadEntities();
     }
 
     private void UpdateVisibility()
@@ -267,29 +300,6 @@ public class DoomGameScene : IGameScene
     {
         Point2D targetPoint = Player.RelativePosition + new Point2D(x, y);
         _movementSystem.MovePlayer(targetPoint);
-    }
-
-    private void CleanupEntities()
-    {
-        // Remove unavailable items from rendering
-        foreach (var item in Items)
-        {
-            if (!item.Available)
-            {
-                _rootPanel.RemoveChild(item);
-            }
-        }
-        Items.RemoveAll(item => !item.Available);
-
-        // Remove dead demons from rendering
-        foreach (var demon in Demons)
-        {
-            if (!demon.Alive)
-            {
-                _rootPanel.RemoveChild(demon);
-            }
-        }
-        Demons.RemoveAll(demon => !demon.Alive);
     }
 
     private void HandleGameOver()
