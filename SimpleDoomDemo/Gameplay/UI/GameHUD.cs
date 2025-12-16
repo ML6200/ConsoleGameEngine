@@ -27,7 +27,7 @@ public class GameHud : UiPanel
         Size = new Dimension2D(width, height);
     }
 
-    public void UpdateHUD(Point2D worldPosition)
+    public void UpdateHud(Point2D worldPosition)
     {
         WorldPosition = worldPosition;
     }

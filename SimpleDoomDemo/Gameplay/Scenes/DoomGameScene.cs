@@ -191,7 +191,7 @@ public class DoomGameScene : IGameScene
         // Update visibility (fog of war)
         UpdateVisibility();
         // Update HUD
-        _hud.UpdateHUD(new Point2D(0, _rootPanel.ScreenSize.Height - 1));
+        _hud.UpdateHud(new Point2D(0, _rootPanel.ScreenSize.Height - 1));
 
         // Cleanup dead entities
         CleanupEntities();
