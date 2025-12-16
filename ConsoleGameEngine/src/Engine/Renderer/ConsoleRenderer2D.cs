@@ -31,6 +31,18 @@ using ConsoleGameEngine.Engine.Renderer.Geometry;
  */
 namespace ConsoleGameEngine.Engine.Renderer;
 
+
+#if PERFORMANCE_MODE
+using OptionalInline = MethodImplAttribute;
+#else
+internal class OptionalInlineAttribute : Attribute
+{
+    public OptionalInlineAttribute(MethodImplOptions options)
+    {
+    }
+}
+#endif
+
 public class ConsoleRenderer2D : IDisposable
 {
     private int _screenWidth;
@@ -115,7 +127,7 @@ public class ConsoleRenderer2D : IDisposable
         }
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [OptionalInline(MethodImplOptions.AggressiveInlining)]
     private bool IsValidCoordinate(int x, int y)
     {
         return (uint) x < _screenWidth && (uint) y < _screenHeight;
@@ -134,7 +146,10 @@ public class ConsoleRenderer2D : IDisposable
             }
         }
     }
-
+    
+#if PERFORMANCE_MODE
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
     public void SetCell(int x, int y, Cell cell)
     {
         if (_isResizing)  return;

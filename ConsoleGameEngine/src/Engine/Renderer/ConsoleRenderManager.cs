@@ -32,7 +32,7 @@ public class ConsoleRenderManager : IDisposable
         _rootComponent = rootComponent;
         _updatesPerSecond = updatesPerSecond;
         
-        FocusManager = new FocusManager();
+        FocusManager = new FocusManager(); 
     }
 
     public void SubsribeFocusEventsToInput(InputManager inputManager)

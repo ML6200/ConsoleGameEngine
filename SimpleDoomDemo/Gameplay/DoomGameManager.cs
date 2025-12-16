@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using ConsoleGameEngine.Engine;
+using ConsoleGameEngine.Engine.Renderer;
 using NLog;
 using SimpleDoomDemo.Gameplay.Scenes;
 
@@ -20,6 +21,7 @@ public class DoomGameManager
 
     public DoomGameManager()
     {
+        RenderConfig.EnablePerformanceMode = true;
         IsTipShown = false;
         Console.OutputEncoding = Encoding.UTF8;
         _engine= new ConsoleEngine();
