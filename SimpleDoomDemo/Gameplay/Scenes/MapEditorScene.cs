@@ -712,8 +712,8 @@ internal class StatusBar : UiPanel
             Text = "Status",
         };
 
-        Children.Add(_posLabel);
-        Children.Add(_stateLabel);
+        AddChild(_posLabel);
+        AddChild(_stateLabel);
     }
 
     public void SetCursorPosition(Point2D pos)

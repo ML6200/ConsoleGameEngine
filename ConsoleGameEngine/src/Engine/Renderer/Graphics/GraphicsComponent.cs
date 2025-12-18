@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Animations;
@@ -87,7 +86,6 @@ public abstract class GraphicsComponent : IRenderable
     private bool _isPositionDirty = true;
     private bool _childrenDirty = true;
     private readonly Lock _childrenLock = new();
-    
     
     public Dimension2D ScreenSize => new(Console.WindowWidth, Console.WindowHeight);
 
@@ -291,7 +289,7 @@ public abstract class GraphicsComponent : IRenderable
             {
                 if (_childrenDirty)
                 {
-                    _cachedChildren =  Children.ToArray();
+                    _cachedChildren = Children.ToArray();
                     _childrenDirty = false;    
                 }
             }
