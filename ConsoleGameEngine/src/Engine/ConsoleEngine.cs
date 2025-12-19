@@ -129,14 +129,6 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         _renderManager = new ConsoleRenderManager(_renderer, Camera, _rootComponent, _targetUpdatesPerSecond);
     }
 
-    private void HandleInput(object? sender, KeyEventArgs e)
-    {
-        if (e.Key == ConsoleKey.X && e is { Control: false, Alt: false, Shift: false })
-        {
-            _statsPanel.Visible = !_statsPanel.Visible;
-        }
-    }
-
     public void Initialize()
     {
         if (_isInitialized)
@@ -146,15 +138,22 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         
         Console.CursorVisible = false;
         Console.Clear();
-        _renderManager.SubsribeFocusEventsToInput(_inputManager);
+        _renderManager.SubscribeFocusEventsToInput(_inputManager);
         _isInitialized = true;
         _logger.Info("Engine initialized");
         
         _monitoring = new(_targetUpdatesPerSecond);
         
         AddStats();
-        
-        _inputManager.OnKeyPressed += HandleInput;
+
+        var channel = KeyBinding.Parse("ctrl+x");
+        _inputManager.Register(channel);
+        _inputManager.Subscribe(channel, HandleInput);
+    }
+
+    private void HandleInput()
+    {
+        _statsPanel.Visible = !_statsPanel.Visible;
     }
 
     public void OnStart()
@@ -320,7 +319,6 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
 
     public void Dispose()
     {
-        _inputManager.OnKeyPressed -= HandleInput;
         
         Stop();
         _cancellationTokenSource?.Dispose();
