@@ -1,15 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
-using ConsoleGameEngine.Engine.Renderer.Animations;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
 public sealed class RootComponent : IRenderable
 {
     private readonly GraphicsComponent _graphicsComponent;
-    public List<Animation> Animations { get; } = new();
 
     public GraphicsComponent GraphicsComponent => _graphicsComponent;
     public Dimension2D ScreenSize => new(Console.WindowWidth, Console.WindowHeight);
