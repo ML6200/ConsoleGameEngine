@@ -25,6 +25,12 @@ public class KeyBinding
         Key = key;
     }
 
+    public KeyBinding(ConsoleKey key)
+    {
+        Modifiers = 0;
+        Key = key;
+    }
+
     private KeyBinding()
     {
     }
@@ -59,7 +65,7 @@ public class KeyBinding
         KeyBinding keyBinding = new KeyBinding();
         if (parts.Length is 1)
         {
-            keyBinding.Key = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), NormalizeKey(parts[0]));
+            keyBinding.Key = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), parts[0], true);
             return keyBinding;
         }
         
@@ -96,7 +102,7 @@ public class KeyBinding
                 keyBinding.Modifiers |= (int) KeyModifier.Shift;
                 break;
             default:
-                if (!Enum.TryParse(NormalizeKey(part), out key))
+                if (!Enum.TryParse(NormalizeKey(part), true, out key))
                 {
                     throw new FormatException();
                 }
@@ -162,6 +168,9 @@ public class KeyBinding
         public static readonly KeyBinding Space = Parse("spacebar");
         public static readonly KeyBinding Escape = Parse("escape");
         public static readonly KeyBinding CtrlC = Parse("ctrl+c");
-
+        public static readonly KeyBinding LeftArrow = Parse("Leftarrow");
+        public static readonly KeyBinding RightArrow = Parse("RightArrow");
+        public static readonly KeyBinding UpArrow = Parse("UpArrow");
+        public static readonly KeyBinding DownArrow = Parse("DownArrow");
     }
 }

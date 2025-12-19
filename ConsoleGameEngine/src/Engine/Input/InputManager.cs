@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using NLog;
 
@@ -94,7 +93,7 @@ public class InputManager : IDisposable
         {
             if (!_keyBindings.TryGetValue(keyBinding, out var value)) return;
             if (value.Listeners.Contains(listener)) return;
-            if (value.IsSolo)
+            if (value.IsSolo && value.Listeners.Contains(listener))
             {
                 _logger.Warn("You cannot add listeners to a solo KeyBinding!");
                 return;
