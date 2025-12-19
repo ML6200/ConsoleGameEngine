@@ -135,7 +135,7 @@ public class MapEditorScene : IGameScene
         _editorPanel.AddChild(_toolBarPanel);
 
         // reset sizes
-        _engine.Input.OnKeyPressed += HandleUserInput;
+        //_engine.Input.OnKeyPressed += HandleUserInput;
         _engine.Camera.CameraSize = _mainPanel.Size;
         _engine.Camera.SetCameraPosition(new Point2D(0, 0));
 
@@ -162,120 +162,123 @@ public class MapEditorScene : IGameScene
             _toolBarPanel.RelativePosition = new Point2D(_engine.RootPanel().ScreenSize.Width / 2 - 50,
                 _mainPanel.Size.Height - _toolBarPanel.Size.Height - offset);
         };
+        HandleUserInput();
     }
 
     private bool _isEntityAdded;
 
-    private void HandleUserInput(object? sender, KeyEventArgs e)
+    private void HandleUserInput()
     {
-        // Mono Keys
-        switch (e.Key)
+        // Movement keys
+        KeyBinding leftArrow = KeyBinding.Commons.LeftArrow;
+        KeyBinding rightArrow = KeyBinding.Commons.RightArrow;
+        KeyBinding upArrow = KeyBinding.Commons.UpArrow;
+        KeyBinding downArrow = KeyBinding.Commons.DownArrow;
+
+        _engine.Input.Register(leftArrow);
+        _engine.Input.Register(rightArrow);
+        _engine.Input.Register(upArrow);
+        _engine.Input.Register(downArrow);
+
+        _engine.Input.Subscribe(leftArrow, () => { MoveCursorBy(-1, 0); });
+        _engine.Input.Subscribe(rightArrow, () => { MoveCursorBy(1, 0); });
+        _engine.Input.Subscribe(upArrow, () => { MoveCursorBy(0, -1); });
+        _engine.Input.Subscribe(downArrow, () => { MoveCursorBy(0, 1); });
+
+        // Game Items
+        KeyBinding wallKey = KeyBinding.Parse("w");
+        KeyBinding toxicKey = KeyBinding.Parse("t");
+        KeyBinding ammoKey = KeyBinding.Parse("a");
+        KeyBinding medKitKey = KeyBinding.Parse("m");
+        KeyBinding bfgKey = KeyBinding.Parse("b");
+        KeyBinding doorKey = KeyBinding.Parse("d");
+        KeyBinding exitKey = KeyBinding.Parse("e");
+
+        _engine.Input.Register(wallKey);
+        _engine.Input.Register(toxicKey);
+        _engine.Input.Register(ammoKey);
+        _engine.Input.Register(medKitKey);
+        _engine.Input.Register(bfgKey);
+        _engine.Input.Register(doorKey);
+        _engine.Input.Register(exitKey);
+
+        _engine.Input.Subscribe(wallKey, () => AddEntity(MapParser.DcmEntity.Wall, MapParser.DcmType.GameItem));
+        _engine.Input.Subscribe(toxicKey, () => AddEntity(MapParser.DcmEntity.ToxicWaste, MapParser.DcmType.GameItem));
+        _engine.Input.Subscribe(ammoKey, () => AddEntity(MapParser.DcmEntity.Ammo, MapParser.DcmType.GameItem));
+        _engine.Input.Subscribe(medKitKey, () => AddEntity(MapParser.DcmEntity.MedKit, MapParser.DcmType.GameItem));
+        _engine.Input.Subscribe(bfgKey, () => AddEntity(MapParser.DcmEntity.BfgCell, MapParser.DcmType.GameItem));
+        _engine.Input.Subscribe(doorKey, () => AddEntity(MapParser.DcmEntity.Door, MapParser.DcmType.GameItem));
+        _engine.Input.Subscribe(exitKey, () => AddEntity(MapParser.DcmEntity.LevelExit, MapParser.DcmType.GameItem));
+
+        // Demons
+        KeyBinding zombieKey = KeyBinding.Parse("z");
+        KeyBinding mancubusKey = KeyBinding.Parse("shift+c");
+        KeyBinding impKey = KeyBinding.Parse("i");
+        KeyBinding playerKey = KeyBinding.Parse("p");
+
+        _engine.Input.Register(zombieKey);
+        _engine.Input.Register(mancubusKey);
+        _engine.Input.Register(impKey);
+        _engine.Input.Register(playerKey);
+
+        _engine.Input.Subscribe(zombieKey, () => AddEntity(MapParser.DcmEntity.Zombieman, MapParser.DcmType.Demon));
+        _engine.Input.Subscribe(mancubusKey, () => AddEntity(MapParser.DcmEntity.Mancubus, MapParser.DcmType.Demon));
+        _engine.Input.Subscribe(impKey, () => AddEntity(MapParser.DcmEntity.Imp, MapParser.DcmType.Demon));
+        _engine.Input.Subscribe(playerKey, () => AddEntity(MapParser.DcmEntity.Player, MapParser.DcmType.Player));
+
+        // Controls
+        KeyBinding hideKey = KeyBinding.Parse("h");
+        KeyBinding escapeKey = KeyBinding.Commons.Escape;
+        KeyBinding backspaceKey = KeyBinding.Parse("backspace");
+
+        _engine.Input.Register(hideKey);
+        _engine.Input.Register(escapeKey);
+        _engine.Input.Register(backspaceKey);
+
+        _engine.Input.Subscribe(hideKey, () => { _toolBarPanel.Visible = !_toolBarPanel.Visible; });
+        _engine.Input.Subscribe(escapeKey, HandleExit);
+        _engine.Input.Subscribe(backspaceKey, () => RemoveEntity(_cursor.RelativePosition));
+
+        // Tools
+        KeyBinding optimizeKey = KeyBinding.Parse("shift+o");
+        KeyBinding loadLegacyKey = KeyBinding.Parse("shift+l");
+
+        _engine.Input.Register(optimizeKey);
+        _engine.Input.Register(loadLegacyKey);
+
+        _engine.Input.Subscribe(optimizeKey, OptimizeMap);
+        _engine.Input.Subscribe(loadLegacyKey, () =>
         {
-            // Movement
-            case ConsoleKey.LeftArrow:
-                MoveCursorBy(-1, 0);
-                break;
-            case ConsoleKey.RightArrow:
-                MoveCursorBy(1, 0);
-                break;
-            case ConsoleKey.UpArrow:
-                MoveCursorBy(0, -1);
-                break;
-            case ConsoleKey.DownArrow:
-                MoveCursorBy(0, 1);
-                break;
+            _isLegacy = true;
+            HandleOpen();
+        });
 
-            // Game Items
-            case ConsoleKey.W:
-                AddEntity(MapParser.DcmEntity.Wall, MapParser.DcmType.GameItem);
-                break;
-            case ConsoleKey.T:
-                AddEntity(MapParser.DcmEntity.ToxicWaste, MapParser.DcmType.GameItem);
-                break;
-            case ConsoleKey.A:
-                AddEntity(MapParser.DcmEntity.Ammo, MapParser.DcmType.GameItem);
-                break;
-            case ConsoleKey.M:
-                AddEntity(MapParser.DcmEntity.MedKit, MapParser.DcmType.GameItem);
-                break;
-            case ConsoleKey.B:
-                AddEntity(MapParser.DcmEntity.BfgCell, MapParser.DcmType.GameItem);
-                break;
-            case ConsoleKey.D:
-                AddEntity(MapParser.DcmEntity.Door, MapParser.DcmType.GameItem);
-                break;
-            case ConsoleKey.E:
-                AddEntity(MapParser.DcmEntity.LevelExit, MapParser.DcmType.GameItem);
-                break;
+        // File operations (platform-dependent)
+        bool isWindows = SystemInfo.Os.IsWindows();
+        string ctrlModifier = isWindows ? "ctrl+alt" : "ctrl";
+        KeyBinding saveKey = KeyBinding.Parse($"{ctrlModifier}+s");
+        KeyBinding openKey = KeyBinding.Parse($"{ctrlModifier}+o");
+        KeyBinding openDefaultKey = KeyBinding.Parse($"{ctrlModifier}+x");
 
-            // Demons
-            case ConsoleKey.Z:
-                AddEntity(MapParser.DcmEntity.Zombieman, MapParser.DcmType.Demon);
-                break;
-            case ConsoleKey.C:
-                if (e.Shift)
-                    AddEntity(MapParser.DcmEntity.Mancubus, MapParser.DcmType.Demon);
-                break;
-            case ConsoleKey.I:
-                AddEntity(MapParser.DcmEntity.Imp, MapParser.DcmType.Demon);
-                break;
-            case ConsoleKey.P:
-                AddEntity(MapParser.DcmEntity.Player, MapParser.DcmType.Player);
-                break;
+        _engine.Input.Register(saveKey);
+        _engine.Input.Register(openKey);
+        _engine.Input.Register(openDefaultKey);
 
-            // Hide or show toolbar panel
-            case ConsoleKey.H:
-                _toolBarPanel.Visible = !_toolBarPanel.Visible;
-                break;
-
-            // Controls
-            case ConsoleKey.Escape:
-                HandleExit();
-                break;
-            case ConsoleKey.Backspace:
-                RemoveEntity(_cursor.RelativePosition);
-                break;
-        }
-
-        if (e.Shift)
+        _engine.Input.Subscribe(saveKey, () =>
         {
-            switch (e.Key)
-            {
-                case ConsoleKey.O:
-                    OptimizeMap();
-                    break;
-                case ConsoleKey.L:
-                    _isLegacy = true;
-                    HandleOpen();
-                    break;
-            }
-        }
-
-        bool mask = !e.Alt;
-        if (SystemInfo.Os.IsWindows())
+            _stateTrigger = StateTrigger.ManualSave;
+            HandleSave();
+        });
+        _engine.Input.Subscribe(openKey, () =>
         {
-            mask = e.Alt;
-        }
-
-        // Keybindings
-        if (e.Control && mask)
+            _stateTrigger = StateTrigger.Open;
+            HandleOpen();
+        });
+        _engine.Input.Subscribe(openDefaultKey, () =>
         {
-            switch (e.Key)
-            {
-                case ConsoleKey.S:
-                    _stateTrigger = StateTrigger.ManualSave;
-                    HandleSave();
-                    break;
-                case ConsoleKey.O:
-                    _stateTrigger = StateTrigger.Open;
-                    HandleOpen();
-                    break;
-                case ConsoleKey.X:
-                    _stateTrigger = StateTrigger.Open;
-                    OpenMap(DoomGameManager.GameSettings.DefaultMap);
-                    break;
-            }
-        }
+            _stateTrigger = StateTrigger.Open;
+            OpenMap(DoomGameManager.GameSettings.DefaultMap);
+        });
     }
 
     private void OptimizeMap()
@@ -362,14 +365,14 @@ public class MapEditorScene : IGameScene
         if (readdCursor) _editorPanel.AddChild(_cursor);
 
         // Unsubscribe first to prevent multiple subscriptions
-        _engine.Input.OnKeyPressed -= HandleUserInput;
-        _engine.Input.OnKeyPressed += HandleUserInput;
+        //_engine.Input.OnKeyPressed -= HandleUserInput;
+        //_engine.Input.OnKeyPressed += HandleUserInput;
     }
 
     private void DisableEditor()
     {
-        _engine.RenderManager.FocusManager.UnregisterAll();
-        _engine.Input.OnKeyPressed -= HandleUserInput;
+        //_engine.RenderManager.FocusManager.UnregisterAll();
+        //_engine.Input.OnKeyPressed -= HandleUserInput;
     }
 
     private void ReloadEditor(bool trustDcmf = true)
