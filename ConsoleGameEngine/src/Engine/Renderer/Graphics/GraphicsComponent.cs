@@ -7,63 +7,25 @@ using ConsoleGameEngine.Engine.Renderer.Animations;
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
 /*
- * Egyszerű fa nézet:
- * 
- * Root - Child3 - Child4
- *   |
- * Child1
- *   |
- * Child2
+ * Graphics component hierarchy system:
  *
- * -----------------------------
+ * Tree structure example:
+ *   Root (0, 0)
+ *    |
+ *   Child1 (1, 1) -> renders at (0+1, 0+1) = (1, 1)
+ *    |
+ *   Child2 (1, 1) -> renders at (1+1, 1+1) = (2, 2)
  *
+ * Each component has one parent and can have multiple children.
+ * Child components use positions relative to their parent.
  *
- * Root (0, 0)
- *  |
- * Child1 (1, 1) Render->(0+1, 0+1)-> (1, 1)
- *  |
- * Child2 (1, 1) Render->(1+1, 1+1)->(2, 2)
- * +-----------------------------------------------------+
- * | A gyerek komponensek mindig relatív pozíciót várnak,|
- * | melyet az adott komponens Render() metódusa kezel.  |
- * +-----------------------------------------------------+
+ * Position types:
+ *   - RelativePosition: Position relative to parent
+ *   - WorldPosition: Absolute position in screen space
  *
- * ################MEGJEGYZÉS########################
- * # Későbbiekben célszerű ezt a relativisztikus    #
- * # megoldást egy külön osztályban kezelni vagy    #
- * # akár a renderelő motor által.                  #
- * ##################################################
- *
- *
- * Minden komponens rendelkezik egy Szülő és egy Gyerek
- * tulajdonsággal. Egy komponensnek több gyereke lehet
- * viszont csak egy szülője.
- *
- *
- *
- * Abszolút & Relatív pocíció
- *  
- *  y
- *  |
- *  |
- *  |
- * 2|   abs(7, 2) -> rel (0, 0)
- * 1|
- *  |--------------------------> x
- *   1234567
- *
- *
- *  Egy elemnek abszolút pozíciója a térben egyértelmű pozíciója,
- *  míg a relatív pozíció a szülőosztályhoz képest igazodik.
- *  Példányosításnál a relatív pozíciót adhatjuk meg,
- *  viszont külön beállíthatunk abszolút pozíciót is.
- *
- *  Pl:
- *  Panel(1, 1, 10, 10)->Gomb(10/2, 10/2, 3, 2)
- *
- *  ConsoleGraphicsPanel panel1 = new ConsoleGraphicsPanel(3, 4, 20, 30);
- *  ConsoleGraphicsPanel panel2 = new ConsoleGraphicsPanel(3, 4, 20, 30);
- *
+ * Example:
+ *   Parent at (10, 10) with Child at relative (5, 5)
+ *   -> Child renders at world position (15, 15)
  */
 
 public abstract class GraphicsComponent : IRenderable
@@ -90,7 +52,7 @@ public abstract class GraphicsComponent : IRenderable
     public Dimension2D ScreenSize => new(Console.WindowWidth, Console.WindowHeight);
 
 
-    // ====================CONSTRUCTORS====================
+    // ========CONSTRUCTORS========
     public GraphicsComponent(int width, int height,
         Point2D? relativePosition,
         ConsoleColor backgroundColor,
@@ -115,11 +77,11 @@ public abstract class GraphicsComponent : IRenderable
 
     public GraphicsComponent()
     {
-        // _relativePosition already initialized to (0, 0) via field initializer
+        // _relativePosition defaults to (0, 0) via field initializer
     }
-    // ====================CONSTRUCTORS_END====================
+    // ========CONSTRUCTORS-END========
     
-    // ====================POSITIONING====================
+    // ========POSITION-AND-SIZE========
     public Dimension2D Size
     {
         get => new(Width, Height);
@@ -131,32 +93,21 @@ public abstract class GraphicsComponent : IRenderable
     }
 
     /*
-     * A komponensek az újabb tervezetben csak a lokális(relatív) pozícíciót
-     * tárolják ezzel csökkentve a komplexitást. Az előző változatban mind a
-     * globális és a lokális pozíciót is követtük, mely eléggé logikátlan, mivel
-     * dupla számolást jelent. Ezzel ellentétben ha a fa mentén bejárjuk a gyerek nodeok
-     * felől és mindig az adott szülő a referencia pont ezzel megkaphatjuk az aktuális
-     * pozíciót a rendereléshez.
+     * Position system design:
      *
-     * PL:
+     * Components only store their relative position to reduce complexity.
+     * World position is calculated on-demand by traversing up the parent chain.
+     * This avoids duplicate tracking and ensures positions stay in sync.
      *
-     * [Parent:root] 
-     *     -> lok(0, 0)
-     *     -> glob(0, 0)
+     * Example:
+     *   Root: local(0, 0) -> world(0, 0)
+     *   Child1: local(1, 1) -> world = Parent.world + (1, 1) = (1, 1)
+     *   Child2: local(1, 1) -> world = Child1.world + (1, 1) = (2, 2)
      *
-     * [Child1]
-     *  ->lok(1, 1)
-     *  ->glob=Parent.glob + (1, 1) => (1, 1)
-     * 
-     * [Child2]
-     *  ->lok(1, 1)
-     *  ->glob=Child1.glob + (1, 1) => (2, 2)
+     * Position caching with dirty flags prevents unnecessary recalculations.
+     * When a parent moves, all children are marked dirty and recalculate on next access.
      *
-     *
-     * !!!Megjegyzés+++
-     * Ezt a rekurzív megoldást később kiválthatjuk egy külön layout manager
-     * vagy Transform osztály bevezetésével.
-     * 
+     * Note: This could be refactored into a separate Transform or LayoutManager class.
      */
     public Point2D WorldPosition
     {
@@ -230,9 +181,9 @@ public abstract class GraphicsComponent : IRenderable
             child.MarkWorldPositionDirty();
         }
     }
-    // ======================END-POSITIONING=======================
+    // ========POSITION-AND-SIZE-END========
 
-    // ====================ANIMATION-MANAGEMENT====================
+    // ========ANIMATION-MANAGEMENT========
     public void AddAnimation(Animation animation)
     {
         Animations.Add(animation);
@@ -242,10 +193,10 @@ public abstract class GraphicsComponent : IRenderable
     {
         Animations.Clear();
     }
-    // ====================ANIMATION-MANAGEMENT-END====================
+    // ========ANIMATION-MANAGEMENT-END========
     
     
-    // ============================PARENTING===========================
+    // ========CHILD-HIERARCHY========
     public void AddChild(GraphicsComponent child)
     {
         lock (_childrenLock)
@@ -272,17 +223,22 @@ public abstract class GraphicsComponent : IRenderable
     {
         lock (_childrenLock)
         {
+            // Create snapshot before clearing to properly update each child's parent reference
+            var childrenSnapshot = Children.ToArray();
             Children.Clear();
+            _childrenDirty = true;
 
-            foreach (var child in Children)
+            foreach (var child in childrenSnapshot)
             {
-                RemoveChild(child);
+                child.Parent = null;
+                child.MarkWorldPositionDirty();
             }
         }
     }
 
     private GraphicsComponent[] GetChildrenSnapshot()
     {
+        // Double-checked locking pattern to minimize lock contention
         if (_childrenDirty)
         {
             lock (_childrenLock)
@@ -290,15 +246,15 @@ public abstract class GraphicsComponent : IRenderable
                 if (_childrenDirty)
                 {
                     _cachedChildren = Children.ToArray();
-                    _childrenDirty = false;    
+                    _childrenDirty = false;
                 }
             }
         }
         return _cachedChildren;
     }
-    // ============================PARENTING-END====================
+    // ========CHILD-HIERARCHY-END========
 
-    // ============================RENDERING========================
+    // ========RENDERING-AND-UPDATE========
     public void Compute(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
         if (!Visible) return;
@@ -340,5 +296,5 @@ public abstract class GraphicsComponent : IRenderable
     protected virtual void UpdateSelf()
     {
     }
-    // ============================RENDERING-END========================
+    // ========RENDERING-AND-UPDATE-END========
 }
