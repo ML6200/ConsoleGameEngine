@@ -59,9 +59,9 @@ public abstract class GraphicsComponent : IRenderable
     public ConsoleColor BorderColor { get; set; }
 
     /// <summary>
-    /// Gets the list of animations currently running on this component.
+    /// List of animations currently running on this component.
     /// </summary>
-    public List<Animation> Animations { get; } = [];
+    private readonly List<Animation> _animations  = [];
 
     /// <summary>
     /// Gets the list of children of this component.
@@ -247,7 +247,7 @@ public abstract class GraphicsComponent : IRenderable
     /// <param name="animation">The animation to add.</param>
     public void AddAnimation(Animation animation)
     {
-        Animations.Add(animation);
+        _animations.Add(animation);
     }
 
     /// <summary>
@@ -255,7 +255,7 @@ public abstract class GraphicsComponent : IRenderable
     /// </summary>
     public void ClearAnimations()
     {
-        Animations.Clear();
+        _animations.Clear();
     }
     // ========ANIMATION-MANAGEMENT-END========
     
@@ -384,13 +384,13 @@ public abstract class GraphicsComponent : IRenderable
     /// </remarks>
     public void Update(double deltaTime)
     {
-        for (int i = Animations.Count - 1; i >= 0; i--)
+        for (int i = _animations.Count - 1; i >= 0; i--)
         {
-            var animation = Animations[i];
+            var animation = _animations[i];
             animation.OnUpdate(deltaTime);
             if (animation.IsComplete)
             {
-                Animations.Remove(animation);
+                _animations.Remove(animation);
             }
         }
         
