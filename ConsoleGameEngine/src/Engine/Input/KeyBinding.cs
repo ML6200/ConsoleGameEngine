@@ -57,11 +57,27 @@ public class KeyBinding
         if (parts.Length is > 3 or 0) throw new FormatException();
 
         KeyBinding keyBinding = new KeyBinding();
+        if (parts.Length is 1)
+        {
+            keyBinding.Key = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), NormalizeKey(parts[0]));
+            return keyBinding;
+        }
+        
         foreach (var part in parts)
         {
             keyBinding.Key = EncodeModifier(part, keyBinding);
         }
         return keyBinding;
+    }
+
+    private static string NormalizeKey(string key)
+    {
+        if (string.IsNullOrEmpty(key)) return string.Empty;
+        
+        key = key.ToLower();
+        Span<char> capital = stackalloc char[1];
+        key.AsSpan(0, 1).ToUpperInvariant(capital);
+        return $"{capital}{key.AsSpan(1)}";
     }
 
     private static ConsoleKey EncodeModifier(string part, KeyBinding keyBinding)
@@ -80,7 +96,7 @@ public class KeyBinding
                 keyBinding.Modifiers |= (int) KeyModifier.Shift;
                 break;
             default:
-                if (!Enum.TryParse(part.ToUpper(), out key))
+                if (!Enum.TryParse(NormalizeKey(part), out key))
                 {
                     throw new FormatException();
                 }
@@ -134,5 +150,18 @@ public class KeyBinding
         string modLiteral = DecodeModifiers(Modifiers);
         string keyLiteral = Key.ToString().ToLower();
         return $"{modLiteral}{keyLiteral}";
+    }
+    
+    public static class Commons
+    {
+        public static readonly KeyBinding CtrlX = Parse("ctrl+x");
+        public static readonly KeyBinding CtrlY = Parse("ctrl+y");
+        public static readonly KeyBinding Enter = Parse("enter");
+        public static readonly KeyBinding Tab = Parse("tab");
+        public static readonly KeyBinding Backspace = Parse("backspace");
+        public static readonly KeyBinding Space = Parse("spacebar");
+        public static readonly KeyBinding Escape = Parse("escape");
+        public static readonly KeyBinding CtrlC = Parse("ctrl+c");
+
     }
 }

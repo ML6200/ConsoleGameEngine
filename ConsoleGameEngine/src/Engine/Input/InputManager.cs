@@ -30,7 +30,6 @@ public class InputManager : IDisposable
     private readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly CancellationTokenSource _cts;
     private readonly Dictionary<KeyBinding, KeyRecord> _keyBindings = new();
-    
 
     public InputManager()
     {
@@ -109,8 +108,8 @@ public class InputManager : IDisposable
     {
         lock (_lock)
         {
-            if (_keyBindings.ContainsKey(keyBinding))
-                _keyBindings[keyBinding].Listeners.Remove(listener);
+            if (_keyBindings.TryGetValue(keyBinding, out var binding))
+                binding.Listeners.Remove(listener);
         }
     }
 
@@ -145,6 +144,7 @@ public class InputManager : IDisposable
         if (_cts is { IsCancellationRequested: false })
         {
             _cts.Cancel();
+            OnKeyPressed -= HandleKeyEvent;
             _inputThread.Join();
             _cts.Dispose();
         }
