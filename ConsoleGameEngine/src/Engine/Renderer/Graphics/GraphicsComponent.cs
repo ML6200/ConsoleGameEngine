@@ -30,6 +30,8 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 /// Position caching with dirty flags prevents unnecessary recalculations.
 /// When a parent moves, all children are marked dirty and recalculate on next access.
 /// </para>
+///
+/// For further information see: <see cref="RootComponent"/>>
 /// </remarks>
 public abstract class GraphicsComponent : IRenderable
 {
