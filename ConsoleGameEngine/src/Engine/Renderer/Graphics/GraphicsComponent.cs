@@ -6,39 +6,64 @@ using ConsoleGameEngine.Engine.Renderer.Animations;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-/*
- * Graphics component hierarchy system:
- *
- * Tree structure example:
- *   Root (0, 0)
- *    |
- *   Child1 (1, 1) -> renders at (0+1, 0+1) = (1, 1)
- *    |
- *   Child2 (1, 1) -> renders at (1+1, 1+1) = (2, 2)
- *
- * Each component has one parent and can have multiple children.
- * Child components use positions relative to their parent.
- *
- * Position types:
- *   - RelativePosition: Position relative to parent
- *   - WorldPosition: Absolute position in screen space
- *
- * Example:
- *   Parent at (10, 10) with Child at relative (5, 5)
- *   -> Child renders at world position (15, 15)
- */
-
+/// <summary>
+/// Base class for all renderable graphics components in the engine.
+/// Implements a hierarchical component system where each component can have one parent and multiple children.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Position System:
+/// Components store their position relative to their parent. World position is calculated on-demand
+/// by traversing up the parent chain. This avoids duplicate tracking and keeps positions in sync.
+/// </para>
+/// <para>
+/// Example hierarchy:
+/// <code>
+///   Root (0, 0)
+///    |
+///   Child1 (1, 1) -> renders at (0+1, 0+1) = (1, 1)
+///    |
+///   Child2 (1, 1) -> renders at (1+1, 1+1) = (2, 2)
+/// </code>
+/// </para>
+/// <para>
+/// Position caching with dirty flags prevents unnecessary recalculations.
+/// When a parent moves, all children are marked dirty and recalculate on next access.
+/// </para>
+/// </remarks>
 public abstract class GraphicsComponent : IRenderable
 {
     protected int Width;
     protected int Height;
+
+    /// <summary>
+    /// Gets or sets whether this component and its children should be rendered.
+    /// </summary>
     public virtual bool Visible { get; set; } = true;
-    
+
+    /// <summary>
+    /// Gets or sets the background color for this component.
+    /// </summary>
     public ConsoleColor BackgroundColor { get; set; }
+
+    /// <summary>
+    /// Gets or sets the foreground (text) color for this component.
+    /// </summary>
     public ConsoleColor ForegroundColor { get; set; }
+
+    /// <summary>
+    /// Gets or sets the border color for this component.
+    /// </summary>
     public ConsoleColor BorderColor { get; set; }
 
+    /// <summary>
+    /// Gets the list of animations currently running on this component.
+    /// </summary>
     public List<Animation> Animations { get; } = new();
+
+    /// <summary>
+    /// Gets the list of child components attached to this component.
+    /// </summary>
     public List<GraphicsComponent> Children { get; } = new();
     private IRenderable? Parent { get; set; }
 
@@ -48,11 +73,23 @@ public abstract class GraphicsComponent : IRenderable
     private bool _isPositionDirty = true;
     private bool _childrenDirty = true;
     private readonly Lock _childrenLock = new();
-    
+
+    /// <summary>
+    /// Gets the current console window size in characters.
+    /// </summary>
     public Dimension2D ScreenSize => new(Console.WindowWidth, Console.WindowHeight);
 
 
     // ========CONSTRUCTORS========
+    /// <summary>
+    /// Initializes a new graphics component with full customization.
+    /// </summary>
+    /// <param name="width">The width of the component in characters.</param>
+    /// <param name="height">The height of the component in characters.</param>
+    /// <param name="relativePosition">The position relative to the parent component. Defaults to (0, 0) if null.</param>
+    /// <param name="backgroundColor">The background color for this component.</param>
+    /// <param name="foregroundColor">The foreground (text) color for this component.</param>
+    /// <param name="borderColor">The border color for this component.</param>
     public GraphicsComponent(int width, int height,
         Point2D? relativePosition,
         ConsoleColor backgroundColor,
@@ -67,6 +104,12 @@ public abstract class GraphicsComponent : IRenderable
         BorderColor = borderColor;
     }
 
+    /// <summary>
+    /// Initializes a new graphics component with size and position.
+    /// </summary>
+    /// <param name="width">The width of the component in characters.</param>
+    /// <param name="height">The height of the component in characters.</param>
+    /// <param name="relativePosition">The position relative to the parent component. Defaults to (0, 0) if null.</param>
     public GraphicsComponent(int width, int height,
         Point2D? relativePosition)
     {
@@ -75,6 +118,10 @@ public abstract class GraphicsComponent : IRenderable
         _relativePosition = relativePosition ?? new Point2D(0, 0);
     }
 
+    /// <summary>
+    /// Initializes a new graphics component with default values.
+    /// Position defaults to (0, 0).
+    /// </summary>
     public GraphicsComponent()
     {
         // _relativePosition defaults to (0, 0) via field initializer
@@ -82,6 +129,9 @@ public abstract class GraphicsComponent : IRenderable
     // ========CONSTRUCTORS-END========
     
     // ========POSITION-AND-SIZE========
+    /// <summary>
+    /// Gets or sets the size of this component in characters.
+    /// </summary>
     public Dimension2D Size
     {
         get => new(Width, Height);
@@ -92,23 +142,14 @@ public abstract class GraphicsComponent : IRenderable
         }
     }
 
-    /*
-     * Position system design:
-     *
-     * Components only store their relative position to reduce complexity.
-     * World position is calculated on-demand by traversing up the parent chain.
-     * This avoids duplicate tracking and ensures positions stay in sync.
-     *
-     * Example:
-     *   Root: local(0, 0) -> world(0, 0)
-     *   Child1: local(1, 1) -> world = Parent.world + (1, 1) = (1, 1)
-     *   Child2: local(1, 1) -> world = Child1.world + (1, 1) = (2, 2)
-     *
-     * Position caching with dirty flags prevents unnecessary recalculations.
-     * When a parent moves, all children are marked dirty and recalculate on next access.
-     *
-     * Note: This could be refactored into a separate Transform or LayoutManager class.
-     */
+    /// <summary>
+    /// Gets or sets the absolute position of this component in screen space.
+    /// </summary>
+    /// <remarks>
+    /// World position is calculated by traversing up the parent chain and adding relative positions.
+    /// Setting this property will update the relative position based on the parent's world position.
+    /// Position values are cached and recalculated only when marked dirty.
+    /// </remarks>
     public Point2D WorldPosition
     {
         get
@@ -155,6 +196,13 @@ public abstract class GraphicsComponent : IRenderable
         _isPositionDirty = false;
     }
 
+    /// <summary>
+    /// Gets or sets the position of this component relative to its parent.
+    /// </summary>
+    /// <remarks>
+    /// When set, this marks the world position as dirty, triggering recalculation on next access.
+    /// All child components are also marked dirty to maintain position hierarchy consistency.
+    /// </remarks>
     public Point2D RelativePosition
     {
         get => _relativePosition;
@@ -184,11 +232,18 @@ public abstract class GraphicsComponent : IRenderable
     // ========POSITION-AND-SIZE-END========
 
     // ========ANIMATION-MANAGEMENT========
+    /// <summary>
+    /// Adds an animation to this component.
+    /// </summary>
+    /// <param name="animation">The animation to add.</param>
     public void AddAnimation(Animation animation)
     {
         Animations.Add(animation);
     }
 
+    /// <summary>
+    /// Removes all animations from this component.
+    /// </summary>
     public void ClearAnimations()
     {
         Animations.Clear();
@@ -197,6 +252,14 @@ public abstract class GraphicsComponent : IRenderable
     
     
     // ========CHILD-HIERARCHY========
+    /// <summary>
+    /// Adds a child component to this component's hierarchy.
+    /// </summary>
+    /// <param name="child">The child component to add.</param>
+    /// <remarks>
+    /// This operation is thread-safe. The child's parent reference is automatically set,
+    /// and all positions in the hierarchy are marked dirty for recalculation.
+    /// </remarks>
     public void AddChild(GraphicsComponent child)
     {
         lock (_childrenLock)
@@ -208,6 +271,14 @@ public abstract class GraphicsComponent : IRenderable
         }
     }
 
+    /// <summary>
+    /// Removes a child component from this component's hierarchy.
+    /// </summary>
+    /// <param name="child">The child component to remove.</param>
+    /// <remarks>
+    /// This operation is thread-safe. The child's parent reference is automatically cleared,
+    /// and the child's position is marked dirty for recalculation.
+    /// </remarks>
     public void RemoveChild(GraphicsComponent child)
     {
         lock (_childrenLock)
@@ -219,6 +290,13 @@ public abstract class GraphicsComponent : IRenderable
         }
     }
 
+    /// <summary>
+    /// Removes all child components from this component's hierarchy.
+    /// </summary>
+    /// <remarks>
+    /// This operation is thread-safe. All children's parent references are cleared,
+    /// and their positions are marked dirty for recalculation.
+    /// </remarks>
     public void RemoveAllChildren()
     {
         lock (_childrenLock)
@@ -255,6 +333,15 @@ public abstract class GraphicsComponent : IRenderable
     // ========CHILD-HIERARCHY-END========
 
     // ========RENDERING-AND-UPDATE========
+    /// <summary>
+    /// Renders this component and all its children to the screen.
+    /// </summary>
+    /// <param name="renderer">The renderer to use for drawing.</param>
+    /// <param name="camera">The camera defining the view.</param>
+    /// <remarks>
+    /// If the component is not visible, neither this component nor its children will be rendered.
+    /// Children are rendered after the parent using a thread-safe snapshot.
+    /// </remarks>
     public void Compute(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
         if (!Visible) return;
@@ -268,10 +355,24 @@ public abstract class GraphicsComponent : IRenderable
         }
     }
 
+    /// <summary>
+    /// Renders this specific component. Override this method to implement custom rendering logic.
+    /// </summary>
+    /// <param name="renderer">The renderer to use for drawing.</param>
+    /// <param name="camera">The camera defining the view.</param>
     protected virtual void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
     }
 
+    /// <summary>
+    /// Updates this component and all its children.
+    /// </summary>
+    /// <param name="deltaTime">Time elapsed since the last update in seconds.</param>
+    /// <remarks>
+    /// Updates all animations first, removing completed ones.
+    /// Then calls UpdateSelf() for component-specific logic.
+    /// Finally updates all children using a thread-safe snapshot.
+    /// </remarks>
     public void Update(double deltaTime)
     {
         for (int i = Animations.Count - 1; i >= 0; i--)
@@ -292,7 +393,10 @@ public abstract class GraphicsComponent : IRenderable
             child.Update(deltaTime);
         }
     }
-    
+
+    /// <summary>
+    /// Updates this specific component's logic. Override this method to implement custom update behavior.
+    /// </summary>
     protected virtual void UpdateSelf()
     {
     }
