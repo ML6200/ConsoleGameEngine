@@ -119,7 +119,7 @@ public class ConsoleRenderManager : IDisposable
                 _renderer.SetDimension(Console.WindowWidth, Console.WindowHeight);
 
                 // Update root panel size to match new window size
-                _rootComponent.GraphicsComponent.Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight);
+                _rootComponent.Canvas.Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight);
                 OnWindowResized?.Invoke(this, EventArgs.Empty);
             }
             else

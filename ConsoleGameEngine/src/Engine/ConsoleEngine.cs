@@ -273,7 +273,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     
     public UiPanel RootPanel()
     {
-        return (UiPanel)_rootComponent.GraphicsComponent;
+        return (UiPanel)_rootComponent.Canvas;
     }
     
     public void SetInitialScene(IGameScene scene)
