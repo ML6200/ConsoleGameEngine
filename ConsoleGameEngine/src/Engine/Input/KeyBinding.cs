@@ -160,7 +160,7 @@ public class KeyBinding
         public static readonly KeyBinding Tab = Parse("tab");
         public static readonly KeyBinding Backspace = Parse("backspace");
         public static readonly KeyBinding Space = Parse("spacebar");
-        public static readonly KeyBinding Escape = Parse("Escape");
+        public static readonly KeyBinding Escape = Parse("escape");
         public static readonly KeyBinding CtrlC = Parse("ctrl+c");
 
     }

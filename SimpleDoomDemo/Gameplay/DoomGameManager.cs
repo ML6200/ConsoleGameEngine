@@ -14,8 +14,8 @@ public class DoomGameManager
 {
     public static GameSettings GameSettings { get; private set; } = SettingsManager.Load();
     public static bool IsTipShown { get; set; }
-    private ConsoleEngine _engine;
-    private MainMenuScene _menuScene;
+    private readonly ConsoleEngine _engine;
+    private readonly MainMenuScene _menuScene;
     
     private static Logger _logger = LogManager.GetCurrentClassLogger();
 
