@@ -38,14 +38,12 @@ public class ConsoleRenderManager : IDisposable
     public void SubscribeFocusEventsToInput(InputManager inputManager)
     {
         inputManager.OnKeyPressed += HandleFocusInput;
-        inputManager.OnKeyPressed += (s, e) =>
+        inputManager.Register(KeyBinding.Commons.Enter);
+        inputManager.Subscribe(KeyBinding.Commons.Enter, () =>
         {
-            if (e.Key == ConsoleKey.Enter
-                && FocusManager.FocusedComponent is UiButton)
-            {
+            if (FocusManager.FocusedComponent is UiButton)
                 FocusManager.ActivateFocused(null);
-            }
-        };
+        });
     }
 
     private void HandleFocusInput(object? sender, KeyEventArgs e)
