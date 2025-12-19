@@ -146,7 +146,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         
         AddStats();
 
-        var channel = KeyBinding.Commons.CtrlX;
+        var channel = KeyBinding.Parse("X");
         _inputManager.Register(channel);
         _inputManager.Subscribe(channel, HandleInput);
     }
