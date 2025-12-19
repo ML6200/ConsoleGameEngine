@@ -60,9 +60,11 @@ public sealed class RootComponent : IRenderable
     /// </remarks>
     public RootComponent(GraphicsComponent canvas)
     {
-        if (canvas.Parent != null)
-            throw new ArgumentException("Root component cannot wrap a component that already has a parent.");
-        _canvas = canvas;
+         if (canvas.Parent != null) 
+             throw new ArgumentException("Root component cannot wrap a component that already has a parent.");
+         
+         _canvas = canvas; 
+         Visible = true;
     }
     // ========CONSTRUCTOR-END========
 

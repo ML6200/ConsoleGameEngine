@@ -59,7 +59,7 @@ public abstract class GraphicsComponent : IRenderable
     public ConsoleColor BorderColor { get; set; }
 
     /// <summary>
-    /// List of animations currently running on this component.
+    /// The list of animations currently running on this component.
     /// </summary>
     private readonly List<Animation> _animations  = [];
 
