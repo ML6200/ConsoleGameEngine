@@ -61,13 +61,20 @@ public abstract class GraphicsComponent : IRenderable
     /// <summary>
     /// Gets the list of animations currently running on this component.
     /// </summary>
-    public List<Animation> Animations { get; } = new();
+    public List<Animation> Animations { get; } = [];
 
     /// <summary>
-    /// Gets the list of child components attached to this component.
+    /// Gets the list of children of this component.
     /// </summary>
-    public List<GraphicsComponent> Children { get; } = new();
-    private IRenderable? Parent { get; set; }
+    public GraphicsComponent[] Children => GetChildrenSnapshot();
+    
+    /// <summary>
+    /// Gets the parent of children of this component.
+    /// </summary>
+    public IRenderable? Parent { get; private set; }
+    
+    
+    private readonly List<GraphicsComponent> _children = [];
 
     private GraphicsComponent[] _cachedChildren = [];
     private Point2D _relativePosition = new(0, 0);
@@ -112,7 +119,7 @@ public abstract class GraphicsComponent : IRenderable
     /// <param name="width">The width of the component in characters.</param>
     /// <param name="height">The height of the component in characters.</param>
     /// <param name="relativePosition">The position relative to the parent component. Defaults to (0, 0) if null.</param>
-    public GraphicsComponent(int width, int height,
+    protected GraphicsComponent(int width, int height,
         Point2D? relativePosition)
     {
         Width = width;
@@ -124,7 +131,7 @@ public abstract class GraphicsComponent : IRenderable
     /// Initializes a new graphics component with default values.
     /// Position defaults to (0, 0).
     /// </summary>
-    public GraphicsComponent()
+    protected GraphicsComponent()
     {
         // _relativePosition defaults to (0, 0) via field initializer
     }
@@ -226,7 +233,7 @@ public abstract class GraphicsComponent : IRenderable
 
     private void MarkChildrenDirty()
     {
-        foreach (var child in Children)
+        foreach (var child in _children)
         {
             child.MarkWorldPositionDirty();
         }
@@ -266,7 +273,7 @@ public abstract class GraphicsComponent : IRenderable
     {
         lock (_childrenLock)
         {
-            Children.Add(child);
+            _children.Add(child);
             _childrenDirty = true;
             child.Parent = this;
             MarkWorldPositionDirty();
@@ -285,7 +292,7 @@ public abstract class GraphicsComponent : IRenderable
     {
         lock (_childrenLock)
         {
-            Children.Remove(child);
+            _children.Remove(child);
             _childrenDirty = true;
             child.Parent = null;
             child.MarkWorldPositionDirty();
@@ -304,8 +311,8 @@ public abstract class GraphicsComponent : IRenderable
         lock (_childrenLock)
         {
             // Create snapshot before clearing to properly update each child's parent reference
-            var childrenSnapshot = Children.ToArray();
-            Children.Clear();
+            var childrenSnapshot = _children.ToArray();
+            _children.Clear();
             _childrenDirty = true;
 
             foreach (var child in childrenSnapshot)
@@ -325,7 +332,7 @@ public abstract class GraphicsComponent : IRenderable
             {
                 if (_childrenDirty)
                 {
-                    _cachedChildren = Children.ToArray();
+                    _cachedChildren = _children.ToArray();
                     _childrenDirty = false;
                 }
             }
