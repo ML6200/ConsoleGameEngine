@@ -26,7 +26,7 @@ public class FocusManager
 
         if (_focusableComponents.Count == 1)
         {
-            SetFocus(0);
+            ActivateFocus(0);
         }
     }
 
@@ -45,7 +45,7 @@ public class FocusManager
         _focusableComponents.Clear();
         _currentFocusIndex = -1;
     }
-    private void SetFocus(int index)
+    private void ActivateFocus(int index)
     {
         if (_currentFocusIndex >= 0 && _currentFocusIndex < _focusableComponents.Count)
         {
@@ -57,7 +57,6 @@ public class FocusManager
         if (_focusableComponents[index].CanFocus)
         {
             _currentFocusIndex = index;
-
             if (_currentFocusIndex >= 0 && _currentFocusIndex < _focusableComponents.Count)
             {
                 var current = _focusableComponents[_currentFocusIndex];
@@ -72,8 +71,9 @@ public class FocusManager
     {
         if (_focusableComponents.Count == 0) return;
 
+        // same as: _currentFocusIndex + 1 < _focusableComponents.Count ? _currentFocusIndex + 1 : 0;
         int nextIndex = (_currentFocusIndex + 1) % _focusableComponents.Count;
-        SetFocus(nextIndex);
+        ActivateFocus(nextIndex);
     }
 
     public void FocusPrevious()
@@ -83,7 +83,7 @@ public class FocusManager
         int prevIndex = (_currentFocusIndex - 1) % _focusableComponents.Count;
         if (prevIndex < 0) prevIndex = _focusableComponents.Count - 1;
         
-        SetFocus(prevIndex);
+        ActivateFocus(prevIndex);
     }
     
     public void ActivateFocused()
