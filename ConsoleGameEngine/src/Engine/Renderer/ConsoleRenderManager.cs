@@ -19,7 +19,6 @@ public class ConsoleRenderManager : IDisposable
     private int _updatesPerSecond;
     
     public double CurrentFps {get; private set; }
-    public FocusManager FocusManager { get; set; }
     
     public event EventHandler OnWindowResized;
 
@@ -31,48 +30,6 @@ public class ConsoleRenderManager : IDisposable
         //_renderer.InitRenderer();
         _rootComponent = rootComponent;
         _updatesPerSecond = updatesPerSecond;
-        
-        FocusManager = new FocusManager(); 
-    }
-
-    public void SubscribeFocusEventsToInput(InputManager inputManager)
-    {
-        inputManager.OnKeyPressed += HandleFocusInput;
-        inputManager.Register(KeyBinding.Commons.Enter);
-        inputManager.Subscribe(KeyBinding.Commons.Enter, () =>
-        {
-            if (FocusManager.FocusedComponent is UiButton)
-                FocusManager.ActivateFocused(null);
-        });
-    }
-
-    private void HandleFocusInput(object? sender, KeyEventArgs e)
-    {
-        if (e.Key == ConsoleKey.Tab || e.Key == ConsoleKey.DownArrow)
-        {
-            if (e.Shift)
-            {
-                FocusManager.FocusPrevious();
-            }
-            else
-            {
-                FocusManager.FocusNext();
-            }
-        } else if (e.Key == ConsoleKey.UpArrow)
-        {
-            if (e.Shift)
-            {
-                FocusManager.FocusNext();
-            }
-            else 
-            {
-                FocusManager.FocusPrevious();
-            }
-        }
-        else if (FocusManager.FocusedComponent is UiInputField uiInputField)
-        {
-            FocusManager.ActivateFocused(e);
-        }
     }
 
     public void Start()

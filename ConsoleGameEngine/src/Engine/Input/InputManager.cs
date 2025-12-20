@@ -140,12 +140,11 @@ public class InputManager : IDisposable
     
     public void Dispose()
     {
-        if (_cts is { IsCancellationRequested: false })
-        {
-            _cts.Cancel();
-            OnKeyPressed -= HandleKeyEvent;
-            _inputThread.Join();
-            _cts.Dispose();
-        }
+        if (_cts is not { IsCancellationRequested: false }) return;
+        
+        _cts.Cancel();
+        OnKeyPressed -= HandleKeyEvent;
+        _inputThread.Join();
+        _cts.Dispose();
     }
 }

@@ -42,7 +42,7 @@ public class UiButtonScrollPane : UiPanel, IFocusable
         HasBorder = false;
     }
 
-    public void OnFocusActivate(KeyEventArgs? param)
+    public void OnFocusActivate()
     {
         int offset = 0;
         foreach (var child in Children)

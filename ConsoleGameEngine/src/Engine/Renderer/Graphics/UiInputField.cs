@@ -66,8 +66,9 @@ public class UiInputField : GraphicsComponent, IFocusable
         _inputManager.OnKeyPressed -= HandleInput;
     }
 
-    public void OnFocusActivate(KeyEventArgs? param)
+    public void OnFocusActivate()
     {
+        KeyEventArgs? param = null;
         if (param != null
             && param.Key != ConsoleKey.Backspace
             && param.Key != ConsoleKey.Enter

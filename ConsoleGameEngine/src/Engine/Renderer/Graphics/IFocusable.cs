@@ -8,5 +8,5 @@ public interface IFocusable
     bool CanFocus { get; set; }
     void OnFocusGained();
     void OnFocusLost();
-    void OnFocusActivate(KeyEventArgs? param);
+    void OnFocusActivate();
 }

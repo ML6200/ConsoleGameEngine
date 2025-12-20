@@ -49,7 +49,7 @@ public class UiButton : GraphicsComponent, IFocusable
         HasBorder = false;
     }
 
-    public void OnFocusActivate(KeyEventArgs? param)
+    public void OnFocusActivate()
     {
         AddAnimation(AnimationTween.Blink(this, 0.3, false));
         

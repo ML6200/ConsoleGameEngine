@@ -72,7 +72,7 @@ public class SettingsScene : IGameScene
         if (!MapParser.HasCorrectExtension(_mapField.Text))
         {
             DisableButtons();
-            UiMsgBox msgBox = new UiMsgBox(_settingsPanel, _engine.RenderManager, _engine.Input,
+            UiMsgBox msgBox = new UiMsgBox(_settingsPanel, _engine.FocusManager, _engine.Input,
                 "Format mismatch", "Only '.dcmf' or '.map' is acceptable!");
             msgBox.OnComplete += state =>
             {
@@ -146,16 +146,16 @@ public class SettingsScene : IGameScene
 
     private void EnableButtons()
     {
-        _engine.RenderManager.FocusManager.Register(_saveAndBackButton);
-        _engine.RenderManager.FocusManager.Register(_backButton);
-        _engine.RenderManager.FocusManager.Register(_mapField);
-        _engine.RenderManager.FocusManager.Register(_assetsField);
-        //_engine.RenderManager.FocusManager.Register(_browseButton);
+        _engine.FocusManager.Register(_saveAndBackButton);
+        _engine.FocusManager.Register(_backButton);
+        _engine.FocusManager.Register(_mapField);
+        _engine.FocusManager.Register(_assetsField);
+        //_engine.FocusManager.Register(_browseButton);
     }
 
     private void DisableButtons()
     {
-        _engine.RenderManager.FocusManager.UnregisterAll();
+        _engine.FocusManager.UnregisterAll();
     }
 
     private void Browse(object? sender, EventArgs e)
@@ -175,7 +175,7 @@ public class SettingsScene : IGameScene
 
     public void OnExit()
     {
-        _engine.RenderManager.FocusManager.UnregisterAll();
+        _engine.FocusManager.UnregisterAll();
         _engine.RootPanel().RemoveChild(_settingsPanel);
     }
 }

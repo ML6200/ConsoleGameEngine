@@ -287,7 +287,7 @@ public class MapEditorScene : IGameScene
         {
             int count = _mapParser.Optimize();
             UiMsgBox msgBox = new UiMsgBox(_mainPanel,
-                _engine.RenderManager,
+                _engine.FocusManager,
                 _engine.Input,
                 "Map optimization",
                 $"Map optimization complete:\nFound {count} duplicates.");
@@ -349,7 +349,7 @@ public class MapEditorScene : IGameScene
     private void ErrorMessage(Exception e)
     {
         UiMsgBox msgBox = new UiMsgBox(_engine.RootPanel(),
-            _engine.RenderManager, _engine.Input,
+            _engine.FocusManager, _engine.Input,
             "Failed to load", e.Message);
 
         msgBox.OnComplete += result =>
@@ -371,7 +371,7 @@ public class MapEditorScene : IGameScene
 
     private void DisableEditor()
     {
-        //_engine.RenderManager.FocusManager.UnregisterAll();
+        //_engine.FocusManager.UnregisterAll();
         //_engine.Input.OnKeyPressed -= HandleUserInput;
     }
 
@@ -470,7 +470,7 @@ public class MapEditorScene : IGameScene
                 SetState(EditorState.Changed);
                 DisableEditor();
                 UiMsgBox msgBox = new UiMsgBox(_mainPanel,
-                    _engine.RenderManager, _engine.Input,
+                    _engine.FocusManager, _engine.Input,
                     "Failed to load", e.Message);
                 msgBox.OnComplete += result =>
                 {
@@ -583,7 +583,7 @@ public class MapEditorScene : IGameScene
     {
         DisableEditor();
         UiInputBox msgBox2 = new UiInputBox(_editorPanel,
-            _engine.RenderManager, _engine.Input,
+            _engine.FocusManager, _engine.Input,
             "Enter the path of the file to be opened:", "");
 
         msgBox2.OnOk += OpenMap;
@@ -617,7 +617,7 @@ public class MapEditorScene : IGameScene
     {
         DisableEditor();
         UiMsgBox msgBox = new UiMsgBox(_editorPanel,
-            _engine.RenderManager, _engine.Input,
+            _engine.FocusManager, _engine.Input,
             "You have unsaved work!", "Do you want to save your work? " +
                                       "If you hit cancel all changes WILL BE LOST!");
 
@@ -652,7 +652,7 @@ public class MapEditorScene : IGameScene
     {
         DisableEditor();
         UiInputBox inpBox = new UiInputBox(_editorPanel,
-            _engine.RenderManager, _engine.Input,
+            _engine.FocusManager, _engine.Input,
             "Enter the path of the file to be saved:", "");
         inpBox.OnOk += s =>
         {
@@ -668,7 +668,7 @@ public class MapEditorScene : IGameScene
 
     public void OnExit()
     {
-        _engine.RenderManager.FocusManager.UnregisterAll();
+        _engine.FocusManager.UnregisterAll();
         _engine.RootPanel().RemoveAllChildren();
     }
 }

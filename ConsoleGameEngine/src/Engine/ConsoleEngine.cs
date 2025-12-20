@@ -59,6 +59,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         
     }
 
+    public FocusManager FocusManager { get; private set; }
     public InputManager Input => _inputManager;
     public ConsoleRenderer2D Renderer => _renderer;
     public ConsoleRenderManager RenderManager => _renderManager;
@@ -138,10 +139,9 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         
         Console.CursorVisible = false;
         Console.Clear();
-        _renderManager.SubscribeFocusEventsToInput(_inputManager);
+        FocusManager = new FocusManager(_inputManager);
         _isInitialized = true;
         _logger.Info("Engine initialized");
-        
         _monitoring = new(_targetUpdatesPerSecond);
         
         AddStats();

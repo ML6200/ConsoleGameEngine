@@ -17,18 +17,17 @@ public class UiInputBox : UiPanel
     private readonly UiButton _cancelButton;
     private readonly GraphicsComponent _parent;
     private readonly UiButton _okButton;
-    private readonly ConsoleRenderManager _renderManager;
+    private readonly FocusManager _focusManager;
     private Logger _logger = LogManager.GetCurrentClassLogger();
     
     public event Action<string>? OnOk;
     public event EventHandler OnCancelled;
 
-    public UiInputBox(GraphicsComponent parent, ConsoleRenderManager renderManager, 
+    public UiInputBox(GraphicsComponent parent, FocusManager focusManager, 
         InputManager inputManager,
         string title, string message)
     {
-        _renderManager = renderManager;
-        
+        _focusManager = focusManager;   
         ForegroundColor = ConsoleColor.White;
         BackgroundColor = ConsoleColor.Blue;
         
@@ -80,9 +79,9 @@ public class UiInputBox : UiPanel
         AddChild(_cancelButton);
         AddChild(_okButton);
         
-        renderManager.FocusManager.Register(_inputField);
-        renderManager.FocusManager.Register(_okButton);
-        renderManager.FocusManager.Register(_cancelButton);
+        _focusManager.Register(_inputField);
+        _focusManager.Register(_okButton);
+        _focusManager.Register(_cancelButton);
         
         HasBorder = true;
         ComputeSizes();
@@ -91,9 +90,9 @@ public class UiInputBox : UiPanel
 
     private void Close()
     {
-        _renderManager.FocusManager.Unregister(_inputField);
-        _renderManager.FocusManager.Unregister(_okButton);
-        _renderManager.FocusManager.Unregister(_cancelButton);
+        _focusManager.Unregister(_inputField);
+        _focusManager.Unregister(_okButton);
+        _focusManager.Unregister(_cancelButton);
         
         Visible = false;
         _parent.RemoveChild(this);

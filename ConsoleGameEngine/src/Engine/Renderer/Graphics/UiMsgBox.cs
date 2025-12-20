@@ -14,16 +14,16 @@ public class UiMsgBox : UiPanel
     private readonly UiButton _cancelButton;
     private readonly GraphicsComponent _parent;
     private readonly UiButton _okButton;
-    private readonly ConsoleRenderManager _renderManager;
+    private readonly FocusManager _focusManager;
     private readonly InputManager _inputManager;
     
     public event Action<MessageOptionState>? OnComplete;
 
-    public UiMsgBox(GraphicsComponent parent, ConsoleRenderManager renderManager, 
+    public UiMsgBox(GraphicsComponent parent, FocusManager focusManager, 
         InputManager inputManager,
         string title, string message)
     {
-        _renderManager = renderManager;
+        _focusManager = focusManager;
         _inputManager = inputManager;
         
         ForegroundColor = ConsoleColor.White;
@@ -69,8 +69,8 @@ public class UiMsgBox : UiPanel
         AddChild(_cancelButton);
         AddChild(_okButton);
         
-        renderManager.FocusManager.Register(_okButton);
-        renderManager.FocusManager.Register(_cancelButton);
+        _focusManager.Register(_okButton);
+        _focusManager.Register(_cancelButton);
         
         HasBorder = true;
         ComputeSizes();
@@ -89,8 +89,8 @@ public class UiMsgBox : UiPanel
     {
         _inputManager.OnKeyPressed -= HandleYesNo;
         OnComplete?.Invoke(option);
-        _renderManager.FocusManager.Unregister(_okButton);
-        _renderManager.FocusManager.Unregister(_cancelButton);
+        _focusManager.Unregister(_okButton);
+        _focusManager.Unregister(_cancelButton);
         
         _parent.RemoveChild(this);
         Visible = false;

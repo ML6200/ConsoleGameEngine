@@ -89,7 +89,7 @@ public class MainMenuScene : IGameScene
 
         if (!DoomGameManager.IsTipShown)
         {
-            UiMsgBox msgBox = new UiMsgBox(_menuPanel, _engine.RenderManager, _engine.Input,
+            UiMsgBox msgBox = new UiMsgBox(_menuPanel, _engine.FocusManager, _engine.Input,
                 "💡 Tip of the day", "You can select buttons with up and down arrows.");
             msgBox.OnComplete += state =>
             {
@@ -108,15 +108,15 @@ public class MainMenuScene : IGameScene
 
     private void EnableButtons()
     {
-        _engine.RenderManager.FocusManager.Register(_playButton);
-        _engine.RenderManager.FocusManager.Register(_settingsButton);
-        _engine.RenderManager.FocusManager.Register(_mapEditButton);
-        _engine.RenderManager.FocusManager.Register(_quitButton);
+        _engine.FocusManager.Register(_playButton);
+        _engine.FocusManager.Register(_settingsButton);
+        _engine.FocusManager.Register(_mapEditButton);
+        _engine.FocusManager.Register(_quitButton);
     }
 
     private void DisableButtons()
     {
-        _engine.RenderManager.FocusManager.UnregisterAll();
+        _engine.FocusManager.UnregisterAll();
     }
 
     private void WindowResized(object? sender, EventArgs e)
@@ -148,7 +148,7 @@ public class MainMenuScene : IGameScene
 
     public void OnExit()
     {
-        _engine.RenderManager.FocusManager.UnregisterAll();
+        _engine.FocusManager.UnregisterAll();
         // Remove menu panel from root
         _engine.RootPanel().RemoveChild(_menuPanel);
     }
@@ -173,7 +173,7 @@ public class MainMenuScene : IGameScene
             message = WrapText(message);
             
             UiMsgBox msgBox = new UiMsgBox(_engine.RootPanel(),
-                _engine.RenderManager, _engine.Input,
+                _engine.FocusManager, _engine.Input,
                 "Failed to load", message);
 
             msgBox.OnComplete += result =>
@@ -205,7 +205,7 @@ public class MainMenuScene : IGameScene
 
     private void OnQuitClicked(object sender, EventArgs e)
     {
-        UiMsgBox msgBox = new UiMsgBox(_menuPanel, _engine.RenderManager, _engine.Input, 
+        UiMsgBox msgBox = new UiMsgBox(_menuPanel, _engine.FocusManager, _engine.Input, 
             "Quit", "Are you sure you want to quit?");
 
         msgBox.OnComplete += state =>

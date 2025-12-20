@@ -5,13 +5,21 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
 public class FocusManager
 {
+    private readonly InputManager _inputManager;
     private readonly List<IFocusable> _focusableComponents = new();
     private int _currentFocusIndex = -1;
     
     public IFocusable? FocusedComponent => 
         _currentFocusIndex >= 0 && _currentFocusIndex < _focusableComponents.Count 
             ? _focusableComponents[_currentFocusIndex] :  null;
+
     
+    public FocusManager(InputManager inputManager)
+    {
+        _inputManager = inputManager;
+        HandleFocusInput();
+    }
+
     public void Register(IFocusable focusable)
     {
         _focusableComponents.Add(focusable);
@@ -78,9 +86,51 @@ public class FocusManager
         SetFocus(prevIndex);
     }
     
-    public void ActivateFocused(KeyEventArgs? param)
+    public void ActivateFocused()
     {
-        FocusedComponent?.OnFocusActivate(param);
+        FocusedComponent?.OnFocusActivate();
+    }
+    
+    public void SubscribeFocusEventsToInput()
+    {
+        HandleFocusInput();
+    }
+
+    private void HandleFocusInput()
+    {
+        KeyBinding tabKey = KeyBinding.Commons.Tab;
+        KeyBinding shiftTabKey = KeyBinding.Parse("shift+tab");
+        
+        _inputManager.Register(tabKey);
+        _inputManager.Register(shiftTabKey);
+        _inputManager.Register(KeyBinding.Commons.Enter);
+        
+        
+        _inputManager.Subscribe(KeyBinding.Commons.Enter, () =>
+        {
+            if (FocusedComponent is UiButton)
+                ActivateFocused();
+        });
+        
+        _inputManager.Subscribe(tabKey, () =>
+        {
+            FocusNext();
+            
+            if (FocusedComponent is UiInputField uiInputField)
+            {
+                ActivateFocused();
+            }
+        });
+        
+        _inputManager.Subscribe(shiftTabKey, () =>
+        {
+            FocusPrevious();
+            
+            if (FocusedComponent is UiInputField uiInputField)
+            {
+                ActivateFocused();
+            }
+        });
     }
 
     public void ClearAll()
