@@ -83,7 +83,8 @@ public class DoomGameScene : IGameScene
         WorldSize = _engine.Camera.WorldSize;
 
         // Subscribe to input events
-        _input.OnKeyPressed += OnKeyPressed;
+        _input.Mode = InputManager.InputMode.KeyInput;
+        HandleInput();
 
         // Setup cleanup handlers
         Console.CancelKeyPress += (sender, e) => _audioEngine.StopAll();
@@ -168,7 +169,6 @@ public class DoomGameScene : IGameScene
     public void OnExit()
     {
         StopAllAudio();
-        _input.OnKeyPressed -= OnKeyPressed!;
 
         // Clean up all game entities from the root panel
         _rootPanel.RemoveChild(Player);
@@ -251,49 +251,48 @@ public class DoomGameScene : IGameScene
         }
     }
 
-    private void OnKeyPressed(object sender, KeyEventArgs e)
+    private void HandleInput()
     {
-        switch (e.Key)
+        KeyBinding escapeKeyBinding = KeyBinding.Commons.Escape;
+        KeyBinding leftArrowKeyBinding = KeyBinding.Commons.LeftArrow;
+        KeyBinding rightArrowKeyBinding = KeyBinding.Commons.RightArrow;
+        KeyBinding upArrowKeyBinding = KeyBinding.Commons.UpArrow;
+        KeyBinding downArrowKeyBinding = KeyBinding.Commons.DownArrow;
+        KeyBinding attackKeyBinding = KeyBinding.Parse("A");
+        KeyBinding attackBfgKeyBinding = KeyBinding.Parse("S");
+        KeyBinding interactKeyBinding = KeyBinding.Parse("D");
+        
+        _input.Register(escapeKeyBinding);
+        _input.Register(leftArrowKeyBinding);
+        _input.Register(rightArrowKeyBinding);
+        _input.Register(upArrowKeyBinding);
+        _input.Register(downArrowKeyBinding);
+        _input.Register(attackKeyBinding);
+        _input.Register(attackBfgKeyBinding);
+        _input.Register(interactKeyBinding);
+        
+        _input.Subscribe(escapeKeyBinding, () =>
         {
-            case ConsoleKey.Escape:
-                UiMsgBox msgBox = new UiMsgBox(_rootPanel, _engine.FocusManager, _engine.Input,
-                    "You are about to exit", "Are you sure you want to exit the game? (Y/N)");
-                msgBox.OnComplete += state =>
+            UiMsgBox msgBox = new UiMsgBox(_rootPanel, _engine.FocusManager, _engine.Input,
+                "You are about to exit", "Are you sure you want to exit the game? (Y/N)");
+            msgBox.OnComplete += state =>
+            {
+                if (state == MessageOptionState.Ok)
                 {
-                    if (state == MessageOptionState.Ok)
-                    {
-                        Interrupted = true;
-                    }
-                };
-                break;
-
-            // Movement
-            case ConsoleKey.LeftArrow:
-                MovePlayerBy(-1, 0);
-                break;
-            case ConsoleKey.RightArrow:
-                MovePlayerBy(1, 0);
-                break;
-            case ConsoleKey.UpArrow:
-                MovePlayerBy(0, -1);
-                break;
-            case ConsoleKey.DownArrow:
-                MovePlayerBy(0, 1);
-                break;
-
-            // Combat
-            case ConsoleKey.A:
-                _combatSystem.PlayerAttack();
-                break;
-            case ConsoleKey.S:
-                _combatSystem.PlayerBFGAttack();
-                break;
-
-            // Interaction
-            case ConsoleKey.D:
-                _interactionSystem.ProcessPlayerDirectInteraction();
-                break;
-        }
+                    Interrupted = true;
+                }
+            };
+        });
+        _input.Subscribe(leftArrowKeyBinding, () => { MovePlayerBy(-1, 0); });
+        _input.Subscribe(rightArrowKeyBinding, () => { MovePlayerBy(1, 0); });
+        _input.Subscribe(upArrowKeyBinding, () => { MovePlayerBy(0, -1); });
+        _input.Subscribe(downArrowKeyBinding, () => { MovePlayerBy(0, 1); });
+        _input.Subscribe(attackKeyBinding, () => { _combatSystem.PlayerAttack(); });
+        _input.Subscribe(attackBfgKeyBinding, () => { _combatSystem.PlayerBFGAttack(); });
+        _input.Subscribe(interactKeyBinding, () =>
+        {
+            _interactionSystem.ProcessPlayerDirectInteraction();
+        });
     }
 
     private void MovePlayerBy(int x, int y)
