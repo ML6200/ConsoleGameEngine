@@ -72,7 +72,7 @@ public class SettingsScene : IGameScene
         if (!MapParser.HasCorrectExtension(_mapField.Text))
         {
             DisableButtons();
-            UiMsgBox msgBox = new UiMsgBox(_settingsPanel, _engine.FocusManager, _engine.Input,
+            UiMsgBox msgBox = new UiMsgBox(_settingsPanel, _engine.UiManager, _engine.Input,
                 "Format mismatch", "Only '.dcmf' or '.map' is acceptable!");
             msgBox.OnComplete += state =>
             {
@@ -99,7 +99,7 @@ public class SettingsScene : IGameScene
         };
         _settingsPanel.AddChild(_mapLabel);
         
-        _mapField = new UiInputField(DoomGameManager.GameSettings.DefaultMap, _engine.Input)
+        _mapField = new UiInputField(DoomGameManager.GameSettings.DefaultMap)
         {
             RelativePosition = new Point2D(3, 4),
             Size = new Dimension2D(40, 1),
@@ -117,7 +117,7 @@ public class SettingsScene : IGameScene
         };
         _settingsPanel.AddChild(_assetsLabel);
         
-        _assetsField = new UiInputField(DoomGameManager.GameSettings.AudioAssetsPath, _engine.Input)
+        _assetsField = new UiInputField(DoomGameManager.GameSettings.AudioAssetsPath)
         {
             RelativePosition = new Point2D(3, 7),
             Size = new Dimension2D(40, 1),
@@ -146,16 +146,16 @@ public class SettingsScene : IGameScene
 
     private void EnableButtons()
     {
-        _engine.FocusManager.Register(_saveAndBackButton);
-        _engine.FocusManager.Register(_backButton);
-        _engine.FocusManager.Register(_mapField);
-        _engine.FocusManager.Register(_assetsField);
+        _engine.UiManager.Register(_saveAndBackButton);
+        _engine.UiManager.Register(_backButton);
+        _engine.UiManager.Register(_mapField);
+        _engine.UiManager.Register(_assetsField);
         //_engine.FocusManager.Register(_browseButton);
     }
 
     private void DisableButtons()
     {
-        _engine.FocusManager.UnregisterAll();
+        _engine.UiManager.UnregisterAll();
     }
 
     private void Browse(object? sender, EventArgs e)
@@ -175,7 +175,7 @@ public class SettingsScene : IGameScene
 
     public void OnExit()
     {
-        _engine.FocusManager.UnregisterAll();
+        _engine.UiManager.UnregisterAll();
         _engine.RootPanel().RemoveChild(_settingsPanel);
     }
 }

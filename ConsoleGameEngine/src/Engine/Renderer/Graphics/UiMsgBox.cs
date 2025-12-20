@@ -14,12 +14,12 @@ public class UiMsgBox : UiPanel
     private readonly UiButton _cancelButton;
     private readonly GraphicsComponent _parent;
     private readonly UiButton _okButton;
-    private readonly FocusManager _focusManager;
+    private readonly UiManager _focusManager;
     private readonly InputManager _inputManager;
     
     public event Action<MessageOptionState>? OnComplete;
 
-    public UiMsgBox(GraphicsComponent parent, FocusManager focusManager, 
+    public UiMsgBox(GraphicsComponent parent, UiManager focusManager, 
         InputManager inputManager,
         string title, string message)
     {

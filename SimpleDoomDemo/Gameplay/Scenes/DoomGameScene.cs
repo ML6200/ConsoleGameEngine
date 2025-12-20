@@ -273,7 +273,7 @@ public class DoomGameScene : IGameScene
         
         _input.Subscribe(escapeKeyBinding, () =>
         {
-            UiMsgBox msgBox = new UiMsgBox(_rootPanel, _engine.FocusManager, _engine.Input,
+            UiMsgBox msgBox = new UiMsgBox(_rootPanel, _engine.UiManager, _engine.Input,
                 "You are about to exit", "Are you sure you want to exit the game? (Y/N)");
             msgBox.OnComplete += state =>
             {

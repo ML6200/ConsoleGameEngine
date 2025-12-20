@@ -9,6 +9,7 @@ public class KeyEventArgs : EventArgs
     public bool Control { get; set; }
     public bool Alt { get; set; }
     public bool Shift { get; set; }
-
-    public bool IsKeyPrintable => !char.IsControl(KeyChar);
+    
+    public bool IsPrintable => !char.IsControl(KeyChar);
+    public bool IsNavigation => Key is ConsoleKey.Tab or ConsoleKey.Enter;
 }

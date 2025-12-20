@@ -17,13 +17,13 @@ public class UiInputBox : UiPanel
     private readonly UiButton _cancelButton;
     private readonly GraphicsComponent _parent;
     private readonly UiButton _okButton;
-    private readonly FocusManager _focusManager;
+    private readonly UiManager _focusManager;
     private Logger _logger = LogManager.GetCurrentClassLogger();
     
     public event Action<string>? OnOk;
     public event EventHandler OnCancelled;
 
-    public UiInputBox(GraphicsComponent parent, FocusManager focusManager, 
+    public UiInputBox(GraphicsComponent parent, UiManager focusManager, 
         InputManager inputManager,
         string title, string message)
     {
@@ -42,7 +42,7 @@ public class UiInputBox : UiPanel
             ForegroundColor = ConsoleColor.White,
             BackgroundColor = this.BackgroundColor,
         };
-        _inputField = new UiInputField("", inputManager)
+        _inputField = new UiInputField("")
         {
             ForegroundColor = ConsoleColor.White,
             BackgroundColor = this.BackgroundColor,

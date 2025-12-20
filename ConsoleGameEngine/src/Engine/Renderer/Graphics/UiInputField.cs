@@ -1,55 +1,47 @@
 using System;
 using ConsoleGameEngine.Engine.Input;
-using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public class UiInputField : GraphicsComponent, IFocusable
+public class UiInputField : GraphicsComponent, IFocusable, IUiInput
 {
     private string _text = "";
-    private volatile bool _isDeleting = false;
     
     private int CursorPosition => _text.Length;
 
     public string Text
     {
         get => _text;
-        set
+        private set
         {
             OnTextChanged?.Invoke(this, EventArgs.Empty);
             _text = value;
-            UpdateSize(); //for growth later
+            UpdateSize();
         }
     }
 
     public bool IsFocused { get; set; }
     public bool CanFocus { get; set; } = true;
-    
     public bool HasBorder { get; set; } = false;
 
     private event EventHandler OnTextChanged;
     public ConsoleColor FocusedBgColor { get; set; } = ConsoleColor.Cyan;
     public ConsoleColor FocusedFgColor { get; set; } = ConsoleColor.Black;
     
-    private InputManager _inputManager;
-    
-    public UiInputField(string text, InputManager inputManager)
+    public UiInputField(string text)
     {
         Text = text;
-        _inputManager = inputManager;
     }
 
-    public UiInputField(InputManager inputManager)
+    public UiInputField()
     {
-        _inputManager = inputManager;
     }
 
 
     public void OnFocusGained()
     {
         HasBorder = true;
-        _inputManager.OnKeyPressed += HandleInput;
     }
 
     private void HandleInput(object? sender, KeyEventArgs e)
@@ -63,29 +55,30 @@ public class UiInputField : GraphicsComponent, IFocusable
     public void OnFocusLost()
     {
         HasBorder = false;
-        _inputManager.OnKeyPressed -= HandleInput;
     }
 
     public void OnFocusActivate()
     {
-        KeyEventArgs? param = null;
-        if (param != null
-            && param.Key != ConsoleKey.Backspace
-            && param.Key != ConsoleKey.Enter
-            && param.Key != ConsoleKey.Escape
-            && param.Key != ConsoleKey.DownArrow
-            && param.Key != ConsoleKey.UpArrow )
-        {
-            _isDeleting = false;
-            Text += param.KeyChar;
-        }
-        else if (param is { Key:ConsoleKey.Backspace })
+    }
+    
+    public void HandleInput(KeyEventArgs keyEventArgs)
+    {
+        if (keyEventArgs.Key == ConsoleKey.Backspace)
         {
             if (Text.Length > 0)
             {
-                _isDeleting = true;
-                Text = _text.Substring(0, Text.Length - 1);
+                Text = Text.Substring(0, Text.Length - 1);
             }
+            return;
+        }
+        if (keyEventArgs is { Key: ConsoleKey.X, Control: true })
+        {
+            Text = "";
+            return;
+        }
+        if (keyEventArgs.IsPrintable && !char.IsControl(keyEventArgs.KeyChar))
+        {
+            Text += keyEventArgs.KeyChar;
         }
     }
     

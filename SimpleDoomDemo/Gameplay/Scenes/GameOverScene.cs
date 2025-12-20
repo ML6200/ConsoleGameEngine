@@ -77,7 +77,7 @@ public class GameOverScene : IGameScene
     {
         _engine.Input.OnKeyPressed -= OnKeyPressed;
         _game.StopAllAudio();
-        _engine.FocusManager.UnregisterAll();
+        _engine.UiManager.UnregisterAll();
         _engine.Input.OnKeyPressed -= OnKeyPressed;
 
         _rootPanel.BackgroundColor = ConsoleColor.Black;

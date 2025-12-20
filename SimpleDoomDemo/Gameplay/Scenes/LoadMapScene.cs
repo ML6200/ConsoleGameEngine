@@ -37,7 +37,7 @@ public class LoadMapScene : IGameScene
 
     public void OnExit()
     {
-        _engine.FocusManager.UnregisterAll();
+        _engine.UiManager.UnregisterAll();
         _engine.Stop();
         _engine.Dispose();
     }

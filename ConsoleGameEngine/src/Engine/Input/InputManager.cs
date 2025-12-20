@@ -144,31 +144,40 @@ public class InputManager : IDisposable
             Control = keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control),
             Alt = keyInfo.Modifiers.HasFlag(ConsoleModifiers.Alt),
         };
-        
-        if (KeyBinding.Parse(keyEventArgs).HasModifiers || !keyEventArgs.IsKeyPrintable) 
-            Mode = InputMode.KeyInput;
-        
+
         HandleKeyEvent(keyEventArgs);
     }
     
-    private void HandleKeyEvent( KeyEventArgs e)
+    private void HandleKeyEvent(KeyEventArgs e)
     {
         var binding = KeyBinding.Parse(e.Control, e.Alt, e.Shift, e.Key);
         lock (_lock)
         {
             if (Mode == InputMode.KeyInput)
             {
-                if (!_keyBindings.TryGetValue(binding, out var value)) return;
-                foreach (var listener in value.Listeners)
+                if (_keyBindings.TryGetValue(binding, out var value))
                 {
-                    listener();
+                    foreach (var listener in value.Listeners)
+                    {
+                        listener();
+                    }
                 }
             }
             else
             {
-                foreach (var action in _rawInputChannel)
+                if (e.IsNavigation && _keyBindings.TryGetValue(binding, out var value))
                 {
-                    action(e);
+                    foreach (var listener in value.Listeners)
+                    {
+                        listener();
+                    }
+                }
+                else
+                {
+                    foreach (var action in _rawInputChannel)
+                    {
+                        action(e);
+                    }
                 }
             }
         }
