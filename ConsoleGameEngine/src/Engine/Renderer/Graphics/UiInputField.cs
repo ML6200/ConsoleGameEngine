@@ -1,5 +1,6 @@
 using System;
 using ConsoleGameEngine.Engine.Input;
+using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
@@ -7,6 +8,8 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 public class UiInputField : GraphicsComponent, IFocusable, IUiInput
 {
     private string _text = "";
+    private UiLabel _cursorLabel;
+    private Animation _cursorAnim;
     
     private int CursorPosition {get; set;} = 0;
 
@@ -31,21 +34,38 @@ public class UiInputField : GraphicsComponent, IFocusable, IUiInput
     public UiInputField(string text)
     {
         Text = text;
+        InitializeCursor();
     }
 
     public UiInputField()
     {
+        InitializeCursor();
     }
 
+    private void InitializeCursor()
+    {
+        _cursorLabel = new UiLabel("|")
+        {
+            Visible = false
+        };
+        AddChild(_cursorLabel);
+
+        _cursorAnim = AnimationTween.Blink(_cursorLabel, 1);
+    }
 
     public void OnFocusGained()
     {
         HasBorder = true;
+        _cursorLabel.Visible = true;
+        _cursorLabel.AddAnimation(_cursorAnim);
+        _cursorAnim.Resume();
     }
 
     public void OnFocusLost()
     {
         HasBorder = false;
+        _cursorLabel.Visible = false;
+        _cursorLabel.ClearAnimations();
     }
 
     public void OnFocusActivate()
@@ -70,21 +90,8 @@ public class UiInputField : GraphicsComponent, IFocusable, IUiInput
         if (keyEventArgs.IsPrintable && !char.IsControl(keyEventArgs.KeyChar))
         {
             Text += keyEventArgs.KeyChar;
+            _cursorAnim.Freeze();
         }
-    }
-    
-    private void ComputeSize()
-    {
-        if (Size != Dimension2D.NullSize) return;
-        
-        int minWidth = HasBorder ? _text.Length + 2 : _text.Length;
-        int minHeight = 1;
-
-        int newWidth = Math.Max(minWidth, Size.Width);
-        int newHeight = Math.Max(minHeight, Size.Height);
-
-        Width = newWidth;
-        Height = newHeight;
     }
 
     protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
@@ -95,12 +102,6 @@ public class UiInputField : GraphicsComponent, IFocusable, IUiInput
         int borderOffset = HasBorder ? 2 : 0;
         int availableWidth = Size.Width - borderOffset;
 
-        /*
-         * [Base size]
-         * [ This is a long text| ]
-         * | |                 |  |
-         * 1 3                -3  1
-         */
         string displayText = Text;
         
         if (Text.Length > availableWidth)
@@ -138,7 +139,12 @@ public class UiInputField : GraphicsComponent, IFocusable, IUiInput
         
         renderer.DrawText(textStartX, textY, displayText, bgColor, fgColor);
         
+        // Update cursor label position and colors
         if (IsFocused)
-            renderer.SetCell(textStartX + CursorPosition, textY, new ('|', bgColor, fgColor));
+        {
+            _cursorLabel.WorldPosition = new Point2D(textStartX + CursorPosition, textY);
+            _cursorLabel.BackgroundColor = bgColor;
+            _cursorLabel.ForegroundColor = fgColor;
+        }
     }
 }
