@@ -109,7 +109,7 @@ public class GameItem : GraphicsComponent
         Visible = Available && distance <= sightRange;
     }
 
-    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    protected override void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
         // Transform world coordinates to screen coordinates
         Point2D screenPos = camera.TransformPoint(WorldPosition);

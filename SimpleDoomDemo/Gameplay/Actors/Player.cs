@@ -112,7 +112,7 @@ public class Player : GraphicsComponent
     }
     
 
-    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    protected override void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
         if (!_alive)
         {

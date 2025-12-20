@@ -69,7 +69,7 @@ public class UiButton : GraphicsComponent, IFocusable
         Height = newHeight;
     }
 
-    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    protected override void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
         if (WorldPosition == null) return;
 

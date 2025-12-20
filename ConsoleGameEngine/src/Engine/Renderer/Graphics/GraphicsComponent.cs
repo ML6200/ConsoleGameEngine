@@ -355,7 +355,7 @@ public abstract class GraphicsComponent : IRenderable
     {
         if (!Visible) return;
         
-        RenderSelf(renderer, camera);
+        Draw(renderer, camera);
         
         var childrenSnapshot = GetChildrenSnapshot();
         foreach (var child in childrenSnapshot)
@@ -369,7 +369,7 @@ public abstract class GraphicsComponent : IRenderable
     /// </summary>
     /// <param name="renderer">The renderer to use for drawing.</param>
     /// <param name="camera">The camera defining the view.</param>
-    protected virtual void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    protected virtual void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
     }
 

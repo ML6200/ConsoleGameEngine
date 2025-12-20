@@ -16,7 +16,7 @@ public class Zombieman : Demon
         _speed = 93;
     }
     
-    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    protected override void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
         // Transform world coordinates to screen coordinates
         Point2D screenPos = camera.TransformPoint(WorldPosition);

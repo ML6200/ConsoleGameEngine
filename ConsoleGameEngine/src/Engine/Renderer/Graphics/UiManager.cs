@@ -7,12 +7,12 @@ public class UiManager
 {
     private readonly InputManager _inputManager;
     private readonly List<IFocusable> _focusableComponents = new();
+    
+    private readonly KeyBinding _tabKey = KeyBinding.Commons.Tab;
+    private readonly KeyBinding _shiftTabKey = KeyBinding.Parse("shift+tab");
+
     private int _currentFocusIndex = -1;
-    
-    private KeyBinding _tabKey = KeyBinding.Commons.Tab;
-    private KeyBinding _shiftTabKey = KeyBinding.Parse("shift+tab");
-    
-    public IFocusable? FocusedComponent => 
+    private IFocusable? FocusedComponent => 
         _currentFocusIndex >= 0 && _currentFocusIndex < _focusableComponents.Count 
             ? _focusableComponents[_currentFocusIndex] :  null;
 

@@ -681,7 +681,7 @@ internal sealed class Cursor : GraphicsComponent
         Visible = true;
     }
 
-    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    protected override void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
         Point2D screenPos = camera.TransformPoint(WorldPosition);
         if (screenPos == Point2D.OutsideScreenPoint) return; // Off-screen culling

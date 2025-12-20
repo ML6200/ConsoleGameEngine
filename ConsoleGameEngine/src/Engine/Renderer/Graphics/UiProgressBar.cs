@@ -25,7 +25,7 @@ public class ProgressBar : GraphicsComponent
         }));
     }
 
-    protected override void RenderSelf(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    protected override void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
     {
         // UI progress bars render directly at world position (no camera transformation)
         int filledWidth = (int)(Size.Width * _progress);
