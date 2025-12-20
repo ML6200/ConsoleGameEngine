@@ -102,7 +102,7 @@ public class SettingsScene : IGameScene
         _mapField = new UiInputField(DoomGameManager.GameSettings.DefaultMap)
         {
             RelativePosition = new Point2D(3, 4),
-            Size = new Dimension2D(40, 1),
+            Size = new Dimension2D(20, 1),
             BackgroundColor = ConsoleColor.DarkYellow,
             ForegroundColor = ConsoleColor.Blue,
         };
@@ -120,7 +120,7 @@ public class SettingsScene : IGameScene
         _assetsField = new UiInputField(DoomGameManager.GameSettings.AudioAssetsPath)
         {
             RelativePosition = new Point2D(3, 7),
-            Size = new Dimension2D(40, 1),
+            Size = new Dimension2D(20, 1),
             BackgroundColor = ConsoleColor.DarkYellow,
             ForegroundColor = ConsoleColor.Blue,
         };
