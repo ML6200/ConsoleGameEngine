@@ -9,5 +9,6 @@ public class KeyEventArgs : EventArgs
     public bool Control { get; set; }
     public bool Alt { get; set; }
     public bool Shift { get; set; }
-    public DateTime Timestamp { get; set; } = DateTime.Now;
+
+    public bool IsKeyPrintable => !char.IsControl(KeyChar);
 }

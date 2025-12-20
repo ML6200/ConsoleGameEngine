@@ -35,6 +35,11 @@ public class KeyBinding
     {
     }
 
+    public static KeyBinding Parse(KeyEventArgs keyEventArgs)
+    {
+        return Parse(keyEventArgs.Control, keyEventArgs.Alt, keyEventArgs.Shift, keyEventArgs.Key);
+    }
+
     public static KeyBinding Parse(bool isControl, bool isAlt, bool isShift, ConsoleKey key)
     {
         KeyBinding keyBinding = new KeyBinding
@@ -73,9 +78,12 @@ public class KeyBinding
         {
             keyBinding.Key = EncodeModifier(part, keyBinding);
         }
+        
         return keyBinding;
     }
-
+    
+    public bool HasModifiers => Modifiers != 0;
+    
     private static string NormalizeKey(string key)
     {
         if (string.IsNullOrEmpty(key)) return string.Empty;

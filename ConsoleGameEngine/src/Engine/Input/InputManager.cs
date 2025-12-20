@@ -7,6 +7,11 @@ namespace ConsoleGameEngine.Engine.Input;
 
 public class InputManager : IDisposable
 {
+    public enum InputMode
+    {
+        TextInput,
+        KeyInput
+    }
     // idea: We could use observables for better separation of concerns
     /*
      * Register(KeyBinding)
@@ -24,11 +29,14 @@ public class InputManager : IDisposable
     
     /* Legacy manual key event (NOT RECOMMENDED)*/
     public event EventHandler<KeyEventArgs> OnKeyPressed;
+    public InputMode Mode {get; set;} = InputMode.KeyInput;
+    
     private readonly Thread _inputThread;
     private readonly Lock _lock = new();
     private readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly CancellationTokenSource _cts;
     private readonly Dictionary<KeyBinding, KeyRecord> _keyBindings = new();
+    private readonly List<Action<KeyEventArgs>> _rawInputChannel = new();
 
     public InputManager()
     {
@@ -41,20 +49,6 @@ public class InputManager : IDisposable
         };
         
         _inputThread.Start();
-        OnKeyPressed += HandleKeyEvent;
-    }
-
-    private void HandleKeyEvent(object? sender, KeyEventArgs e)
-    {
-        var binding = KeyBinding.Parse(e.Control, e.Alt, e.Shift, e.Key);
-        lock (_lock)
-        {
-            if (!_keyBindings.TryGetValue(binding, out var value)) return;
-            foreach (var listener in value.Listeners)
-            {
-                listener();
-            }
-        }
     }
 
     /// <summary>
@@ -102,6 +96,22 @@ public class InputManager : IDisposable
             value.Listeners.Add(listener);
         }
     }
+
+    public void SubscribeToRawInput(Action<KeyEventArgs> action)
+    {
+        lock (_lock)
+        {
+            _rawInputChannel.Add(action);
+        }
+    }
+    
+    public void UnsubscribeFromRawInput(Action<KeyEventArgs> action)
+    {
+        lock (_lock)
+        {
+            _rawInputChannel.Remove(action);
+        }
+    }
     
     public void UnSubscribe(KeyBinding keyBinding, Action listener)
     {
@@ -134,8 +144,34 @@ public class InputManager : IDisposable
             Control = keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control),
             Alt = keyInfo.Modifiers.HasFlag(ConsoleModifiers.Alt),
         };
-
-        OnKeyPressed.Invoke(this, keyEventArgs);
+        
+        if (KeyBinding.Parse(keyEventArgs).HasModifiers || !keyEventArgs.IsKeyPrintable) 
+            Mode = InputMode.KeyInput;
+        
+        HandleKeyEvent(keyEventArgs);
+    }
+    
+    private void HandleKeyEvent( KeyEventArgs e)
+    {
+        var binding = KeyBinding.Parse(e.Control, e.Alt, e.Shift, e.Key);
+        lock (_lock)
+        {
+            if (Mode == InputMode.KeyInput)
+            {
+                if (!_keyBindings.TryGetValue(binding, out var value)) return;
+                foreach (var listener in value.Listeners)
+                {
+                    listener();
+                }
+            }
+            else
+            {
+                foreach (var action in _rawInputChannel)
+                {
+                    action(e);
+                }
+            }
+        }
     }
     
     public void Dispose()
@@ -143,7 +179,6 @@ public class InputManager : IDisposable
         if (_cts is not { IsCancellationRequested: false }) return;
         
         _cts.Cancel();
-        OnKeyPressed -= HandleKeyEvent;
         _inputThread.Join();
         _cts.Dispose();
     }
