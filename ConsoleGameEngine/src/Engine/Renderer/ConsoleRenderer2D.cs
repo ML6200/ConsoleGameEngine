@@ -305,14 +305,20 @@ public class ConsoleRenderer2D : IDisposable
         if(_isResizing) return;
         
         int pos = 0;
+        bool isPosSet;
         for (int y = 0; y < _screenHeight; y++)
         {
+            isPosSet = false;
             for (int x = 0; x < _screenWidth; x++)
             {
                 Cell cell = _renderBuffer[x, y];
                 if (_dirtyMarks[x, y])
                 {
-                    pos = WriteEscPosToBuffer(_writeBuffer, pos, x, y);
+                    if (!isPosSet)
+                    {
+                        pos = WriteEscPosToBuffer(_writeBuffer, pos, x, y);
+                        isPosSet = true;
+                    }
 
                     if (cell.ForegroundColor != _lastFg || cell.BackgroundColor != _lastBg)
                     {
@@ -326,7 +332,7 @@ public class ConsoleRenderer2D : IDisposable
 
                     pos = WriteCharToBuffer(_writeBuffer, pos, cell.Character);
                     _dirtyMarks[x, y] = false;
-                }
+                } else isPosSet = false;
             }
         }
         
