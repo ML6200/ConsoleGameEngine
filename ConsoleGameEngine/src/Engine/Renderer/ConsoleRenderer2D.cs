@@ -302,41 +302,55 @@ public class ConsoleRenderer2D : IDisposable
     private ConsoleColor _lastBg = ConsoleColor.Black;
     public void Render()
     {
-        if(_isResizing) return;
-        
+        if (_isResizing) return;
         int pos = 0;
-        bool isPosSet;
+        
         for (int y = 0; y < _screenHeight; y++)
         {
-            isPosSet = false;
-            for (int x = 0; x < _screenWidth; x++)
+            int x = 0;
+            while (x < _screenWidth)
             {
-                Cell cell = _renderBuffer[x, y];
-                if (_dirtyMarks[x, y])
+                if (!_dirtyMarks[x, y]) { x++; continue; }
+                
+                int startX = x;
+                var runFg = _renderBuffer[startX, y].ForegroundColor;
+                var runBg = _renderBuffer[startX, y].BackgroundColor;
+                
+                int runEnd = startX + 1;
+                while (runEnd < _screenWidth && _dirtyMarks[runEnd, y])
                 {
-                    if (!isPosSet)
+                    var next = _renderBuffer[runEnd, y];
+                    if (next.ForegroundColor != runFg || next.BackgroundColor != runBg)
                     {
-                        pos = WriteEscPosToBuffer(_writeBuffer, pos, x, y);
-                        isPosSet = true;
+                        break; 
                     }
-
-                    if (cell.ForegroundColor != _lastFg || cell.BackgroundColor != _lastBg)
-                    {
-                        pos = WriteColorToBuffer(_writeBuffer, pos,
-                            cell.ForegroundColor,
-                            cell.BackgroundColor);
-
-                        _lastFg = cell.ForegroundColor;
-                        _lastBg = cell.BackgroundColor;
-                    }
-
-                    pos = WriteCharToBuffer(_writeBuffer, pos, cell.Character);
-                    _dirtyMarks[x, y] = false;
-                } else isPosSet = false;
+                    runEnd++;
+                }
+                
+                pos = WriteEscPosToBuffer(_writeBuffer, pos, startX, y);
+                
+                if (runFg != _lastFg || runBg != _lastBg)
+                {
+                    pos = WriteColorToBuffer(_writeBuffer, pos, runFg, runBg);
+                    _lastFg = runFg;
+                    _lastBg = runBg;
+                }
+                
+                for (int sx = startX; sx < runEnd; sx++)
+                {
+                    char ch = _renderBuffer[sx, y].Character;
+                    pos = WriteCharToBuffer(_writeBuffer, pos, ch);
+                    _dirtyMarks[sx, y] = false;
+                }
+                
+                x = runEnd;
             }
         }
         
-        _stdOut.Write(_writeBuffer, 0, pos);
+        if (pos > 0)
+        {
+            _stdOut.Write(_writeBuffer, 0, pos);
+        }
     }
 
     private int WriteEscPosToBuffer(byte[] buff, int pos, int x, int y)
