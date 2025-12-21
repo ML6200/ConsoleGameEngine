@@ -76,6 +76,7 @@ public sealed class RootComponent : IRenderable
     /// </summary>
     /// <param name="renderer">The renderer to use for drawing.</param>
     /// <param name="camera">The camera defining the view.</param>
+    /// <param name="screenPoint"></param>
     /// <remarks>
     /// If the root is not visible, the entire hierarchy is skipped.
     /// This method delegates to the wrapped component's Compute method.

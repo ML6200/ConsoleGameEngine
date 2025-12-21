@@ -11,11 +11,10 @@ public class RenderPipeline
     private List<RenderAction> _queue = new();
     private int _counter = 0;
 
-    private ConsoleCamera? _currentCamera { get; set; }
+    public ConsoleCamera? Camera { get; set; }
 
-    public RenderPipeline(ConsoleCamera currentCamera)
+    public RenderPipeline()
     {
-        _currentCamera = currentCamera;
     }
 
     public void Submit(Action action)
@@ -53,18 +52,18 @@ public class RenderPipeline
 
         if (component is Viewport viewport)
         {
-            var previousCamera = _currentCamera;
-            _currentCamera = viewport.Camera;
+            var previousCamera = Camera;
+            Camera = viewport.Camera;
             
             foreach (var child in component.Children)
                 WalkTree(child, renderer);
 
-            _currentCamera = previousCamera;
+            Camera = previousCamera;
             return;
         }
 
-        Point2D screenPos = _currentCamera != null
-            ? _currentCamera.TransformPoint(component.WorldPosition)
+        Point2D screenPos = Camera != null
+            ? Camera.TransformPoint(component.WorldPosition)
             : component.WorldPosition; 
 
         Submit(() => component.Draw(renderer, screenPos));

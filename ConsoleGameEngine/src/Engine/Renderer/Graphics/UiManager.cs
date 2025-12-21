@@ -4,7 +4,6 @@ namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
 public class UiManager : IComponentObserver
 {
-    private readonly InputManager _inputManager;
     private readonly KeyboardFocusManager _keyboardFocusManager;
     
     private readonly KeyBinding _tabKey = KeyBinding.Commons.Tab;
@@ -13,16 +12,15 @@ public class UiManager : IComponentObserver
     
     public UiManager(InputManager inputManager)
     {
-        _inputManager = inputManager;
         _keyboardFocusManager = new KeyboardFocusManager(inputManager);
         
-        _inputManager.Register(_tabKey);
-        _inputManager.Register(_shiftTabKey);
-        _inputManager.Register(KeyBinding.Commons.Enter);
+        inputManager.Register(_tabKey);
+        inputManager.Register(_shiftTabKey);
+        inputManager.Register(KeyBinding.Commons.Enter);
 
-        _inputManager.Subscribe(_tabKey, _keyboardFocusManager.FocusNext);
-        _inputManager.Subscribe(_shiftTabKey, _keyboardFocusManager.FocusPrevious);
-        _inputManager.Subscribe(KeyBinding.Commons.Enter, () =>
+        inputManager.Subscribe(_tabKey, _keyboardFocusManager.FocusNext);
+        inputManager.Subscribe(_shiftTabKey, _keyboardFocusManager.FocusPrevious);
+        inputManager.Subscribe(KeyBinding.Commons.Enter, () =>
         {
             if (_keyboardFocusManager.FocusedComponent is UiButton)
             {
@@ -30,7 +28,7 @@ public class UiManager : IComponentObserver
             }
         });
         
-        _inputManager.SubscribeToRawInput(HandleInput);
+        inputManager.SubscribeToRawInput(HandleInput);
     }
 
     private void HandleInput(KeyEventArgs e)

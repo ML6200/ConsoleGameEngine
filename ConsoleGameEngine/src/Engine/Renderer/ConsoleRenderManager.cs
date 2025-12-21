@@ -11,7 +11,7 @@ namespace ConsoleGameEngine.Engine.Renderer;
 public class ConsoleRenderManager : IDisposable
 {
     private Logger _logger = LogManager.GetCurrentClassLogger();
-    private readonly GraphicsComponent _rootCanvas;
+    private readonly RootComponent _rootCanvas;
     private Thread _graphicsThread;
     private CancellationTokenSource _cts;
     private ConsoleRenderer2D _renderer;
@@ -27,9 +27,9 @@ public class ConsoleRenderManager : IDisposable
     public ConsoleRenderManager(ConsoleEngine engine, int updatesPerSecond)
     {
         _renderer = new ConsoleRenderer2D(engine.ScreenSize);
-        _renderPipeline = new RenderPipeline(engine.Camera);
-        _camera = engine.Camera;
-        _rootCanvas = engine.RootPanel();
+        _renderPipeline = new RenderPipeline();
+        _renderPipeline.Camera = engine.Camera;
+        _rootCanvas = engine.RootComponent;
         _updatesPerSecond = updatesPerSecond;
     }
 
@@ -77,12 +77,12 @@ public class ConsoleRenderManager : IDisposable
                 _renderer.SetDimension(Console.WindowWidth, Console.WindowHeight);
 
                 // Update root panel size to match new window size
-                _rootCanvas.Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight);
+                _rootCanvas.Canvas.Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight);
                 OnWindowResized?.Invoke(this, EventArgs.Empty);
             }
             else
             {
-                _renderPipeline.ComputeComponentTree(_rootCanvas, _renderer);
+                _renderPipeline.ComputeComponentTree(_rootCanvas.Canvas, _renderer);
                 _renderPipeline.Compute(_renderer);
                 _renderer.Render();
             }

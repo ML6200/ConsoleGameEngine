@@ -42,6 +42,8 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     public Monitoring Monitoring => _monitoring;
     
     public Dimension2D ScreenSize => new(Console.WindowWidth, Console.WindowHeight);
+    
+    public RootComponent RootComponent => _rootComponent;
 
     public int TargetUpdatesPerSecond
     {

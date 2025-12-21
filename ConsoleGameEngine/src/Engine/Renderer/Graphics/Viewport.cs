@@ -3,7 +3,7 @@ using ConsoleGameEngine.Engine.Renderer.Graphics;
 
 namespace ConsoleGameEngine.Engine.Renderer;
 
-public class Viewport : GraphicsComponent
+public abstract class Viewport : GraphicsComponent
 {
     public ConsoleCamera? Camera { get; set; }
     public Dimension2D ViewportSize { get; set; }
