@@ -668,7 +668,6 @@ public class MapEditorScene : IGameScene
 
     public void OnExit()
     {
-        _engine.UiManager.UnregisterAll();
         _engine.RootPanel().RemoveAllChildren();
     }
 }

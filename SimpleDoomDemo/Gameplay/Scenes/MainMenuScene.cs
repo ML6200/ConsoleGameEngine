@@ -148,7 +148,6 @@ public class MainMenuScene : IGameScene
 
     public void OnExit()
     {
-        _engine.UiManager.UnregisterAll();
         // Remove menu panel from root
         _engine.RootPanel().RemoveChild(_menuPanel);
     }

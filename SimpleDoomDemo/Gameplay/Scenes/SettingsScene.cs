@@ -146,16 +146,12 @@ public class SettingsScene : IGameScene
 
     private void EnableButtons()
     {
-        _engine.UiManager.Register(_saveAndBackButton);
-        _engine.UiManager.Register(_backButton);
-        _engine.UiManager.Register(_mapField);
-        _engine.UiManager.Register(_assetsField);
+
         //_engine.FocusManager.Register(_browseButton);
     }
 
     private void DisableButtons()
     {
-        _engine.UiManager.UnregisterAll();
     }
 
     private void Browse(object? sender, EventArgs e)
@@ -175,7 +171,6 @@ public class SettingsScene : IGameScene
 
     public void OnExit()
     {
-        _engine.UiManager.UnregisterAll();
         _engine.RootPanel().RemoveChild(_settingsPanel);
     }
 }

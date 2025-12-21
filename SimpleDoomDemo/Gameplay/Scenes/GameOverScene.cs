@@ -75,10 +75,7 @@ public class GameOverScene : IGameScene
 
     public void OnExit()
     {
-        _engine.Input.OnKeyPressed -= OnKeyPressed;
         _game.StopAllAudio();
-        _engine.UiManager.UnregisterAll();
-        _engine.Input.OnKeyPressed -= OnKeyPressed;
 
         _rootPanel.BackgroundColor = ConsoleColor.Black;
         _rootPanel.RemoveChild(_gameOverPanel);

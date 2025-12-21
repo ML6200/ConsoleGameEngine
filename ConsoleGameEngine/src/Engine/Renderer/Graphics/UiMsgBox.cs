@@ -69,9 +69,6 @@ public class UiMsgBox : UiPanel
         AddChild(_cancelButton);
         AddChild(_okButton);
         
-        _focusManager.Register(_okButton);
-        _focusManager.Register(_cancelButton);
-        
         HasBorder = true;
         ComputeSizes();
         ComputePositions();
@@ -89,8 +86,6 @@ public class UiMsgBox : UiPanel
     {
         _inputManager.OnKeyPressed -= HandleYesNo;
         OnComplete?.Invoke(option);
-        _focusManager.Unregister(_okButton);
-        _focusManager.Unregister(_cancelButton);
         
         _parent.RemoveChild(this);
         Visible = false;

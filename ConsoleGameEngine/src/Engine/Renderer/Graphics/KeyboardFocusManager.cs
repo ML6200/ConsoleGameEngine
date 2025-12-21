@@ -3,7 +3,7 @@ using ConsoleGameEngine.Engine.Input;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public class FocusManager
+public class KeyboardFocusManager
 {
     private readonly InputManager _inputManager;
     private readonly List<IFocusable> _focusableComponents = new();
@@ -14,10 +14,9 @@ public class FocusManager
             ? _focusableComponents[_currentFocusIndex] :  null;
 
     
-    public FocusManager(InputManager inputManager)
+    public KeyboardFocusManager(InputManager inputManager)
     {
         _inputManager = inputManager;
-        HandleFocusInput();
     }
 
     public void Register(IFocusable focusable)
@@ -25,9 +24,7 @@ public class FocusManager
         _focusableComponents.Add(focusable);
 
         if (_focusableComponents.Count == 1)
-        {
             ActivateFocus(0);
-        }
     }
 
     public void Unregister(IFocusable focusable)
@@ -62,6 +59,11 @@ public class FocusManager
                 var current = _focusableComponents[_currentFocusIndex];
                 current.IsFocused = true;
                 current.OnFocusGained();
+                
+                if (current is IUiInput)
+                    _inputManager.Mode = InputManager.InputMode.TextInput;
+                else
+                    _inputManager.Mode = InputManager.InputMode.KeyInput;
             }
         }
     }
@@ -89,48 +91,6 @@ public class FocusManager
     public void ActivateFocused()
     {
         FocusedComponent?.OnFocusActivate();
-    }
-    
-    public void SubscribeFocusEventsToInput()
-    {
-        HandleFocusInput();
-    }
-
-    private void HandleFocusInput()
-    {
-        KeyBinding tabKey = KeyBinding.Commons.Tab;
-        KeyBinding shiftTabKey = KeyBinding.Parse("shift+tab");
-        
-        _inputManager.Register(tabKey);
-        _inputManager.Register(shiftTabKey);
-        _inputManager.Register(KeyBinding.Commons.Enter);
-        
-        
-        _inputManager.Subscribe(KeyBinding.Commons.Enter, () =>
-        {
-            if (FocusedComponent is UiButton)
-                ActivateFocused();
-        });
-        
-        _inputManager.Subscribe(tabKey, () =>
-        {
-            FocusNext();
-            
-            if (FocusedComponent is UiInputField uiInputField)
-            {
-                ActivateFocused();
-            }
-        });
-        
-        _inputManager.Subscribe(shiftTabKey, () =>
-        {
-            FocusPrevious();
-            
-            if (FocusedComponent is UiInputField uiInputField)
-            {
-                ActivateFocused();
-            }
-        });
     }
 
     public void ClearAll()

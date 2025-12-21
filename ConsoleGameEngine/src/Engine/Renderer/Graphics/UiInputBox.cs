@@ -77,10 +77,6 @@ public class UiInputBox : UiPanel
         AddChild(_cancelButton);
         AddChild(_okButton);
         
-        _focusManager.Register(_inputField);
-        _focusManager.Register(_okButton);
-        _focusManager.Register(_cancelButton);
-        
         HasBorder = true;
         ComputeSizes();
         ComputePositions();
@@ -88,10 +84,6 @@ public class UiInputBox : UiPanel
 
     private void Close()
     {
-        _focusManager.Unregister(_inputField);
-        _focusManager.Unregister(_okButton);
-        _focusManager.Unregister(_cancelButton);
-        
         Visible = false;
         _parent.RemoveChild(this);
     }
