@@ -108,15 +108,15 @@ public class MainMenuScene : IGameScene
 
     private void EnableButtons()
     {
-        _engine.UiManager.Register(_playButton);
-        _engine.UiManager.Register(_settingsButton);
-        _engine.UiManager.Register(_mapEditButton);
-        _engine.UiManager.Register(_quitButton);
+        // _engine.UiManager.Register(_playButton);
+        // _engine.UiManager.Register(_settingsButton);
+        // _engine.UiManager.Register(_mapEditButton);
+        // _engine.UiManager.Register(_quitButton);
     }
 
     private void DisableButtons()
     {
-        _engine.UiManager.UnregisterAll();
+        //_engine.UiManager.UnregisterAll();
     }
 
     private void WindowResized(object? sender, EventArgs e)

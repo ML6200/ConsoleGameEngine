@@ -583,7 +583,7 @@ public class MapEditorScene : IGameScene
     {
         DisableEditor();
         UiInputBox msgBox2 = new UiInputBox(_editorPanel,
-            _engine.UiManager, _engine.Input,
+            _engine.UiManager,
             "Enter the path of the file to be opened:", "");
 
         msgBox2.OnOk += OpenMap;
@@ -652,7 +652,7 @@ public class MapEditorScene : IGameScene
     {
         DisableEditor();
         UiInputBox inpBox = new UiInputBox(_editorPanel,
-            _engine.UiManager, _engine.Input,
+            _engine.UiManager,
             "Enter the path of the file to be saved:", "");
         inpBox.OnOk += s =>
         {

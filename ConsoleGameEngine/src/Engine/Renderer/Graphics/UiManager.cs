@@ -3,7 +3,7 @@ using ConsoleGameEngine.Engine.Input;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
-public class UiManager
+public class UiManager : IComponentObserver
 {
     private readonly InputManager _inputManager;
     private readonly List<IFocusable> _focusableComponents = new();
@@ -130,5 +130,17 @@ public class UiManager
         
         _focusableComponents.Clear();
         _currentFocusIndex = -1;
+    }
+
+    public void OnComponentAdded(GraphicsComponent component)
+    {
+        if (component is IFocusable focusable)
+            Register(focusable);
+    }
+
+    public void OnComponentRemoved(GraphicsComponent component)
+    {
+        if (component is IFocusable focusable)
+            Unregister(focusable);
     }
 }

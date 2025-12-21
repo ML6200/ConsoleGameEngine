@@ -54,6 +54,7 @@ public sealed class RootComponent : IRenderable
     /// Initializes a new root component wrapping the specified graphics component.
     /// </summary>
     /// <param name="canvas">The graphics component to use as the root's content.</param>
+    /// <param name="uiManager"></param>
     /// <remarks>
     /// The root component starts visible by default. The wrapped component becomes the
     /// top-level parent in the rendering hierarchy.
@@ -63,9 +64,10 @@ public sealed class RootComponent : IRenderable
          if (canvas.Parent != null) 
              throw new ArgumentException("Root component cannot wrap a component that already has a parent.");
          
-         _canvas = canvas; 
+         _canvas = canvas;
          Visible = true;
     }
+    
     // ========CONSTRUCTOR-END========
 
     // ========RENDERING-AND-UPDATE========

@@ -73,7 +73,6 @@ public abstract class GraphicsComponent : IRenderable
     /// </summary>
     public IRenderable? Parent { get; private set; }
     
-    
     private readonly List<GraphicsComponent> _children = [];
 
     private GraphicsComponent[] _cachedChildren = [];
@@ -87,8 +86,25 @@ public abstract class GraphicsComponent : IRenderable
     /// Gets the current console window size in characters.
     /// </summary>
     public Dimension2D ScreenSize => new(Console.WindowWidth, Console.WindowHeight);
+    
+        
+    private IComponentObserver? ComponentObserver {get; set;}
 
+    /// <summary>
+    /// Sets the component observer for this component and all its descendants.
+    /// This is typically called on the root component to wire up the UI manager.
+    /// </summary>
+    public void SetObserver(IComponentObserver? observer)
+    {
+        ComponentObserver = observer;
 
+        // Notify for this component
+        observer?.OnComponentAdded(this);
+
+        // Propagate to all descendants
+        PropagateObserver(this, observer);
+    }
+    
     // ========CONSTRUCTORS========
     /// <summary>
     /// Initializes a new graphics component with full customization.
@@ -135,6 +151,7 @@ public abstract class GraphicsComponent : IRenderable
     {
         // _relativePosition defaults to (0, 0) via field initializer
     }
+    
     // ========CONSTRUCTORS-END========
     
     // ========POSITION-AND-SIZE========
@@ -203,6 +220,16 @@ public abstract class GraphicsComponent : IRenderable
         else _cachedWorldPosition = _relativePosition;
         
         _isPositionDirty = false;
+    }
+
+    private void PropagateObserver(GraphicsComponent component, IComponentObserver? observer)
+    {
+        foreach (var child in component.Children)
+        {
+            child.ComponentObserver = observer;
+            observer?.OnComponentAdded(child);
+            PropagateObserver(child, observer);
+        }
     }
 
     /// <summary>
@@ -277,6 +304,11 @@ public abstract class GraphicsComponent : IRenderable
             _childrenDirty = true;
             child.Parent = this;
             MarkWorldPositionDirty();
+
+            // Set observer on the child and propagate to its descendants
+            child.ComponentObserver = ComponentObserver;
+            ComponentObserver?.OnComponentAdded(child);
+            PropagateObserver(child, ComponentObserver);
         }
     }
 
@@ -296,6 +328,11 @@ public abstract class GraphicsComponent : IRenderable
             _childrenDirty = true;
             child.Parent = null;
             child.MarkWorldPositionDirty();
+
+            // Notify observer and clear from child tree
+            ComponentObserver?.OnComponentRemoved(child);
+            child.ComponentObserver = null;
+            PropagateObserver(child, null);
         }
     }
 

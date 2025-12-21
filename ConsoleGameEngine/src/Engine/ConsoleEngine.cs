@@ -39,9 +39,9 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     
     private readonly Queue<double> _updateSamples = new();
     private readonly Queue<double> _renderSamples = new();
-    
+
     public Monitoring Monitoring => _monitoring;
-        
+
     public int TargetUpdatesPerSecond
     {
         get => _targetUpdatesPerSecond;
@@ -117,8 +117,12 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
             HasBorder = false,
             Visible = true
         };
-
+        
+        UiManager = new UiManager(_inputManager);
         _rootComponent = new RootComponent(rootPane);
+
+        // Connect UiManager as observer to the component tree
+        _rootComponent.Canvas.SetObserver(UiManager);
 
         // Initialize camera after _rootComponent is created
         Camera = new ConsoleCamera(this,
@@ -139,7 +143,6 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         
         Console.CursorVisible = false;
         Console.Clear();
-        UiManager = new UiManager(_inputManager);
         _isInitialized = true;
         _logger.Info("Engine initialized");
         _monitoring = new(_targetUpdatesPerSecond);

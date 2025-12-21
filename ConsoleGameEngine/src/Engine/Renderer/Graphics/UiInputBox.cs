@@ -1,5 +1,4 @@
 using System;
-using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using NLog;
 
@@ -23,8 +22,7 @@ public class UiInputBox : UiPanel
     public event Action<string>? OnOk;
     public event EventHandler OnCancelled;
 
-    public UiInputBox(GraphicsComponent parent, UiManager focusManager, 
-        InputManager inputManager,
+    public UiInputBox(GraphicsComponent parent, UiManager focusManager,
         string title, string message)
     {
         _focusManager = focusManager;   
