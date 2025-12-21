@@ -136,14 +136,14 @@ public class MapEditorScene : IGameScene
 
         // reset sizes
         //_engine.Input.OnKeyPressed += HandleUserInput;
-        _engine.Camera.CameraSize = _mainPanel.Size;
-        _engine.Camera.SetCameraPosition(new Point2D(0, 0));
+        //_engine.Camera.CameraSize = _mainPanel.Size;
+        //_engine.Camera.SetCameraPosition(new Point2D(0, 0));
 
         _cursor = new Cursor(0, 0);
         _editorPanel.AddChild(_cursor);
         _mapParser = new MapParser();
 
-        _engine.Camera.FollowObject(_cursor);
+        _engine.GameViewport.Camera.FollowObject(_cursor);
 
         _statusBar = new StatusBar(_cursor.RelativePosition)
         {
@@ -154,7 +154,7 @@ public class MapEditorScene : IGameScene
         _engine.RenderManager.OnWindowResized += (sender, args) =>
         {
             _mainPanel.Size = _engine.RootPanel().ScreenSize;
-            _engine.Camera.CameraSize = _mainPanel.Size;
+            _engine.GameViewport.Camera.CameraSize = _mainPanel.Size;
 
             _title.RelativePosition = new Point2D(_engine.RootPanel().ScreenSize.Width / 2
                                                   - _title.Size.Width / 2, 0);

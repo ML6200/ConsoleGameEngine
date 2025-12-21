@@ -43,7 +43,7 @@ public class StatsPanel : UiPanel
                       $"CPU: {Math.Round(_engine.Monitoring.GetAverageCpuUsage())}%\n" +
                       $"MEM: {Math.Round(_engine.Monitoring.GetWorkingSet())} MB";
     }
-    protected override void UpdateSelf()
+    protected override void UpdateSelf(double deltaTime)
     {
         _label.Text = GetText(out double fps);
         int newWidth = _engine.RootPanel().ScreenSize.Width - _label.Size.Width;

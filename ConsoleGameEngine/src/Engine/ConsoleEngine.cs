@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer;
@@ -25,8 +24,8 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     private IGameScene? _currentScene;
     private IGameScene? _pendingScene;
     
-    private int _targetUpdatesPerSecond = 60; // A jatek logikahoz
-    private int _targetRenderFps = 60; // rendereléshez
+    private int _targetUpdatesPerSecond = 60; // For animations and logic
+    private int _targetRenderFps = 60; // for rendering
     
     private Monitoring _monitoring;
     private StatsPanel _statsPanel;
@@ -42,6 +41,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     public Monitoring Monitoring => _monitoring;
     
     public Dimension2D ScreenSize => new(Console.WindowWidth, Console.WindowHeight);
+    public Dimension2D WorldSize {get; private set;}
     
     public RootComponent RootComponent => _rootComponent;
 
@@ -67,8 +67,12 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     public ConsoleRenderManager RenderManager => _renderManager;
     public bool IsRunning => _isRunning;
     public IGameScene? CurrentScene => _currentScene;
-    public ConsoleCamera Camera {get; set;}
-    
+
+    public UiViewport UiViewport {get; private set; }
+
+    public GameViewport GameViewport { get; set; }
+
+
     public double CurrentUpdateRate { get; private set; }
     
 
@@ -123,15 +127,16 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
 
         // Connect UiManager as observer to the component tree
         _rootComponent.Canvas.SetObserver(UiManager);
-
+        
+        WorldSize = new Dimension2D(width, height);
         // Initialize camera after _rootComponent is created
-        Camera = new ConsoleCamera(this,
-            new Dimension2D(width, height),  
-            new Point2D(0, 0),
-            new Dimension2D(width, height)
-        );
+        // Camera = new ConsoleCamera(this,
+        //     new Dimension2D(width, height),  
+        //     new Point2D(0, 0),
+        //     new Dimension2D(width, height)
+        // );
 
-        _renderManager = new ConsoleRenderManager(this, _targetUpdatesPerSecond);
+        _renderManager = new ConsoleRenderManager(_rootComponent, _targetUpdatesPerSecond);
     }
 
     public void Initialize()
@@ -141,8 +146,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
             throw new InvalidOperationException("Engine already initialized");
         }
         
-        Console.CursorVisible = false;
-        Console.Clear();
+        CleanupConsole();
         _isInitialized = true;
         _logger.Info("Engine initialized");
         _monitoring = new(_targetUpdatesPerSecond);
@@ -152,6 +156,12 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         var channel = KeyBinding.Parse("X");
         _inputManager.Register(channel);
         _inputManager.Subscribe(channel, HandleInput);
+    }
+
+    private static void CleanupConsole()
+    {
+        Console.CursorVisible = false;
+        Console.Clear();
     }
 
     private void HandleInput()
@@ -213,7 +223,6 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
                 RootPanel().AddChild(_statsPanel);
             }
         }
-        Camera.Follow(deltaTime);
         // update all components
         _rootComponent.Update(deltaTime);
         _currentScene?.OnUpdate(deltaTime);

@@ -410,7 +410,7 @@ public abstract class GraphicsComponent : IRenderable
             }
         }
         
-        UpdateSelf();
+        UpdateSelf(deltaTime);
         
         var childrenSnapshot = GetChildrenSnapshot();
         foreach (var child in childrenSnapshot)
@@ -422,7 +422,7 @@ public abstract class GraphicsComponent : IRenderable
     /// <summary>
     /// Updates this specific component's logic. Override this method to implement custom update behavior.
     /// </summary>
-    protected virtual void UpdateSelf()
+    protected virtual void UpdateSelf(double deltaTime)
     {
     }
     // ========RENDERING-AND-UPDATE-END========

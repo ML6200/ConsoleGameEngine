@@ -11,7 +11,7 @@ namespace ConsoleGameEngine.Engine.Renderer;
 public class ConsoleRenderManager : IDisposable
 {
     private Logger _logger = LogManager.GetCurrentClassLogger();
-    private readonly RootComponent _rootCanvas;
+    private readonly RootComponent _rootComponent;
     private Thread _graphicsThread;
     private CancellationTokenSource _cts;
     private ConsoleRenderer2D _renderer;
@@ -24,12 +24,11 @@ public class ConsoleRenderManager : IDisposable
     
     private RenderPipeline _renderPipeline;
 
-    public ConsoleRenderManager(ConsoleEngine engine, int updatesPerSecond)
+    public ConsoleRenderManager(RootComponent rootComponent, int updatesPerSecond)
     {
-        _renderer = new ConsoleRenderer2D(engine.ScreenSize);
+        _renderer = new ConsoleRenderer2D(rootComponent.ScreenSize);
         _renderPipeline = new RenderPipeline();
-        _renderPipeline.Camera = engine.Camera;
-        _rootCanvas = engine.RootComponent;
+        _rootComponent = rootComponent;
         _updatesPerSecond = updatesPerSecond;
     }
 
@@ -58,7 +57,6 @@ public class ConsoleRenderManager : IDisposable
         {
             _cts.Cancel();
             _graphicsThread.Join();
-            //windowEventThread.Join();
             _cts.Dispose();
         }
     }
@@ -77,12 +75,12 @@ public class ConsoleRenderManager : IDisposable
                 _renderer.SetDimension(Console.WindowWidth, Console.WindowHeight);
 
                 // Update root panel size to match new window size
-                _rootCanvas.Canvas.Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight);
+                _rootComponent.Canvas.Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight);
                 OnWindowResized?.Invoke(this, EventArgs.Empty);
             }
             else
             {
-                _renderPipeline.ComputeComponentTree(_rootCanvas.Canvas, _renderer);
+                _renderPipeline.ComputeComponentTree(_rootComponent.Canvas, _renderer);
                 _renderPipeline.Compute(_renderer);
                 _renderer.Render();
             }

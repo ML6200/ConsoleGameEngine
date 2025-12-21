@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Audio;
 using ConsoleGameEngine.Engine.Input;
+using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
@@ -79,8 +80,11 @@ public class DoomGameScene : IGameScene
         _engine = consoleEngine;
         _rootPanel = _engine.RootPanel();
         _input = _engine.Input;
-        
-        WorldSize = _engine.Camera.WorldSize;
+
+        WorldSize = _engine.WorldSize;
+        ConsoleCamera camera = new ConsoleCamera(_engine, WorldSize, Point2D.NullPoint, WorldSize);
+        _engine.GameViewport = new GameViewport(camera);
+        _engine.UiViewport.Camera = camera;
 
         // Subscribe to input events
         _input.Mode = InputManager.InputMode.KeyInput;
@@ -98,7 +102,7 @@ public class DoomGameScene : IGameScene
 
         AddHud();
 
-        _engine.Camera.FollowObject(Player);
+        _engine.GameViewport.Camera?.FollowObject(Player);
 
         // Start music
         //AudioPlayer.PlayMusic(Path.Combine("assets", "sounds", "doom_music.mp3"));
