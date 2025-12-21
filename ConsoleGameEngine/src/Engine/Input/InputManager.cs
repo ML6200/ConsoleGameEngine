@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using NLog;
 
@@ -7,11 +8,6 @@ namespace ConsoleGameEngine.Engine.Input;
 
 public class InputManager : IDisposable
 {
-    public enum InputMode
-    {
-        TextInput,
-        KeyInput
-    }
     // idea: We could use observables for better separation of concerns
     /*
      * Register(KeyBinding)
@@ -28,8 +24,9 @@ public class InputManager : IDisposable
     }
     
     /* Legacy manual key event (NOT RECOMMENDED)*/
-    public event EventHandler<KeyEventArgs> OnKeyPressed;
-    public InputMode Mode {get; set;} = InputMode.KeyInput;
+    private event EventHandler<KeyEventArgs> OnKeyPressed;
+    
+    public InputMode CurrentMode => _inputModeStack.Current;
     
     private readonly Thread _inputThread;
     private readonly Lock _lock = new();
@@ -37,6 +34,7 @@ public class InputManager : IDisposable
     private readonly CancellationTokenSource _cts;
     private readonly Dictionary<KeyBinding, KeyRecord> _keyBindings = new();
     private readonly List<Action<KeyEventArgs>> _rawInputChannel = new();
+    private readonly InputModeStack _inputModeStack = new();
 
     public InputManager()
     {
@@ -153,7 +151,7 @@ public class InputManager : IDisposable
         var binding = KeyBinding.Parse(e.Control, e.Alt, e.Shift, e.Key);
         lock (_lock)
         {
-            if (Mode == InputMode.KeyInput)
+            if (_inputModeStack.Current == InputMode.KeyInput)
             {
                 if (_keyBindings.TryGetValue(binding, out var value))
                 {
@@ -180,6 +178,22 @@ public class InputManager : IDisposable
                     }
                 }
             }
+        }
+    }
+
+    public void PushMode(InputMode mode)
+    {
+        lock (_lock)
+        {
+            _inputModeStack.PushMode(mode);
+        }
+    }
+
+    public void PopMode()
+    {
+        lock (_lock)
+        {
+            _inputModeStack.PopMode();
         }
     }
     

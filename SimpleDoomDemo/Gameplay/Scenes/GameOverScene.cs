@@ -62,7 +62,7 @@ public class GameOverScene : IGameScene
         if (_levelComplete) _rootPanel.BackgroundColor = ConsoleColor.DarkGreen;
         _rootPanel.AddChild(_gameOverPanel);
 
-        _engine.Input.Mode = InputManager.InputMode.TextInput;
+        _engine.Input.PushMode(InputMode.TextInput);
         _engine.Input.SubscribeToRawInput(a =>
         {
             _engine.LoadScene(new MainMenuScene());
@@ -80,6 +80,7 @@ public class GameOverScene : IGameScene
 
         _rootPanel.BackgroundColor = ConsoleColor.Black;
         _rootPanel.RemoveChild(_gameOverPanel);
+        _engine.Input.PopMode();
     }
 }
 

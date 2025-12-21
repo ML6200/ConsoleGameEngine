@@ -59,11 +59,15 @@ public class KeyboardFocusManager
                 var current = _focusableComponents[_currentFocusIndex];
                 current.IsFocused = true;
                 current.OnFocusGained();
-                
-                if (current is IUiInput)
-                    _inputManager.Mode = InputManager.InputMode.TextInput;
-                else
-                    _inputManager.Mode = InputManager.InputMode.KeyInput;
+
+                if (current is IUiInput && _inputManager.CurrentMode is InputMode.KeyInput)
+                {
+                    _inputManager.PushMode(InputMode.TextInput);
+                }
+                else if (current is not IUiInput && _inputManager.CurrentMode is InputMode.TextInput)
+                {
+                    _inputManager.PopMode();
+                }
             }
         }
     }

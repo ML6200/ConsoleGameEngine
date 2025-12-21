@@ -11,7 +11,7 @@ namespace SimpleDoomDemo.Gameplay.Scenes;
 
 public class MainMenuScene : IGameScene
 {
-    private Logger  _logger = LogManager.GetCurrentClassLogger();
+    private Logger _logger = LogManager.GetCurrentClassLogger();
     private ConsoleEngine _engine;
     private UiPanel _menuPanel;
     private UiButton _playButton;
@@ -30,18 +30,18 @@ public class MainMenuScene : IGameScene
 
     public void OnEnter()
     {
-        int centerX = _engine.RootPanel().ScreenSize.Width / 2;
-        int centerY = _engine.RootPanel().ScreenSize.Height / 2;
+        int centerX = _engine.ScreenSize.Width / 2;
+        int centerY = _engine.ScreenSize.Height / 2;
 
         // Create menu panel with blue background
         _menuPanel = new UiPanel()
         {
             RelativePosition = new Point2D(0, 0),
-            Size = new Dimension2D(_engine.RootPanel().ScreenSize.Width, _engine.RootPanel().ScreenSize.Height),
+            Size = new Dimension2D(_engine.ScreenSize.Width, _engine.ScreenSize.Height),
             HasBorder = false
         };
-        _engine.RootPanel().AddChild(_menuPanel);
-        _engine.Input.Mode = InputManager.InputMode.KeyInput;
+        _engine.UiViewport.AddChild(_menuPanel);
+        _engine.Input.PushMode(InputMode.KeyInput);
 
         // Create Play button
         _playButton = new UiButton("▶ PLAY GAME")
@@ -151,7 +151,8 @@ public class MainMenuScene : IGameScene
     public void OnExit()
     {
         // Remove menu panel from root
-        _engine.RootPanel().RemoveChild(_menuPanel);
+        _engine.UiViewport.RemoveChild(_menuPanel);
+        _engine.Input.PopMode();
     }
     
     private void OnPlayClicked(object sender, EventArgs e)

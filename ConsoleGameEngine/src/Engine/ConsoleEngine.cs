@@ -104,7 +104,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         {
             RelativePosition = new Point2D(0, 0)
         };
-        RootPanel().AddChild(_statsPanel);
+        UiViewport.AddChild(_statsPanel);
     }
 
     public ConsoleEngine()

@@ -668,7 +668,7 @@ public class MapEditorScene : IGameScene
 
     public void OnExit()
     {
-        _engine.RootPanel().RemoveAllChildren();
+        _engine.GameViewport.RemoveAllChildren();
     }
 }
 

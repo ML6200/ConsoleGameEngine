@@ -90,7 +90,7 @@ public class DoomGameScene : IGameScene
 
         WorldSize = _engine.WorldSize;
         
-        _input.Mode = InputManager.InputMode.KeyInput;
+        _input.PushMode(InputMode.KeyInput);
         HandleInput();
 
         // Setup cleanup handlers
@@ -175,6 +175,7 @@ public class DoomGameScene : IGameScene
     
     public void OnExit()
     {
+        _input.PopMode();
         StopAllAudio();
 
         // Clean up all game entities from game viewport
@@ -184,10 +185,7 @@ public class DoomGameScene : IGameScene
 
         // Clean up HUD from UI viewport
         _uiViewport.RemoveChild(_hud);
-
-        // Clean up viewports from root panel
-        _rootPanel.RemoveChild(_uiViewport);
-        _rootPanel.RemoveChild(_gameViewport);
+        
     }
 
     private void CleanupAllEntities()

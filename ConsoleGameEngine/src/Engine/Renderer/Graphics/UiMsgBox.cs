@@ -62,8 +62,6 @@ public class UiMsgBox : UiPanel
         _okButton.OnClick += (e, s) => Close(MessageOptionState.Ok);
         _cancelButton.OnClick += (e, s) => Close(MessageOptionState.Cancel);
         
-        inputManager.OnKeyPressed += HandleYesNo;
-        
         AddChild(_titleLabel);
         AddChild(_messageLabel);
         AddChild(_cancelButton);
@@ -84,7 +82,6 @@ public class UiMsgBox : UiPanel
 
     private void Close(MessageOptionState option)
     {
-        _inputManager.OnKeyPressed -= HandleYesNo;
         OnComplete?.Invoke(option);
         
         _parent.RemoveChild(this);
