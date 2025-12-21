@@ -1,5 +1,6 @@
 using System;
 using ConsoleGameEngine.Engine.Renderer.Animations;
+using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
 
@@ -25,7 +26,7 @@ public class ProgressBar : GraphicsComponent
         }));
     }
 
-    protected override void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    public override void Draw(ConsoleRenderer2D renderer, Point2D screenPoint)
     {
         // UI progress bars render directly at world position (no camera transformation)
         int filledWidth = (int)(Size.Width * _progress);

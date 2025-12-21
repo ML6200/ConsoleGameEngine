@@ -15,13 +15,12 @@ public class Imp : Demon
         _speed = 93;
     }
     
-    protected override void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    public override void Draw(ConsoleRenderer2D renderer, Point2D screenPoint)
     {
         // Transform world coordinates to screen coordinates
-        Point2D screenPos = camera.TransformPoint(WorldPosition);
-        if (screenPos == Point2D.OutsideScreenPoint) return; // Off-screen culling
+        //if (screenPoint == Point2D.OutsideScreenPoint) return; // Off-screen culling
 
-        renderer.DrawText(screenPos.X, screenPos.Y, "☠");
+        renderer.DrawText(screenPoint.X, screenPoint.Y, "☠");
     }
 
     public override void GetAttackDamageRange(out int min, out int max)

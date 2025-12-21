@@ -1,5 +1,3 @@
-using System;
-using System.Dynamic;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;
@@ -42,7 +40,7 @@ public class UiLabel : GraphicsComponent
         }
     }
 
-    protected override void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    public override void Draw(ConsoleRenderer2D renderer, Point2D screenPoint)
     {
         if (_text.Contains("\n"))
         {

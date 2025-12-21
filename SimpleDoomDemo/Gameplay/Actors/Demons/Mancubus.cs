@@ -15,13 +15,12 @@ public class Mancubus : Demon
         _speed = 70;
     }
 
-    protected override void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    public override void Draw(ConsoleRenderer2D renderer, Point2D screenPoint)
     {
         // Transform world coordinates to screen coordinates
-        Point2D screenPos = camera.TransformPoint(WorldPosition);
-        if (screenPos == Point2D.OutsideScreenPoint) return; // Off-screen culling
+        //if (screenPoint == Point2D.OutsideScreenPoint) return; // Off-screen culling
 
-        renderer.SetCell(screenPos.X, screenPos.Y,
+        renderer.SetCell(screenPoint.X, screenPoint.Y,
             new Cell('Ω', ConsoleColor.Black, ConsoleColor.DarkRed));
     }
 

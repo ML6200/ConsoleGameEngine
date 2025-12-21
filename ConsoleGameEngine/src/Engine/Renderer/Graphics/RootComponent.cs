@@ -80,9 +80,9 @@ public sealed class RootComponent : IRenderable
     /// If the root is not visible, the entire hierarchy is skipped.
     /// This method delegates to the wrapped component's Compute method.
     /// </remarks>
-    public void Compute(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    public void Draw(ConsoleRenderer2D renderer, Point2D screenPoint)
     {
-        _canvas.Compute(renderer, camera);
+        _canvas.Draw(renderer, screenPoint);
     }
 
     /// <summary>

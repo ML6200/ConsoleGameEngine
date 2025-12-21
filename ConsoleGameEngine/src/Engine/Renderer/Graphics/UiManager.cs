@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using ConsoleGameEngine.Engine.Input;
 
 namespace ConsoleGameEngine.Engine.Renderer.Graphics;

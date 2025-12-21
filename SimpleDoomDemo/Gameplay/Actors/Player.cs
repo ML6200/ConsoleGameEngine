@@ -112,7 +112,7 @@ public class Player : GraphicsComponent
     }
     
 
-    protected override void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    public override void Draw(ConsoleRenderer2D renderer, Point2D screenPoint)
     {
         if (!_alive)
         {
@@ -120,11 +120,7 @@ public class Player : GraphicsComponent
             return;
         }
 
-        // Transform world coordinates to screen coordinates
-        Point2D screenPos = camera.TransformPoint(WorldPosition);
-        if (screenPos == Point2D.OutsideScreenPoint) return; // Off-screen culling
-
-        renderer.SetCell(screenPos.X, screenPos.Y,
+        renderer.SetCell(screenPoint.X, screenPoint.Y,
             new Cell('●', ConsoleColor.Black, ConsoleColor.Green));
     }
 }

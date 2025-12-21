@@ -69,10 +69,8 @@ public class UiButton : GraphicsComponent, IFocusable
         Height = newHeight;
     }
 
-    protected override void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    public override void Draw(ConsoleRenderer2D renderer, Point2D screenPoint)
     {
-        if (WorldPosition == null) return;
-
         // UI buttons render directly at world position (no camera transformation)
         ConsoleColor bgColor = IsFocused ? FocusedBgColor : BackgroundColor;
         ConsoleColor fgColor = IsFocused ? FocusedFgColor : ForegroundColor;

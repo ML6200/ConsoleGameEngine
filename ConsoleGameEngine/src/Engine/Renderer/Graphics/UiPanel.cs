@@ -15,7 +15,7 @@ public class UiPanel : GraphicsComponent
 
     public bool HasBorder { get; set; } = true;
 
-    protected override void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    public override void Draw(ConsoleRenderer2D renderer, Point2D screenPoint)
     {
         // UI panels render directly at world position (no camera transformation)
         // This makes them fixed on screen, perfect for menus, HUDs, etc.

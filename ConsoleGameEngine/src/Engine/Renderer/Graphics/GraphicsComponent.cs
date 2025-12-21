@@ -377,36 +377,15 @@ public abstract class GraphicsComponent : IRenderable
         return _cachedChildren;
     }
     // ========CHILD-HIERARCHY-END========
-
-    // ========RENDERING-AND-UPDATE========
-    /// <summary>
-    /// Renders this component and all its children to the screen.
-    /// </summary>
-    /// <param name="renderer">The renderer to use for drawing.</param>
-    /// <param name="camera">The camera defining the view.</param>
-    /// <remarks>
-    /// If the component is not visible, neither this component nor its children will be rendered.
-    /// Children are rendered after the parent using a thread-safe snapshot.
-    /// </remarks>
-    public void Compute(ConsoleRenderer2D renderer, ConsoleCamera camera)
-    {
-        if (!Visible) return;
-        
-        Draw(renderer, camera);
-        
-        var childrenSnapshot = GetChildrenSnapshot();
-        foreach (var child in childrenSnapshot)
-        {
-            child.Compute(renderer,  camera);
-        }
-    }
+    
 
     /// <summary>
     /// Renders this specific component. Override this method to implement custom rendering logic.
     /// </summary>
     /// <param name="renderer">The renderer to use for drawing.</param>
     /// <param name="camera">The camera defining the view.</param>
-    protected virtual void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    /// <param name="screenPoint"></param>
+    public virtual void Draw(ConsoleRenderer2D renderer, Point2D screenPoint)
     {
     }
 

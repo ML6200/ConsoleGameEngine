@@ -32,7 +32,6 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     private StatsPanel _statsPanel;
     
     private readonly ConsoleRenderManager _renderManager;
-    private readonly ConsoleRenderer2D _renderer;
     private readonly RootComponent _rootComponent;
     private readonly Lock _sceneLock = new();
     private readonly ManualResetEvent _exitEvent = new(false);
@@ -41,6 +40,8 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
     private readonly Queue<double> _renderSamples = new();
 
     public Monitoring Monitoring => _monitoring;
+    
+    public Dimension2D ScreenSize => new(Console.WindowWidth, Console.WindowHeight);
 
     public int TargetUpdatesPerSecond
     {
@@ -61,7 +62,6 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
 
     public UiManager UiManager { get; private set; }
     public InputManager Input => _inputManager;
-    public ConsoleRenderer2D Renderer => _renderer;
     public ConsoleRenderManager RenderManager => _renderManager;
     public bool IsRunning => _isRunning;
     public IGameScene? CurrentScene => _currentScene;
@@ -101,14 +101,12 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
         RootPanel().AddChild(_statsPanel);
     }
 
-
-    public ConsoleEngine(int? windowWidth = null, int? windowHeight = null)
+    public ConsoleEngine()
     {
         _inputManager = new InputManager();
         
-        int width = windowWidth ?? Console.WindowWidth;
-        int height = windowHeight ?? Console.WindowHeight;
-        _renderer = new ConsoleRenderer2D(width, height);
+        int width = Console.WindowWidth;
+        int height = Console.WindowHeight;
 
         GraphicsComponent rootPane = new UiPanel()
         {
@@ -131,7 +129,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
             new Dimension2D(width, height)
         );
 
-        _renderManager = new ConsoleRenderManager(_renderer, Camera, _rootComponent, _targetUpdatesPerSecond);
+        _renderManager = new ConsoleRenderManager(this, _targetUpdatesPerSecond);
     }
 
     public void Initialize()
@@ -205,7 +203,6 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
             if (_pendingScene != null)
             {
                 _currentScene?.OnExit();
-                _renderer.FlushBuffer();
                 _currentScene = _pendingScene;
                 _pendingScene = null;
                 _currentScene.OnEnter();

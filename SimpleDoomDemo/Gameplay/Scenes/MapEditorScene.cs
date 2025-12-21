@@ -680,12 +680,11 @@ internal sealed class Cursor : GraphicsComponent
         Visible = true;
     }
 
-    protected override void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    public override void Draw(ConsoleRenderer2D renderer, Point2D screenPoint)
     {
-        Point2D screenPos = camera.TransformPoint(WorldPosition);
-        if (screenPos == Point2D.OutsideScreenPoint) return; // Off-screen culling
+        if (screenPoint == Point2D.OutsideScreenPoint) return; // Off-screen culling
 
-        renderer.SetCell(screenPos.X, screenPos.Y,
+        renderer.SetCell(screenPoint.X, screenPoint.Y,
             new Cell('⊡', ConsoleColor.Black, ConsoleColor.Green));
     }
 }

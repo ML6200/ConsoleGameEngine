@@ -94,7 +94,7 @@ public class UiInputField : GraphicsComponent, IFocusable, IUiInput
         }
     }
 
-    protected override void Draw(ConsoleRenderer2D renderer, ConsoleCamera camera)
+    public override void Draw(ConsoleRenderer2D renderer, Point2D screenPoint)
     {
         var bgColor = IsFocused ? FocusedBgColor : BackgroundColor;
         var fgColor = IsFocused ? FocusedFgColor : ForegroundColor;
