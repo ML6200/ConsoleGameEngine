@@ -40,7 +40,7 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
 
     public Monitoring Monitoring => _monitoring;
     
-    public Dimension2D ScreenSize => new(Console.WindowWidth, Console.WindowHeight);
+    public Dimension2D ScreenSize => _rootComponent.ScreenSize;
     public Dimension2D WorldSize {get; private set;}
     
     public RootComponent RootComponent => _rootComponent;
@@ -127,16 +127,25 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
 
         // Connect UiManager as observer to the component tree
         _rootComponent.Canvas.SetObserver(UiManager);
-        
-        WorldSize = new Dimension2D(width, height);
-        // Initialize camera after _rootComponent is created
-        // Camera = new ConsoleCamera(this,
-        //     new Dimension2D(width, height),  
-        //     new Point2D(0, 0),
-        //     new Dimension2D(width, height)
-        // );
+
+        // Set world size to be much larger than screen for scrolling maps
+        WorldSize = new Dimension2D(width * 10, height * 10);
 
         _renderManager = new ConsoleRenderManager(_rootComponent, _targetUpdatesPerSecond);
+
+        // Create camera with large world but screen-sized viewport
+        ConsoleCamera camera = new ConsoleCamera(
+            this,
+            WorldSize,                          // Large world (e.g., 800x240)
+            Point2D.NullPoint,                  // Start at (0,0)
+            new Dimension2D(width, height)      // Camera viewport = screen size (80x24)
+        );
+        
+        UiViewport = new UiViewport();
+        GameViewport = new GameViewport(camera);
+        
+        RootPanel().AddChild(UiViewport);
+        RootPanel().AddChild(GameViewport);
     }
 
     public void Initialize()

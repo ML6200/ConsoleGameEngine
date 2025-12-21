@@ -42,7 +42,6 @@ public class GameOverScene : IGameScene
 
     public void OnEnter()
     {
-        // Play appropriate sound effect
         if (_playerDied)
         {
             _game.PlaySoundEffect(SoundEffectType.PlayerDeath);
@@ -52,7 +51,6 @@ public class GameOverScene : IGameScene
             _game.PlaySoundEffect(SoundEffectType.LevelComplete);
         }
 
-        // Create game over panel
         _gameOverPanel = new GameOverPanel(_player, _playerDied, _levelComplete, _interrupted)
         {
             RelativePosition = new Point2D(0, 0),
@@ -64,8 +62,11 @@ public class GameOverScene : IGameScene
         if (_levelComplete) _rootPanel.BackgroundColor = ConsoleColor.DarkGreen;
         _rootPanel.AddChild(_gameOverPanel);
 
-        // Subscribe to input
-        _engine.Input.OnKeyPressed += OnKeyPressed;
+        _engine.Input.Mode = InputManager.InputMode.TextInput;
+        _engine.Input.SubscribeToRawInput(a =>
+        {
+            _engine.LoadScene(new MainMenuScene());
+        });
     }
 
     public void OnUpdate(double deltaTime)
@@ -79,11 +80,6 @@ public class GameOverScene : IGameScene
 
         _rootPanel.BackgroundColor = ConsoleColor.Black;
         _rootPanel.RemoveChild(_gameOverPanel);
-    }
-
-    private void OnKeyPressed(object sender, KeyEventArgs e)
-    {
-        _engine.LoadScene(new MainMenuScene()); // later we fix this by adding settings
     }
 }
 

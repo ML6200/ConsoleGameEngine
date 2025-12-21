@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using ConsoleGameEngine.Engine;
+using ConsoleGameEngine.Engine.Input;
 using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
@@ -40,6 +41,7 @@ public class MainMenuScene : IGameScene
             HasBorder = false
         };
         _engine.RootPanel().AddChild(_menuPanel);
+        _engine.Input.Mode = InputManager.InputMode.KeyInput;
 
         // Create Play button
         _playButton = new UiButton("▶ PLAY GAME")

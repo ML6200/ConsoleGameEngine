@@ -28,6 +28,10 @@ public class DoomGameScene : IGameScene
     private UiPanel _rootPanel;
     private InputManager _input;
 
+    // ============================= VIEWPORTS ==============================
+    private UiViewport _uiViewport;
+    private GameViewport _gameViewport;
+
     // ============================= UI ==============================
     private GameHud _hud;
 
@@ -81,12 +85,11 @@ public class DoomGameScene : IGameScene
         _rootPanel = _engine.RootPanel();
         _input = _engine.Input;
 
-        WorldSize = _engine.WorldSize;
-        ConsoleCamera camera = new ConsoleCamera(_engine, WorldSize, Point2D.NullPoint, WorldSize);
-        _engine.GameViewport = new GameViewport(camera);
-        _engine.UiViewport.Camera = camera;
+        _gameViewport = _engine.GameViewport;
+        _uiViewport = _engine.UiViewport;
 
-        // Subscribe to input events
+        WorldSize = _engine.WorldSize;
+        
         _input.Mode = InputManager.InputMode.KeyInput;
         HandleInput();
 
@@ -102,7 +105,7 @@ public class DoomGameScene : IGameScene
 
         AddHud();
 
-        _engine.GameViewport.Camera?.FollowObject(Player);
+        _gameViewport.Camera?.FollowObject(Player);
 
         // Start music
         //AudioPlayer.PlayMusic(Path.Combine("assets", "sounds", "doom_music.mp3"));
@@ -118,29 +121,29 @@ public class DoomGameScene : IGameScene
 
     private void AddHud()
     {
-        // Create and add HUD (positioned at bottom of screen)
+        // Create and add HUD to UI viewport (screen space - no camera transformation)
         int hudWidth = Console.WindowWidth;
         int hudHeight = 1;
         _hud = new GameHud(_engine, Player, hudWidth, hudHeight)
         {
             RelativePosition = new Point2D(0, Console.WindowHeight - 1)
         };
-        _rootPanel.AddChild(_hud);
+        _uiViewport.AddChild(_hud);  // Add to UI viewport, not root panel
     }
 
     private bool LoadEntities()
     {
-        // Add all game entities to root panel (they will use camera transformation)
-        _rootPanel.AddChild(Player);
+        // Add all game entities to game viewport (they will use camera transformation)
+        _gameViewport.AddChild(Player);
 
         foreach (var item in Items)
         {
-            _rootPanel.AddChild(item);
+            _gameViewport.AddChild(item);
         }
 
         foreach (var demon in Demons)
         {
-            _rootPanel.AddChild(demon);
+            _gameViewport.AddChild(demon);
             demon.UpdateVisibility(Player.WorldPosition, Player.SightRange);
         }
 
@@ -174,45 +177,50 @@ public class DoomGameScene : IGameScene
     {
         StopAllAudio();
 
-        // Clean up all game entities from the root panel
-        _rootPanel.RemoveChild(Player);
+        // Clean up all game entities from game viewport
+        _gameViewport.RemoveChild(Player);
 
         CleanupAllEntities();
 
-        _rootPanel.RemoveChild(_hud);
+        // Clean up HUD from UI viewport
+        _uiViewport.RemoveChild(_hud);
+
+        // Clean up viewports from root panel
+        _rootPanel.RemoveChild(_uiViewport);
+        _rootPanel.RemoveChild(_gameViewport);
     }
 
     private void CleanupAllEntities()
     {
         foreach (var demon in Demons)
         {
-            _rootPanel.RemoveChild(demon);
+            _gameViewport.RemoveChild(demon);
         }
 
         foreach (var item in Items)
         {
-            _rootPanel.RemoveChild(item);
+            _gameViewport.RemoveChild(item);
         }
     }
     
     private void CleanupDeadEntities()
     {
-        // Remove unavailable items from rendering
+        // Remove unavailable items from game viewport
         foreach (var item in Items)
         {
             if (!item.Available)
             {
-                _rootPanel.RemoveChild(item);
+                _gameViewport.RemoveChild(item);
             }
         }
         Items.RemoveAll(item => !item.Available);
 
-        // Remove dead demons from rendering
+        // Remove dead demons from game viewport
         foreach (var demon in Demons)
         {
             if (!demon.Alive)
             {
-                _rootPanel.RemoveChild(demon);
+                _gameViewport.RemoveChild(demon);
             }
         }
         Demons.RemoveAll(demon => !demon.Alive);

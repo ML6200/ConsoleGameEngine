@@ -27,23 +27,21 @@ public class GameHud : UiPanel
         Size = new Dimension2D(width, height);
     }
 
-    public void UpdateHud(Point2D worldPosition)
+    public void UpdateHud(Point2D screenPosition)
     {
-        WorldPosition = worldPosition;
+        // Update position directly (for UI in screen space)
+        RelativePosition = screenPosition;
     }
 
     public override void Draw(ConsoleRenderer2D renderer, Point2D screenPoint)
     {
-        // HUD should always be visible (don't use camera transformation for UI)
-        // Render directly at world position (which should be screen position for UI)
-        int x = WorldPosition.X;
-        int y = WorldPosition.Y;
-
+        // Use the pre-calculated screen position from the render pipeline
+        // Since this is in UiViewport (no camera), screenPoint = WorldPosition
         string hudText = $"HP: {_player.Health}/{_player.MaxHealth}  " +
                          $"Ammo: {_player.Ammo}/{_player.MaxAmmo}  " +
                          $"BFG: {_player.BfgCells}/{_player.MaxBfgCells}  " +
                          $"XP: {_player.CombatPoints}  ";
-                         
-        renderer.DrawText(x, y, hudText, ConsoleColor.White, ConsoleColor.Black);
+
+        renderer.DrawText(screenPoint.X, screenPoint.Y, hudText, ConsoleColor.White, ConsoleColor.Black);
     }
 }

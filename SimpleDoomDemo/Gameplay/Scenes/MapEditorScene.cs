@@ -100,11 +100,11 @@ public class MapEditorScene : IGameScene
             RelativePosition = new Point2D(0, 0),
             BackgroundColor = ConsoleColor.Black,
             ForegroundColor = ConsoleColor.White,
-            Size = _engine.RootPanel().ScreenSize,
+            Size = _engine.ScreenSize,
             HasBorder = true,
             BorderColor = ConsoleColor.White,
         };
-        _engine.RootPanel().AddChild(_mainPanel);
+        _engine.GameViewport.AddChild(_mainPanel);
 
         int centerX = _engine.RootPanel().ScreenSize.Width / 2;
 
@@ -143,7 +143,7 @@ public class MapEditorScene : IGameScene
         _editorPanel.AddChild(_cursor);
         _mapParser = new MapParser();
 
-        _engine.GameViewport.Camera.FollowObject(_cursor);
+        _engine.GameViewport.Camera?.FollowObject(_cursor);
 
         _statusBar = new StatusBar(_cursor.RelativePosition)
         {
@@ -153,10 +153,10 @@ public class MapEditorScene : IGameScene
 
         _engine.RenderManager.OnWindowResized += (sender, args) =>
         {
-            _mainPanel.Size = _engine.RootPanel().ScreenSize;
+            _mainPanel.Size = _engine.ScreenSize;
             _engine.GameViewport.Camera.CameraSize = _mainPanel.Size;
 
-            _title.RelativePosition = new Point2D(_engine.RootPanel().ScreenSize.Width / 2
+            _title.RelativePosition = new Point2D(_engine.ScreenSize.Width / 2
                                                   - _title.Size.Width / 2, 0);
 
             _toolBarPanel.RelativePosition = new Point2D(_engine.RootPanel().ScreenSize.Width / 2 - 50,
