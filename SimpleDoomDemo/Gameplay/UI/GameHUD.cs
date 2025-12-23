@@ -21,8 +21,8 @@ public class GameHud : UiPanel
         _player = player;
 
         // Configure panel
-        BackgroundColor = ConsoleColor.Black;
-        ForegroundColor = ConsoleColor.White;
+        BackgroundColor = AnsiColor.Black;
+        ForegroundColor = AnsiColor.White;
         HasBorder = false;
         Size = new Dimension2D(width, height);
     }
@@ -42,6 +42,7 @@ public class GameHud : UiPanel
                          $"BFG: {_player.BfgCells}/{_player.MaxBfgCells}  " +
                          $"XP: {_player.CombatPoints}  ";
 
-        renderer.DrawText(screenPoint.X, screenPoint.Y, hudText, ConsoleColor.White, ConsoleColor.Black);
+        var style = new RenderStyle(AnsiColor.Black, AnsiColor.White, FontStyle.Regular);
+        renderer.DrawText(screenPoint.X, screenPoint.Y, hudText, style);
     }
 }

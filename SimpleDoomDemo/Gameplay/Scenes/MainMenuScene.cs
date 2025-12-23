@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using ConsoleGameEngine.Engine;
 using ConsoleGameEngine.Engine.Input;
+using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Animations;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
@@ -48,9 +49,9 @@ public class MainMenuScene : IGameScene
         {
             RelativePosition = new Point2D(centerX - 10, centerY - 8),
             Size = new Dimension2D(20, 3),
-            FocusedBgColor = ConsoleColor.Green,
-            BackgroundColor = ConsoleColor.DarkGreen,
-            ForegroundColor = ConsoleColor.White,
+            FocusedBgColor = AnsiColor.Green,
+            BackgroundColor = AnsiColor.DarkGreen,
+            ForegroundColor = AnsiColor.White,
         };
         _playButton.OnClick += OnPlayClicked;
         _menuPanel.AddChild(_playButton);
@@ -59,9 +60,9 @@ public class MainMenuScene : IGameScene
         {
             RelativePosition = new Point2D(centerX - 10, centerY - 4),
             Size = new Dimension2D(20, 3),
-            FocusedBgColor = ConsoleColor.DarkBlue,
-            BackgroundColor = ConsoleColor.Blue,
-            ForegroundColor = ConsoleColor.White,
+            FocusedBgColor = AnsiColor.DarkBlue,
+            BackgroundColor = AnsiColor.Blue,
+            ForegroundColor = AnsiColor.White,
         };
         _settingsButton.OnClick += Settings;
         _menuPanel.AddChild(_settingsButton);
@@ -70,9 +71,9 @@ public class MainMenuScene : IGameScene
         {
             RelativePosition = new Point2D(centerX - 10, centerY),
             Size = new Dimension2D(20, 3),
-            FocusedBgColor = ConsoleColor.DarkGray,
-            BackgroundColor = ConsoleColor.Gray,
-            ForegroundColor = ConsoleColor.Black,
+            FocusedBgColor = AnsiColor.DarkGray,
+            BackgroundColor = AnsiColor.Gray,
+            ForegroundColor = AnsiColor.Black,
         };
         _mapEditButton.OnClick += EditMap;
         _menuPanel.AddChild(_mapEditButton);
@@ -82,9 +83,9 @@ public class MainMenuScene : IGameScene
         {
             RelativePosition = new Point2D(centerX - 10, centerY + 6),
             Size = new Dimension2D(20, 3),
-            FocusedBgColor = ConsoleColor.Red,
-            BackgroundColor = ConsoleColor.DarkRed,
-            ForegroundColor = ConsoleColor.White,
+            FocusedBgColor = AnsiColor.Red,
+            BackgroundColor = AnsiColor.DarkRed,
+            ForegroundColor = AnsiColor.White,
         };
         _quitButton.OnClick += OnQuitClicked;
         _menuPanel.AddChild(_quitButton);

@@ -25,40 +25,40 @@ public class UiInputBox : UiPanel
     public UiInputBox(GraphicsComponent parent, UiManager focusManager,
         string title, string message)
     {
-        _focusManager = focusManager;   
-        ForegroundColor = ConsoleColor.White;
-        BackgroundColor = ConsoleColor.Blue;
-        
+        _focusManager = focusManager;
+        ForegroundColor = AnsiColor.White;
+        BackgroundColor = AnsiColor.Blue;
+
         Size = new Dimension2D(20, 6);
-        
+
         parent.AddChild(this);
         _parent = parent;
         _title = title;
         _message = message;
         _titleLabel = new UiLabel(_title)
         {
-            ForegroundColor = ConsoleColor.White,
+            ForegroundColor = AnsiColor.White,
             BackgroundColor = this.BackgroundColor,
         };
         _inputField = new UiInputField("")
         {
-            ForegroundColor = ConsoleColor.White,
+            ForegroundColor = AnsiColor.White,
             BackgroundColor = this.BackgroundColor,
             Size = new Dimension2D(20, 1),
         };
         _cancelButton = new UiButton("Cancel")
         {
-            BackgroundColor = ConsoleColor.DarkBlue,
-            ForegroundColor = ConsoleColor.White,
-            FocusedBgColor = ConsoleColor.Yellow,
-            FocusedFgColor = ConsoleColor.DarkBlue
+            BackgroundColor = AnsiColor.DarkBlue,
+            ForegroundColor = AnsiColor.White,
+            FocusedBgColor = AnsiColor.Yellow,
+            FocusedFgColor = AnsiColor.DarkBlue
         };
         _okButton = new UiButton("OK")
         {
-            BackgroundColor = ConsoleColor.DarkBlue,
-            ForegroundColor = ConsoleColor.White,
-            FocusedBgColor = ConsoleColor.Yellow,
-            FocusedFgColor = ConsoleColor.DarkBlue
+            BackgroundColor = AnsiColor.DarkBlue,
+            ForegroundColor = AnsiColor.White,
+            FocusedBgColor = AnsiColor.Yellow,
+            FocusedFgColor = AnsiColor.DarkBlue
         };
         
         _okButton.OnClick += (e, s) =>

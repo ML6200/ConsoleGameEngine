@@ -20,13 +20,13 @@ public class UiPanel : GraphicsComponent
         // UI panels render directly at world position (no camera transformation)
         // This makes them fixed on screen, perfect for menus, HUDs, etc.
 
-        renderer.FillRect(WorldPosition.X, WorldPosition.Y, Width, Height,
-            ' ', BackgroundColor, ForegroundColor);
-        
+        var fillStyle = new RenderStyle(BackgroundColor, ForegroundColor, FontStyle);
+        renderer.FillRect(WorldPosition.X, WorldPosition.Y, Width, Height, ' ', fillStyle);
+
         if (HasBorder)
         {
-            renderer.DrawBox(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height,
-                BackgroundColor, BorderColor);
+            var borderStyle = new RenderStyle(BackgroundColor, BorderColor, FontStyle);
+            renderer.DrawBox(WorldPosition.X, WorldPosition.Y, Size.Width, Size.Height, borderStyle);
         }
     }
 }

@@ -25,38 +25,38 @@ public class UiMsgBox : UiPanel
     {
         _focusManager = focusManager;
         _inputManager = inputManager;
-        
-        ForegroundColor = ConsoleColor.White;
-        BackgroundColor = ConsoleColor.Blue;
-        BorderColor = ConsoleColor.White;
+
+        ForegroundColor = AnsiColor.White;
+        BackgroundColor = AnsiColor.Blue;
+        BorderColor = AnsiColor.White;
         parent.AddChild(this);
-        
+
         _parent = parent;
         _title = title;
         _message = message;
         _titleLabel = new UiLabel(_title)
         {
-            ForegroundColor = ConsoleColor.White,
+            ForegroundColor = AnsiColor.White,
             BackgroundColor = this.BackgroundColor,
         };
         _messageLabel = new UiLabel(_message)
         {
-            ForegroundColor = ConsoleColor.White,
+            ForegroundColor = AnsiColor.White,
             BackgroundColor = this.BackgroundColor,
         };
         _cancelButton = new UiButton("Cancel")
         {
-            BackgroundColor = ConsoleColor.DarkBlue,
-            ForegroundColor = ConsoleColor.White,
-            FocusedBgColor = ConsoleColor.Yellow,
-            FocusedFgColor = ConsoleColor.DarkBlue
+            BackgroundColor = AnsiColor.DarkBlue,
+            ForegroundColor = AnsiColor.White,
+            FocusedBgColor = AnsiColor.Yellow,
+            FocusedFgColor = AnsiColor.DarkBlue
         };
         _okButton = new UiButton("OK")
         {
-            BackgroundColor = ConsoleColor.DarkBlue,
-            ForegroundColor = ConsoleColor.White,
-            FocusedBgColor = ConsoleColor.Yellow,
-            FocusedFgColor = ConsoleColor.DarkBlue
+            BackgroundColor = AnsiColor.DarkBlue,
+            ForegroundColor = AnsiColor.White,
+            FocusedBgColor = AnsiColor.Yellow,
+            FocusedFgColor = AnsiColor.DarkBlue
         };
         
         _okButton.OnClick += (e, s) => Close(MessageOptionState.Ok);

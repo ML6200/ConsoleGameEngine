@@ -46,17 +46,22 @@ public abstract class GraphicsComponent : IRenderable
     /// <summary>
     /// Gets or sets the background color for this component.
     /// </summary>
-    public ConsoleColor BackgroundColor { get; set; }
+    public AnsiColor BackgroundColor { get; set; }
 
     /// <summary>
     /// Gets or sets the foreground (text) color for this component.
     /// </summary>
-    public ConsoleColor ForegroundColor { get; set; }
+    public AnsiColor ForegroundColor { get; set; }
 
     /// <summary>
     /// Gets or sets the border color for this component.
     /// </summary>
-    public ConsoleColor BorderColor { get; set; }
+    public AnsiColor BorderColor { get; set; }
+
+    /// <summary>
+    /// Gets or sets the font style for this component.
+    /// </summary>
+    public FontStyle FontStyle { get; set; } = FontStyle.Regular;
 
     /// <summary>
     /// The list of animations currently running on this component.
@@ -117,9 +122,9 @@ public abstract class GraphicsComponent : IRenderable
     /// <param name="borderColor">The border color for this component.</param>
     public GraphicsComponent(int width, int height,
         Point2D? relativePosition,
-        ConsoleColor backgroundColor,
-        ConsoleColor foregroundColor,
-        ConsoleColor borderColor)
+        AnsiColor backgroundColor,
+        AnsiColor foregroundColor,
+        AnsiColor borderColor)
     {
         Width = width;
         Height = height;

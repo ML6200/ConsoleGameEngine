@@ -25,9 +25,9 @@ public class UiButton : GraphicsComponent, IFocusable
     public bool HasBorder { get; set; } = false;
 
     public event EventHandler OnClick;
-    
-    public ConsoleColor FocusedBgColor { get; set; } = ConsoleColor.Cyan;
-    public ConsoleColor FocusedFgColor { get; set; } = ConsoleColor.Cyan;
+
+    public AnsiColor FocusedBgColor { get; set; } = AnsiColor.Cyan;
+    public AnsiColor FocusedFgColor { get; set; } = AnsiColor.Cyan;
     
     public UiButton(string text)
     {
@@ -72,8 +72,10 @@ public class UiButton : GraphicsComponent, IFocusable
     public override void Draw(ConsoleRenderer2D renderer, Point2D screenPoint)
     {
         // UI buttons render directly at world position (no camera transformation)
-        ConsoleColor bgColor = IsFocused ? FocusedBgColor : BackgroundColor;
-        ConsoleColor fgColor = IsFocused ? FocusedFgColor : ForegroundColor;
+        AnsiColor bgColor = IsFocused ? FocusedBgColor : BackgroundColor;
+        AnsiColor fgColor = IsFocused ? FocusedFgColor : ForegroundColor;
+
+        var style = new RenderStyle(bgColor, fgColor, FontStyle);
 
         if (HasBorder)
         {
@@ -83,8 +85,7 @@ public class UiButton : GraphicsComponent, IFocusable
                 Size.Width,
                 Size.Height,
                 ' ',
-                bgColor,
-                fgColor
+                style
             );
 
             // Szegely
@@ -93,8 +94,7 @@ public class UiButton : GraphicsComponent, IFocusable
                 WorldPosition.Y,
                 Size.Width,
                 Size.Height,
-                bgColor,
-                fgColor
+                style
             );
         }
         else
@@ -105,8 +105,7 @@ public class UiButton : GraphicsComponent, IFocusable
                 Size.Width,
                 Size.Height,
                 ' ',
-                bgColor,
-                fgColor
+                style
             );
         }
 
@@ -115,6 +114,6 @@ public class UiButton : GraphicsComponent, IFocusable
         int textX = WorldPosition.X + padding;
         int textY = WorldPosition.Y + Size.Height / 2;
 
-        renderer.DrawText(textX, textY, Text, bgColor, fgColor);
+        renderer.DrawText(textX, textY, Text, style);
     }
 }

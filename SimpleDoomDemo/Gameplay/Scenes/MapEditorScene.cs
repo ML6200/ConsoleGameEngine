@@ -98,11 +98,11 @@ public class MapEditorScene : IGameScene
         _mainPanel = new UiPanel()
         {
             RelativePosition = new Point2D(0, 0),
-            BackgroundColor = ConsoleColor.Black,
-            ForegroundColor = ConsoleColor.White,
+            BackgroundColor = AnsiColor.Black,
+            ForegroundColor = AnsiColor.White,
             Size = _engine.ScreenSize,
             HasBorder = true,
-            BorderColor = ConsoleColor.White,
+            BorderColor = AnsiColor.White,
         };
         _engine.GameViewport.AddChild(_mainPanel);
 
@@ -111,8 +111,8 @@ public class MapEditorScene : IGameScene
         _title = new UiLabel()
         {
             Text = "Map Editor",
-            ForegroundColor = ConsoleColor.White,
-            BackgroundColor = ConsoleColor.Black,
+            ForegroundColor = AnsiColor.White,
+            BackgroundColor = AnsiColor.Black,
         };
 
         _title.RelativePosition = new Point2D(centerX - _title.Size.Width / 2, 0);
@@ -126,8 +126,8 @@ public class MapEditorScene : IGameScene
         _editorPanel = new UiPanel()
         {
             RelativePosition = new Point2D(1, 1),
-            BackgroundColor = ConsoleColor.Black,
-            ForegroundColor = ConsoleColor.White,
+            BackgroundColor = AnsiColor.Black,
+            ForegroundColor = AnsiColor.White,
             Size = _mainPanel.Size - offset,
             HasBorder = false,
         };
@@ -684,8 +684,8 @@ internal sealed class Cursor : GraphicsComponent
     {
         if (screenPoint == Point2D.OutsideScreenPoint) return; // Off-screen culling
 
-        renderer.SetCell(screenPoint.X, screenPoint.Y,
-            new Cell('⊡', ConsoleColor.Black, ConsoleColor.Green));
+        var style = new RenderStyle(AnsiColor.Black, AnsiColor.Green, FontStyle.Regular);
+        renderer.SetCell(screenPoint.X, screenPoint.Y, new Cell('⊡', style));
     }
 }
 
@@ -696,20 +696,20 @@ internal class StatusBar : UiPanel
 
     public StatusBar(Point2D screenPos)
     {
-        BackgroundColor = ConsoleColor.DarkGray;
+        BackgroundColor = AnsiColor.DarkGray;
         HasBorder = false;
 
         _posLabel = new UiLabel()
         {
             RelativePosition = new Point2D(1, 0),
-            ForegroundColor = ConsoleColor.Green,
+            ForegroundColor = AnsiColor.Green,
         };
         SetCursorPosition(screenPos);
 
         _stateLabel = new UiLabel()
         {
             RelativePosition = new Point2D(_posLabel.Size.Width + 4, 0),
-            ForegroundColor = ConsoleColor.Green,
+            ForegroundColor = AnsiColor.Green,
             Text = "Status",
         };
 
@@ -737,15 +737,15 @@ internal class MapToolbar : UiPanel
 {
     public MapToolbar(int? width = null, int? height = null)
     {
-        ConsoleColor panelBg = ConsoleColor.Black;
-        ConsoleColor panelFg = ConsoleColor.White;
-        ConsoleColor borderColor = ConsoleColor.DarkGray;
-        ConsoleColor titleColor = ConsoleColor.White;
-        ConsoleColor itemsColor = ConsoleColor.DarkGreen;
-        ConsoleColor demonsColor = ConsoleColor.DarkYellow;
-        ConsoleColor controlsColor = ConsoleColor.DarkCyan;
-        ConsoleColor toolsColor = ConsoleColor.DarkMagenta;
-        ConsoleColor infoColor = ConsoleColor.DarkGray;
+        AnsiColor panelBg = AnsiColor.Black;
+        AnsiColor panelFg = AnsiColor.White;
+        AnsiColor borderColor = AnsiColor.DarkGray;
+        AnsiColor titleColor = AnsiColor.White;
+        AnsiColor itemsColor = AnsiColor.DarkGreen;
+        AnsiColor demonsColor = AnsiColor.DarkYellow;
+        AnsiColor controlsColor = AnsiColor.DarkCyan;
+        AnsiColor toolsColor = AnsiColor.DarkMagenta;
+        AnsiColor infoColor = AnsiColor.DarkGray;
 
         // Configure panel
         BackgroundColor = panelBg;

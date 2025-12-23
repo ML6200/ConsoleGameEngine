@@ -1,4 +1,5 @@
 using System;
+using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 
@@ -11,26 +12,26 @@ public class StatsPanel : UiPanel
     public StatsPanel(ConsoleEngine engine, string txt)
     {
         _engine = engine;
-        BackgroundColor = ConsoleColor.Black;
-        ForegroundColor = ConsoleColor.Green;
+        BackgroundColor = AnsiColor.Black;
+        ForegroundColor = AnsiColor.Green;
         HasBorder = true;
-        BorderColor = ConsoleColor.DarkYellow;
+        BorderColor = AnsiColor.DarkYellow;
 
         string text = GetText(out double fps);
-        
+
         _label = new UiLabel(text)
         {
             RelativePosition = new Point2D(2, 1),
-            ForegroundColor = ConsoleColor.Green,
-            BackgroundColor = ConsoleColor.Black,
+            ForegroundColor = AnsiColor.Green,
+            BackgroundColor = AnsiColor.Black,
         };
         AddChild(_label);
         Size = _label.Size + new Dimension2D(5, 2);
-        
+
         var label1 = new UiLabel(txt)
         {
             RelativePosition = new Point2D(Size.Width / 2 - txt.Length / 2, 0),
-            ForegroundColor = ConsoleColor.DarkYellow,
+            ForegroundColor = AnsiColor.DarkYellow,
         };
         AddChild(label1);
     }

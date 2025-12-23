@@ -20,7 +20,7 @@ public class Imp : Demon
         // Transform world coordinates to screen coordinates
         //if (screenPoint == Point2D.OutsideScreenPoint) return; // Off-screen culling
 
-        renderer.DrawText(screenPoint.X, screenPoint.Y, "☠");
+        renderer.DrawText(screenPoint.X, screenPoint.Y, "☠", default);
     }
 
     public override void GetAttackDamageRange(out int min, out int max)

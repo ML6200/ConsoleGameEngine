@@ -1,5 +1,6 @@
 using System;
 using ConsoleGameEngine.Engine;
+using ConsoleGameEngine.Engine.Renderer;
 using ConsoleGameEngine.Engine.Renderer.Geometry;
 using ConsoleGameEngine.Engine.Renderer.Graphics;
 
@@ -26,38 +27,38 @@ public class SettingsScene : IGameScene
         _engine = consoleEngine;
         _settingsPanel = new UiPanel()
         {
-            BackgroundColor = ConsoleColor.DarkBlue,
-            ForegroundColor = ConsoleColor.White,
+            BackgroundColor = AnsiColor.DarkBlue,
+            ForegroundColor = AnsiColor.White,
             Size = _engine.RootPanel().Size,
-            BorderColor = ConsoleColor.Yellow
+            BorderColor = AnsiColor.Yellow
         };
         
         _engine.RootPanel().AddChild(_settingsPanel);
         
         _titleLabel = new UiLabel("Doom game settings")
         {
-            ForegroundColor = ConsoleColor.Yellow,
-            BackgroundColor = ConsoleColor.DarkBlue,
+            ForegroundColor = AnsiColor.Yellow,
+            BackgroundColor = AnsiColor.DarkBlue,
         };
         _settingsPanel.AddChild(_titleLabel);
         
         _saveAndBackButton = new UiButton("Save")
         {
             RelativePosition = new Point2D(3, 1),
-            BackgroundColor = ConsoleColor.Blue,
-            ForegroundColor = ConsoleColor.Yellow,
-            FocusedBgColor = ConsoleColor.Yellow,
-            FocusedFgColor = ConsoleColor.Blue
+            BackgroundColor = AnsiColor.Blue,
+            ForegroundColor = AnsiColor.Yellow,
+            FocusedBgColor = AnsiColor.Yellow,
+            FocusedFgColor = AnsiColor.Blue
         };
         _settingsPanel.AddChild(_saveAndBackButton);
         
         _backButton = new UiButton("Cancel")
         {
             RelativePosition = new Point2D(_saveAndBackButton.Size.Width + 4, 1),
-            BackgroundColor = ConsoleColor.Blue,
-            ForegroundColor = ConsoleColor.Yellow,
-            FocusedBgColor = ConsoleColor.DarkRed,
-            FocusedFgColor = ConsoleColor.Yellow
+            BackgroundColor = AnsiColor.Blue,
+            ForegroundColor = AnsiColor.Yellow,
+            FocusedBgColor = AnsiColor.DarkRed,
+            FocusedFgColor = AnsiColor.Yellow
         };
         _settingsPanel.AddChild(_backButton);
     }
@@ -94,8 +95,8 @@ public class SettingsScene : IGameScene
         _mapLabel = new UiLabel("Default map path:")
         {
             RelativePosition = new Point2D(3, 3),
-            BackgroundColor = ConsoleColor.DarkBlue,
-            ForegroundColor = ConsoleColor.Yellow,
+            BackgroundColor = AnsiColor.DarkBlue,
+            ForegroundColor = AnsiColor.Yellow,
         };
         _settingsPanel.AddChild(_mapLabel);
         
@@ -103,8 +104,8 @@ public class SettingsScene : IGameScene
         {
             RelativePosition = new Point2D(3, 4),
             Size = new Dimension2D(20, 1),
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ForegroundColor = ConsoleColor.Blue,
+            BackgroundColor = AnsiColor.DarkYellow,
+            ForegroundColor = AnsiColor.Blue,
         };
         _settingsPanel.AddChild(_mapField);
         
@@ -112,8 +113,8 @@ public class SettingsScene : IGameScene
         _assetsLabel = new UiLabel("Music assets path(folder):")
         {
             RelativePosition = new Point2D(3, 6),
-            BackgroundColor = ConsoleColor.DarkBlue,
-            ForegroundColor = ConsoleColor.Yellow,
+            BackgroundColor = AnsiColor.DarkBlue,
+            ForegroundColor = AnsiColor.Yellow,
         };
         _settingsPanel.AddChild(_assetsLabel);
         
@@ -121,8 +122,8 @@ public class SettingsScene : IGameScene
         {
             RelativePosition = new Point2D(3, 7),
             Size = new Dimension2D(20, 1),
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ForegroundColor = ConsoleColor.Blue,
+            BackgroundColor = AnsiColor.DarkYellow,
+            ForegroundColor = AnsiColor.Blue,
         };
         _settingsPanel.AddChild(_assetsField);
         
@@ -130,10 +131,10 @@ public class SettingsScene : IGameScene
         _browseButton = new UiButton("Browse")
         {
             RelativePosition = new Point2D(_mapField.Size.Width + 4, 4),
-            BackgroundColor = ConsoleColor.Blue,
-            ForegroundColor = ConsoleColor.Yellow,
-            FocusedBgColor = ConsoleColor.Yellow,
-            FocusedFgColor = ConsoleColor.Blue
+            BackgroundColor = AnsiColor.Blue,
+            ForegroundColor = AnsiColor.Yellow,
+            FocusedBgColor = AnsiColor.Yellow,
+            FocusedFgColor = AnsiColor.Blue
         };
         
         EnableButtons();

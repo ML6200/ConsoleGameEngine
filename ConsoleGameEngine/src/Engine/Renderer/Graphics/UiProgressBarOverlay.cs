@@ -17,22 +17,22 @@ public class UiProgressBarOverlay : UiPanel
     {
         _parent = parent;
 
-        ForegroundColor = ConsoleColor.White;
-        BackgroundColor = ConsoleColor.DarkBlue;
-        BorderColor = ConsoleColor.White;
+        ForegroundColor = AnsiColor.White;
+        BackgroundColor = AnsiColor.DarkBlue;
+        BorderColor = AnsiColor.White;
         HasBorder = true;
 
         // Create title label
         _titleLabel = new UiLabel(title)
         {
-            ForegroundColor = ConsoleColor.White,
+            ForegroundColor = AnsiColor.White,
             BackgroundColor = BackgroundColor,
         };
 
         // Create status label
         _statusLabel = new UiLabel("")
         {
-            ForegroundColor = ConsoleColor.Gray,
+            ForegroundColor = AnsiColor.Gray,
             BackgroundColor = BackgroundColor,
         };
 

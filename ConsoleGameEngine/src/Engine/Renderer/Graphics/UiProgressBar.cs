@@ -32,25 +32,25 @@ public class ProgressBar : GraphicsComponent
         int filledWidth = (int)(Size.Width * _progress);
 
         // Draw empty part
+        var emptyStyle = new RenderStyle(AnsiColor.DarkGray, AnsiColor.Gray, FontStyle.Regular);
         renderer.FillRect(
             WorldPosition.X + filledWidth,
             WorldPosition.Y,
             Size.Width - filledWidth,
             Size.Height,
             '░',
-            ConsoleColor.DarkGray,
-            ConsoleColor.Gray
+            emptyStyle
         );
-        
+
         // Draw filled part
+        var filledStyle = new RenderStyle(AnsiColor.Green, AnsiColor.White, FontStyle.Regular);
         renderer.FillRect(
             WorldPosition.X,
             WorldPosition.Y,
             filledWidth,
             Size.Height,
             '█',
-            ConsoleColor.Green,
-            ConsoleColor.White
+            filledStyle
         );
     } 
 }

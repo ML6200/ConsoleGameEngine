@@ -20,8 +20,8 @@ public class Mancubus : Demon
         // Transform world coordinates to screen coordinates
         //if (screenPoint == Point2D.OutsideScreenPoint) return; // Off-screen culling
 
-        renderer.SetCell(screenPoint.X, screenPoint.Y,
-            new Cell('Ω', ConsoleColor.Black, ConsoleColor.DarkRed));
+        var style = new RenderStyle(AnsiColor.Black, AnsiColor.DarkRed, FontStyle.Regular);
+        renderer.SetCell(screenPoint.X, screenPoint.Y, new Cell('Ω', style));
     }
 
     public override void GetAttackDamageRange(out int min, out int max)

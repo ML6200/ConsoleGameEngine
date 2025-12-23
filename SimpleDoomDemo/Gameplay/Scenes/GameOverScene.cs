@@ -57,9 +57,9 @@ public class GameOverScene : IGameScene
             Size = new Dimension2D(Console.WindowWidth, Console.WindowHeight),
             Visible = true
         };
-        if (_interrupted) _rootPanel.BackgroundColor = ConsoleColor.DarkBlue;
-        if (_playerDied) _rootPanel.BackgroundColor = ConsoleColor.DarkRed;
-        if (_levelComplete) _rootPanel.BackgroundColor = ConsoleColor.DarkGreen;
+        if (_interrupted) _rootPanel.BackgroundColor = AnsiColor.DarkBlue;
+        if (_playerDied) _rootPanel.BackgroundColor = AnsiColor.DarkRed;
+        if (_levelComplete) _rootPanel.BackgroundColor = AnsiColor.DarkGreen;
         _rootPanel.AddChild(_gameOverPanel);
 
         _engine.Input.PushMode(InputMode.TextInput);
@@ -78,7 +78,7 @@ public class GameOverScene : IGameScene
     {
         _game.StopAllAudio();
 
-        _rootPanel.BackgroundColor = ConsoleColor.Black;
+        _rootPanel.BackgroundColor = AnsiColor.Black;
         _rootPanel.RemoveChild(_gameOverPanel);
         _engine.Input.PopMode();
     }
@@ -111,29 +111,29 @@ public class GameOverPanel : UiPanel
 
         // Determine title text and colors based on game over reason
         string titleText;
-        ConsoleColor bgColor;
-        ConsoleColor fgColor = ConsoleColor.White;
+        AnsiColor bgColor;
+        AnsiColor fgColor = AnsiColor.White;
 
         if (_playerDied)
         {
             titleText = "YOU DIED!";
-            bgColor = ConsoleColor.DarkRed;
+            bgColor = AnsiColor.DarkRed;
         }
         else if (_interrupted)
         {
             titleText = "EXITED";
-            bgColor = ConsoleColor.DarkBlue;
-            fgColor = ConsoleColor.Yellow;
+            bgColor = AnsiColor.DarkBlue;
+            fgColor = AnsiColor.Yellow;
         }
         else if (_levelComplete)
         {
             titleText = "LEVEL COMPLETE!";
-            bgColor = ConsoleColor.DarkGreen;
+            bgColor = AnsiColor.DarkGreen;
         }
         else
         {
             titleText = "";
-            bgColor = ConsoleColor.Red;
+            bgColor = AnsiColor.Red;
         }
 
         // Create UI components

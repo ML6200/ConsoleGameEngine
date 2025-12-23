@@ -22,47 +22,47 @@ public class GameItem : GraphicsComponent
         {
             case ItemType.Ammo:
                 Solidity = 0;
-                ForegroundColor = ConsoleColor.Yellow;
+                ForegroundColor = AnsiColor.Yellow;
                 _glyph = '⁍';
                 break;
 
             case ItemType.BfgCell:
                 Solidity = 0;
-                ForegroundColor = ConsoleColor.Green;
+                ForegroundColor = AnsiColor.Green;
                 _glyph = 'B';
                 break;
 
             case ItemType.Door:
                 Solidity = 10;
-                BackgroundColor = ConsoleColor.Gray;
-                ForegroundColor = ConsoleColor.Black;
+                BackgroundColor = AnsiColor.Gray;
+                ForegroundColor = AnsiColor.Black;
                 _glyph = '/';
                 break;
 
             case ItemType.LevelExit:
                 Solidity = 0;
-                BackgroundColor = ConsoleColor.Blue;
-                ForegroundColor = ConsoleColor.Black;
+                BackgroundColor = AnsiColor.Blue;
+                ForegroundColor = AnsiColor.Black;
                 _glyph = 'E';
                 break;
 
             case ItemType.MedKit:
                 Solidity = 0;
-                BackgroundColor = ConsoleColor.DarkGray;
-                ForegroundColor = ConsoleColor.Red;
+                BackgroundColor = AnsiColor.DarkGray;
+                ForegroundColor = AnsiColor.Red;
                 _glyph = '+';
                 break;
 
             case ItemType.ToxicWaste:
                 Solidity = 0;
-                ForegroundColor = ConsoleColor.Green;
+                ForegroundColor = AnsiColor.Green;
                 _glyph = '☣';
                 break;
 
             case ItemType.Wall:
                 Solidity = 10;
-                BackgroundColor = ConsoleColor.Gray;
-                ForegroundColor = ConsoleColor.Gray;
+                BackgroundColor = AnsiColor.Gray;
+                ForegroundColor = AnsiColor.Gray;
                 _glyph = ' ';
                 break;
         }
@@ -88,12 +88,12 @@ public class GameItem : GraphicsComponent
             if (Solidity.Equals(10))
             {
                 Solidity = 0;
-                ForegroundColor = ConsoleColor.Black;
+                ForegroundColor = AnsiColor.Black;
                 _glyph = '/';
             }
             else
             {
-                ForegroundColor = ConsoleColor.Black;
+                ForegroundColor = AnsiColor.Black;
                 Solidity = 10;
                 _glyph = '\\';
             }
@@ -113,7 +113,7 @@ public class GameItem : GraphicsComponent
     {
         if (screenPoint == Point2D.OutsideScreenPoint) return;
 
-        renderer.SetCell(screenPoint.X, screenPoint.Y,
-            new Cell(_glyph, BackgroundColor, ForegroundColor));
+        var style = new RenderStyle(BackgroundColor, ForegroundColor, FontStyle);
+        renderer.SetCell(screenPoint.X, screenPoint.Y, new Cell(_glyph, style));
     }
 }

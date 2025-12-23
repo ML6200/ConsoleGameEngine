@@ -28,8 +28,8 @@ public class UiInputField : GraphicsComponent, IFocusable, IUiInput
     public bool HasBorder { get; set; } = false;
 
     private event EventHandler OnTextChanged;
-    public ConsoleColor FocusedBgColor { get; set; } = ConsoleColor.Cyan;
-    public ConsoleColor FocusedFgColor { get; set; } = ConsoleColor.Black;
+    public AnsiColor FocusedBgColor { get; set; } = AnsiColor.Cyan;
+    public AnsiColor FocusedFgColor { get; set; } = AnsiColor.Black;
     
     public UiInputField(string text)
     {
@@ -99,46 +99,47 @@ public class UiInputField : GraphicsComponent, IFocusable, IUiInput
         var bgColor = IsFocused ? FocusedBgColor : BackgroundColor;
         var fgColor = IsFocused ? FocusedFgColor : ForegroundColor;
 
+        var style = new RenderStyle(bgColor, fgColor, FontStyle);
+
         int borderOffset = HasBorder ? 2 : 0;
         int availableWidth = Size.Width - borderOffset;
 
         string displayText = Text;
-        
+
         if (Text.Length > availableWidth)
         {
             int startIndex = Text.Length - availableWidth;
             displayText = displayText.Substring(startIndex);
             CursorPosition = availableWidth;
         }
-        
+
         renderer.FillRect(
             WorldPosition.X,
             WorldPosition.Y,
             Size.Width,
             Size.Height,
             ' ',
-            bgColor,
-            fgColor
+            style
         );
-        
+
         if (HasBorder)
         {
-            renderer.SetCell(WorldPosition.X, WorldPosition.Y, new Cell('['));
-            renderer.SetCell(WorldPosition.X + Size.Width - 1, WorldPosition.Y, new Cell(']'));
+            renderer.SetCell(WorldPosition.X, WorldPosition.Y, new Cell('[', style));
+            renderer.SetCell(WorldPosition.X + Size.Width - 1, WorldPosition.Y, new Cell(']', style));
         }
-        
+
         int textStartX = WorldPosition.X + (HasBorder ? 1 : 0);
         int textY = WorldPosition.Y + Size.Height / 2;
-        
+
         if (displayText.Length < availableWidth)
         {
             int padding = (availableWidth - displayText.Length) / 2;
             textStartX += padding;
             CursorPosition = displayText.Length;
         }
-        
-        renderer.DrawText(textStartX, textY, displayText, bgColor, fgColor);
-        
+
+        renderer.DrawText(textStartX, textY, displayText, style);
+
         // Update cursor label position and colors
         if (IsFocused)
         {

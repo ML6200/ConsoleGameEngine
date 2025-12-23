@@ -16,8 +16,8 @@ public class UiButtonScrollPane : UiPanel, IFocusable
     public bool HasBorder { get; set; } = false;
 
     public event EventHandler OnClick;
-    
-    public ConsoleColor FocusedBgColor { get; set; } = ConsoleColor.DarkBlue;
+
+    public AnsiColor FocusedBgColor { get; set; } = AnsiColor.DarkBlue;
     
     public UiButtonScrollPane(string text)
     {

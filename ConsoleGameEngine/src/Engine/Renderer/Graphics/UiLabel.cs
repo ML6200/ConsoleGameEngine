@@ -42,19 +42,19 @@ public class UiLabel : GraphicsComponent
 
     public override void Draw(ConsoleRenderer2D renderer, Point2D screenPoint)
     {
+        var style = new RenderStyle(BackgroundColor, ForegroundColor, FontStyle);
+
         if (_text.Contains("\n"))
         {
             string[] lines = _text.Split('\n');
             for (int i = 0; i < lines.Length; i++)
             {
-                renderer.DrawText(WorldPosition.X, WorldPosition.Y + i, lines[i].TrimEnd('\r'),
-                    BackgroundColor, ForegroundColor);
+                renderer.DrawText(WorldPosition.X, WorldPosition.Y + i, lines[i].TrimEnd('\r'), style);
             }
         }
         else
         {
-            renderer.DrawText(WorldPosition.X, WorldPosition.Y, Text,
-                BackgroundColor, ForegroundColor);
+            renderer.DrawText(WorldPosition.X, WorldPosition.Y, Text, style);
         }
     }
 }

@@ -18,7 +18,8 @@ public class Zombieman : Demon
     
     public override void Draw(ConsoleRenderer2D renderer, Point2D screenPoint)
     {
-        renderer.DrawText(screenPoint.X, screenPoint.Y, "☠", default, ConsoleColor.DarkCyan);
+        var style = new RenderStyle(AnsiColor.Black, AnsiColor.DarkCyan, FontStyle.Regular);
+        renderer.DrawText(screenPoint.X, screenPoint.Y, "☠", style);
     }
 
     public override void GetAttackDamageRange(out int min, out int max)

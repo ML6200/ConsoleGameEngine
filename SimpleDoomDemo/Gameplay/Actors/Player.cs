@@ -120,7 +120,7 @@ public class Player : GraphicsComponent
             return;
         }
 
-        renderer.SetCell(screenPoint.X, screenPoint.Y,
-            new Cell('●', ConsoleColor.Black, ConsoleColor.Green));
+        var style = new RenderStyle(AnsiColor.Black, AnsiColor.Green, FontStyle.Regular);
+        renderer.SetCell(screenPoint.X, screenPoint.Y, new Cell('●', style));
     }
 }
