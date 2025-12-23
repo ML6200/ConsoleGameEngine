@@ -17,17 +17,20 @@ public class RenderPipeline
     {
     }
 
-    public void Submit(Action action)
+    public void Submit(GraphicsComponent component,  ConsoleRenderer2D renderer, Point2D screenPos)
     {
         _queue.Add(new RenderAction()
         {
-            Action = action,
+            Component = component,
+            Renderer = renderer,
+            ScreenPosition = screenPos,
             SequenceId = _counter++
         });
     }
 
-    public void Compute(ConsoleRenderer2D renderer)
+    public void Compute(RootComponent root, ConsoleRenderer2D renderer)
     {
+        TraverseComponentTree(root, renderer);
         var sortedAction = _queue
             .OrderBy(c => c.Layer)
             .ThenBy(c => c.ZIndex)
@@ -35,15 +38,15 @@ public class RenderPipeline
 
         foreach (var action in sortedAction)
         {
-            action.Action();
+            action.Component.Draw(renderer, action.ScreenPosition);
         }
         _queue.Clear();
         _counter = 0;
     }
     
-    public void ComputeComponentTree(GraphicsComponent root, ConsoleRenderer2D renderer)
+    private void TraverseComponentTree(RootComponent root, ConsoleRenderer2D renderer)
     {
-        WalkTree(root, renderer);
+        WalkTree(root.Canvas, renderer);
     }
 
     private void WalkTree(GraphicsComponent component, ConsoleRenderer2D renderer)
@@ -66,7 +69,7 @@ public class RenderPipeline
             ? Camera.TransformPoint(component.WorldPosition)
             : component.WorldPosition; 
 
-        Submit(() => component.Draw(renderer, screenPos));
+        Submit(component, renderer, screenPos);
 
         foreach (var child in component.Children)
             WalkTree(child, renderer);

@@ -79,8 +79,7 @@ public class ConsoleRenderManager : IDisposable
             }
             else
             {
-                _renderPipeline.ComputeComponentTree(_rootComponent.Canvas, _renderer);
-                _renderPipeline.Compute(_renderer);
+                _renderPipeline.Compute(_rootComponent, _renderer);
                 _renderer.Render();
             }
 
