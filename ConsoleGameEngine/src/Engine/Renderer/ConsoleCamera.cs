@@ -210,8 +210,8 @@ public class ConsoleCamera
         else
         {
             // Smoothly interpolate towards target position
-            _cameraX = AnimationTween.LerpForScalar(_cameraX, targetCameraX, multiplier);
-            _cameraY = AnimationTween.LerpForScalar(_cameraY, targetCameraY, multiplier);
+            _cameraX = Animation.LerpForScalar(_cameraX, targetCameraX, multiplier);
+            _cameraY = Animation.LerpForScalar(_cameraY, targetCameraY, multiplier);
         }
 
         SetCameraPosition(new Point2D((int)_cameraX, (int)_cameraY));

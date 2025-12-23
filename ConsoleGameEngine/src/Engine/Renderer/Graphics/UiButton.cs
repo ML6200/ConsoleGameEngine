@@ -51,7 +51,7 @@ public class UiButton : GraphicsComponent, IFocusable
 
     public void OnFocusActivate()
     {
-        AddAnimation(AnimationTween.Blink(this, 0.3, false));
+        AddAnimation(Animation.Blink(this, 0.3, false));
         
         OnClick(this, EventArgs.Empty);
     }

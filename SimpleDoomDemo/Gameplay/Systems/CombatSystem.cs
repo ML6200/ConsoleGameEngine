@@ -30,7 +30,7 @@ public class CombatSystem : IGameSystem
         _game.Player.Shoot();
         _game.PlaySoundEffect(SoundEffectType.Shotgun);
 
-        var attackAnim = AnimationTween.Blink(_game.Player, 0.2, loop: false);
+        var attackAnim = Animation.Blink(_game.Player, 0.2, loop: false);
         _game.Player.AddAnimation(attackAnim);
 
         List<Demon> nearbyDemons = GetDemonsWithinRange(_game.Player.WorldPosition, _game.Player.SightRange);
@@ -53,7 +53,7 @@ public class CombatSystem : IGameSystem
         _game.Player.ShootBFG();
         _game.PlaySoundEffect(SoundEffectType.BFG);
         
-        var bfgAnim = AnimationTween.Blink(_game.Player, 0.2, loop: false);
+        var bfgAnim = Animation.Blink(_game.Player, 0.2, loop: false);
         _game.Player.AddAnimation(bfgAnim);
 
         List<Demon> nearbyDemons = GetDemonsWithinRange(_game.Player.WorldPosition, _game.Player.SightRange);
@@ -64,7 +64,7 @@ public class CombatSystem : IGameSystem
             DealDamageToDemon(demon, damage);
 
             // Trigger explosion animation on hit demons
-            var explosionAnim = AnimationTween.Blink(demon, 150, loop: false);
+            var explosionAnim = Animation.Blink(demon, 150, loop: false);
             demon.AddAnimation(explosionAnim);
         }
     }
@@ -89,12 +89,12 @@ public class CombatSystem : IGameSystem
         {
             _game.Player?.AddCombatPoints(demon.GetCombatPoints());
             
-            var deathAnim = AnimationTween.Blink(demon, 0.5, loop: false);
+            var deathAnim = Animation.Blink(demon, 0.5, loop: false);
             demon.AddAnimation(deathAnim);
         }
         else
         {
-            var hitAnim = AnimationTween.Blink(demon, 0.2, loop: false);
+            var hitAnim = Animation.Blink(demon, 0.2, loop: false);
             demon.AddAnimation(hitAnim);
         }
     }
@@ -106,7 +106,7 @@ public class CombatSystem : IGameSystem
 
         if (_game.Player.Alive)
         {
-            var painAnim = AnimationTween.Blink(_game.Player, 0.3, loop: false);
+            var painAnim = Animation.Blink(_game.Player, 0.3, loop: false);
             _game.Player.AddAnimation(painAnim);
         }
     }

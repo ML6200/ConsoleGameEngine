@@ -5,7 +5,7 @@ using ConsoleGameEngine.Engine.Renderer.Graphics;
 
 namespace ConsoleGameEngine.Engine.Renderer.Animations;
 
-public static class AnimationTween
+public partial class Animation
 {
     public static Animation MoveTo(GraphicsComponent target, Point2D end, double duration)
     {

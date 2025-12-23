@@ -106,7 +106,7 @@ public class MainMenuScene : IGameScene
         _engine.RenderManager.OnWindowResized += WindowResized;
         
         _menuPanel.RelativePosition = new Point2D(0, -_engine.RootPanel().ScreenSize.Height);
-        _menuPanel.AddAnimation(AnimationTween.MoveTo(_menuPanel, new Point2D(0, 0), 0.5));
+        _menuPanel.AddAnimation(Animation.MoveTo(_menuPanel, new Point2D(0, 0), 0.5));
     }
 
     private void EnableButtons()

@@ -62,7 +62,7 @@ public class InteractionSystem : IGameSystem
                     item.Interact();
                     _game.PlaySoundEffect(SoundEffectType.ItemPickup);
 
-                    var pickupAnim = AnimationTween.Blink(item, 0.3, loop: false);
+                    var pickupAnim = Animation.Blink(item, 0.3, loop: false);
                     item.AddAnimation(pickupAnim);
                     break;
 
@@ -73,7 +73,7 @@ public class InteractionSystem : IGameSystem
                         item.Interact();
                         _game.PlaySoundEffect(SoundEffectType.ItemPickup);
 
-                        var cellPickupAnim = AnimationTween.Blink(item, 0.4, loop: false);
+                        var cellPickupAnim = Animation.Blink(item, 0.4, loop: false);
                         item.AddAnimation(cellPickupAnim);
                     }
                     break;
@@ -83,7 +83,7 @@ public class InteractionSystem : IGameSystem
                     item.Interact();
                     _game.PlaySoundEffect(SoundEffectType.ItemPickup);
 
-                    var medkitAnim = AnimationTween.Blink(item, 0.5, false);
+                    var medkitAnim = Animation.Blink(item, 0.5, false);
                     item.AddAnimation(medkitAnim);
                     break;
 
@@ -91,7 +91,7 @@ public class InteractionSystem : IGameSystem
                     _game.Player.TakeDamage(2);
                     _game.PlaySoundEffect(SoundEffectType.Pain);
 
-                    var toxicAnim = AnimationTween.Blink(_game.Player, 0.5, false);
+                    var toxicAnim = Animation.Blink(_game.Player, 0.5, false);
                     _game.Player.AddAnimation(toxicAnim);
                     break;
             }
@@ -108,7 +108,7 @@ public class InteractionSystem : IGameSystem
             {
                 if (item.Type == ItemType.ToxicWaste)
                 {
-                    var damageAnim = AnimationTween.Blink(demon, 0.3, loop: false);
+                    var damageAnim = Animation.Blink(demon, 0.3, loop: false);
                     demon.AddAnimation(damageAnim);
 
                     demon.TakeDamage(5);

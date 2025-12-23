@@ -50,7 +50,7 @@ public class UiInputField : GraphicsComponent, IFocusable, IUiInput
         };
         AddChild(_cursorLabel);
 
-        _cursorAnim = AnimationTween.Blink(_cursorLabel, 1);
+        _cursorAnim = Animation.Blink(_cursorLabel, 1);
     }
 
     public void OnFocusGained()
@@ -74,6 +74,7 @@ public class UiInputField : GraphicsComponent, IFocusable, IUiInput
     
     public void HandleInput(KeyEventArgs keyEventArgs)
     {
+        _cursorLabel.Visible = true;
         if (keyEventArgs.Key == ConsoleKey.Backspace)
         {
             if (Text.Length > 0)

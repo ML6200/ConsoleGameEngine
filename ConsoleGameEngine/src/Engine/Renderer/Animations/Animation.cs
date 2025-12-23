@@ -2,7 +2,7 @@ using System;
 
 namespace ConsoleGameEngine.Engine.Renderer.Animations;
 
-public class Animation
+public partial class Animation
 {
     private double _elapsedTime = 0;
     private Action<float> _onUpdate;
