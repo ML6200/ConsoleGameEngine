@@ -136,7 +136,7 @@ public class MapEditorScene : IGameScene
 
         // reset sizes
         //_engine.Input.OnKeyPressed += HandleUserInput;
-        //_engine.Camera.CameraSize = _mainPanel.Size;
+        _engine.GameViewport.Camera.CameraSize = _mainPanel.Size;
         //_engine.Camera.SetCameraPosition(new Point2D(0, 0));
 
         _cursor = new Cursor(0, 0);
