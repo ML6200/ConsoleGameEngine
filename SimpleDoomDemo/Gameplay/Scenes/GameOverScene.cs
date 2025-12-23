@@ -63,10 +63,7 @@ public class GameOverScene : IGameScene
         _rootPanel.AddChild(_gameOverPanel);
 
         _engine.Input.PushMode(InputMode.TextInput);
-        _engine.Input.SubscribeToRawInput(a =>
-        {
-            _engine.LoadScene(new MainMenuScene());
-        });
+        _engine.Input.SubscribeToRawInput(HandleKeyPress);
     }
 
     public void OnUpdate(double deltaTime)
@@ -80,7 +77,13 @@ public class GameOverScene : IGameScene
 
         _rootPanel.BackgroundColor = AnsiColor.Black;
         _rootPanel.RemoveChild(_gameOverPanel);
+        _engine.Input.UnsubscribeFromRawInput(HandleKeyPress);
         _engine.Input.PopMode();
+    }
+
+    private void HandleKeyPress(KeyEventArgs obj)
+    {
+        _engine.LoadScene(new MainMenuScene());
     }
 }
 
@@ -199,7 +202,7 @@ public class GameOverPanel : UiPanel
         AddChild(mainPanel);
         
         mainPanel.RelativePosition = new Point2D(0, -Console.WindowHeight);
-        mainPanel.AddAnimation(AnimationTween.MoveTo(mainPanel, new Point2D(0, 0), 0.5));
+        mainPanel.AddAnimation(Animation.MoveTo(mainPanel, new Point2D(0, 0), 0.5));
         BackgroundColor = bgColor;
         ForegroundColor = fgColor;
     }
