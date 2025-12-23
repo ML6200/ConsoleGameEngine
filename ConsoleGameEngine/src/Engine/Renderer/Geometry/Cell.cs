@@ -6,16 +6,12 @@ namespace ConsoleGameEngine.Engine.Renderer.Geometry;
 public readonly struct Cell : IEquatable<Cell>
 {
     public readonly char Character;
-    public readonly ConsoleColor ForegroundColor;
-    public readonly ConsoleColor BackgroundColor;
+    public readonly RenderStyle RenderStyle;
 
-    public Cell(char character = ' ', 
-        ConsoleColor backgroundColor = ConsoleColor.Black, 
-        ConsoleColor foregroundColor = ConsoleColor.White)
+    public Cell(char character = ' ', RenderStyle renderStyle = default)
     {
+        RenderStyle = renderStyle;
         Character = character;
-        BackgroundColor = backgroundColor;
-        ForegroundColor = foregroundColor;
     }
 
     public override bool Equals([NotNullWhen(true)] object? obj)
@@ -23,9 +19,8 @@ public readonly struct Cell : IEquatable<Cell>
         if (obj?.GetType() == typeof(Cell))
         {
             Cell other = (Cell)obj;
-            return Character ==  other.Character &&
-                   ForegroundColor == other.ForegroundColor &&
-                   BackgroundColor == other.BackgroundColor;
+            return Character ==  other.Character && 
+                   RenderStyle == other.RenderStyle;
         }
         
         return base.Equals(obj);
@@ -33,15 +28,14 @@ public readonly struct Cell : IEquatable<Cell>
 
     public bool Equals(Cell other)
     {
-        return Character == other.Character 
-               && BackgroundColor == other.BackgroundColor 
-               && ForegroundColor == other.ForegroundColor;
+        return Character ==  other.Character && 
+               RenderStyle == other.RenderStyle;
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Character, (int)BackgroundColor, (int)ForegroundColor);
+        return HashCode.Combine(Character, RenderStyle.GetHashCode());
     }
     
-    public static Cell Empty => new Cell(' ', ConsoleColor.Black, ConsoleColor.White);
+    public static Cell Empty => new Cell(' ');
 }

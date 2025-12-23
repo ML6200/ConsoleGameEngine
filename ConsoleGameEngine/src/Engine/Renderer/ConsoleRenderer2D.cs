@@ -159,16 +159,28 @@ public class ConsoleRenderer2D : IDisposable
             _renderBuffer[x, y] = cell;
         }
     }
+
+    public void SetCell(int x, int y, Cell cell,
+        RenderStyle style)
+    {
+        if (_isResizing) return;
+
+        if (IsValidCoordinate(x, y)
+            && !_renderBuffer[x, y].Equals(cell))
+        {
+            _dirtyMarks[x, y] = true;
+            _renderBuffer[x, y] = cell;
+        }
+    }
     
     public void DrawText(int x, int y, string text,
-        ConsoleColor bgColor = ConsoleColor.Black,
-        ConsoleColor fgColor = ConsoleColor.White)
+        RenderStyle style = default)
     {
         if (_isResizing) return;
         
         for (int i = 0; i < text.Length; i++)
         {
-            SetCell(x + i, y, new Cell(text[i], bgColor, fgColor));
+            SetCell(x + i, y, new Cell(text[i], style));
         }
     }
 
@@ -180,8 +192,7 @@ public class ConsoleRenderer2D : IDisposable
      * (x, y+height-1)
      */
     public void DrawBox(int x, int y, int width, int height,
-        ConsoleColor bg = ConsoleColor.Black,
-        ConsoleColor fg = ConsoleColor.White)
+        RenderStyle style = default)
 
     {
         if (_isResizing) return;
@@ -189,32 +200,28 @@ public class ConsoleRenderer2D : IDisposable
         SetCell(x, y, 
             new Cell(
                 RenderSpecCharacters.TopLeftCorner,
-                bg,
-                fg
+                style
             )
         ); // top left corner
 
         SetCell(x + width - 1, y, 
             new Cell(
                 RenderSpecCharacters.TopRightCorner,
-                bg,
-                fg
+                style
             )
         ); // top right corner
 
         SetCell(x, y + height - 1, 
             new Cell(
                 RenderSpecCharacters.BottomLeftCorner,
-                bg,
-                fg
+                style
             )
         ); // bottom left corner
 
         SetCell(x + width - 1, y + height - 1,
             new Cell(
                 RenderSpecCharacters.BottomRightCorner,
-                bg,
-                fg
+                style
             )
         ); // bottom right corner
 
@@ -223,16 +230,14 @@ public class ConsoleRenderer2D : IDisposable
             SetCell(x + xIndex, y,
                 new Cell(
                     RenderSpecCharacters.HorizontalLine, 
-                    bg, 
-                    fg
+                    style
                 )
             );
 
             SetCell(x + xIndex, y + height - 1,
                 new Cell(
                     RenderSpecCharacters.HorizontalLine,
-                    bg,
-                    fg
+                    style
                 )
             );
         }
@@ -242,15 +247,13 @@ public class ConsoleRenderer2D : IDisposable
             SetCell(x, y + yIndex,
                 new Cell(
                     RenderSpecCharacters.VerticalLine,
-                    bg,
-                    fg
+                    style
                 )
             );
             SetCell(x + width - 1, y + yIndex,
                 new Cell(
                     RenderSpecCharacters.VerticalLine,
-                    bg,
-                    fg
+                    style
                 )
             );
         }
@@ -260,8 +263,7 @@ public class ConsoleRenderer2D : IDisposable
         int width,
         int height,
         char character = RenderSpecCharacters.Empty,
-        ConsoleColor bg = ConsoleColor.Black,
-        ConsoleColor fg = ConsoleColor.White)
+        RenderStyle style = default)
     {
         if (_isResizing) return;
 
@@ -271,7 +273,7 @@ public class ConsoleRenderer2D : IDisposable
             {
                 if (IsValidCoordinate(x + dx, y + dy))
                 {
-                    Cell cell = new Cell(character, bg, fg);
+                    Cell cell = new Cell(character, style);
                     SetCell(x + dx, y + dy, cell);
                 }
             }
@@ -298,8 +300,7 @@ public class ConsoleRenderer2D : IDisposable
      *
      * renderBuffer:screenWidth, ScreenHeight
      */
-    private ConsoleColor _lastFg = ConsoleColor.White;
-    private ConsoleColor _lastBg = ConsoleColor.Black;
+    private RenderStyle _lastStyle = RenderStyle.Default;
     public void Render()
     {
         if (_isResizing) return;
@@ -317,14 +318,13 @@ public class ConsoleRenderer2D : IDisposable
                 }
                 
                 int startX = x;
-                var runFg = _renderBuffer[startX, y].ForegroundColor;
-                var runBg = _renderBuffer[startX, y].BackgroundColor;
+                var runStyle = _renderBuffer[startX, y].RenderStyle;
                 
                 int runEnd = startX + 1;
                 while (runEnd < _screenWidth && _dirtyMarks[runEnd, y])
                 {
                     var next = _renderBuffer[runEnd, y];
-                    if (next.ForegroundColor != runFg || next.BackgroundColor != runBg)
+                    if (next.RenderStyle != runStyle)
                     {
                         break; 
                     }
@@ -333,11 +333,10 @@ public class ConsoleRenderer2D : IDisposable
                 
                 pos = WriteEscPosToBuffer(_writeBuffer, pos, startX, y);
                 
-                if (runFg != _lastFg || runBg != _lastBg)
+                if (runStyle != _lastStyle)
                 {
-                    pos = WriteColorToBuffer(_writeBuffer, pos, runFg, runBg);
-                    _lastFg = runFg;
-                    _lastBg = runBg;
+                    //pos = WriteColorToBuffer(_writeBuffer, pos, runFg, runBg);
+                    pos = WriteStyleToBuffer(_writeBuffer, pos, runStyle);
                 }
                 
                 for (int sx = startX; sx < runEnd; sx++)
@@ -369,15 +368,37 @@ public class ConsoleRenderer2D : IDisposable
         pos = WriteCharToBuffer(buff, pos, 'H');
         return pos;
     }
-    
-    private int WriteColorToBuffer(byte[] buff, int pos, ConsoleColor fg, ConsoleColor bg)
+
+    private int WriteFontStyleToBuffer(byte[] buff, int pos, FontStyle style)
     {
-        buff[pos++] = 0x1B; // ANSI escape char
-        pos = WriteCharToBuffer(buff, pos, '[');
+        int fontStyleCode = style switch
+        {
+            FontStyle.Bold => 1,
+            FontStyle.Italic => 3,
+            _ => 0
+        };
+        pos = WriteIntToBuffer(buff, pos, fontStyleCode);
+        pos = WriteCharToBuffer(buff, pos, ';');
+        return pos;
+    }
+    
+    private int WriteColorToBuffer(byte[] buff, int pos, AnsiColor fg, AnsiColor bg)
+    {
+        //buff[pos++] = 0x1B; // ANSI escape char
+        //pos = WriteCharToBuffer(buff, pos, '[');
         pos = WriteIntToBuffer(buff, pos, GetAnsiFgColorCode(fg));
         pos = WriteCharToBuffer(buff, pos, ';');
         pos = WriteIntToBuffer(buff, pos, GetAnsiBgColorCode(bg));
         pos = WriteCharToBuffer(buff, pos, 'm');
+        return pos;
+    }
+
+    private int WriteStyleToBuffer(byte[] buff, int pos, RenderStyle style)
+    {
+        buff[pos++] = 0x1B;
+        pos = WriteCharToBuffer(buff, pos, '[');
+        pos = WriteFontStyleToBuffer(buff, pos, style.FontStyle);
+        pos = WriteColorToBuffer(buff, pos, style.Foreground, style.Background);
         return pos;
     }
     
@@ -511,12 +532,12 @@ public class ConsoleRenderer2D : IDisposable
         107 // White = 15
     ];
 
-    private int GetAnsiFgColorCode(ConsoleColor fg)
+    private int GetAnsiFgColorCode(AnsiColor fg)
     {
         return _foregroundColorCodes[(int)fg];
     }
 
-    private int GetAnsiBgColorCode(ConsoleColor bg)
+    private int GetAnsiBgColorCode(AnsiColor bg)
     {
         return _backgroundColorCodes[(int)bg];
     }
