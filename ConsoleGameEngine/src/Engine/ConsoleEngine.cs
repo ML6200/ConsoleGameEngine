@@ -245,6 +245,9 @@ public class ConsoleEngine : IEngineLifecycle, IDisposable
             _logger.Error("Scene cannot be null.");
             throw new ArgumentNullException(nameof(scene));
         }
+        
+        if (_currentScene != null) 
+            _inputManager.UnregisterToScene(_currentScene);
 
         lock (_sceneLock)
         {

@@ -175,10 +175,10 @@ public class MapEditorScene : IGameScene
         KeyBinding upArrow = KeyBinding.Commons.UpArrow;
         KeyBinding downArrow = KeyBinding.Commons.DownArrow;
 
-        _engine.Input.Register(leftArrow);
-        _engine.Input.Register(rightArrow);
-        _engine.Input.Register(upArrow);
-        _engine.Input.Register(downArrow);
+        _engine.Input.RegisterToScene(this, leftArrow);
+        _engine.Input.RegisterToScene(this, rightArrow);
+        _engine.Input.RegisterToScene(this, upArrow);
+        _engine.Input.RegisterToScene(this, downArrow);
 
         _engine.Input.Subscribe(leftArrow, () => { MoveCursorBy(-1, 0); });
         _engine.Input.Subscribe(rightArrow, () => { MoveCursorBy(1, 0); });
@@ -194,13 +194,13 @@ public class MapEditorScene : IGameScene
         KeyBinding doorKey = KeyBinding.Parse("d");
         KeyBinding exitKey = KeyBinding.Parse("e");
 
-        _engine.Input.Register(wallKey);
-        _engine.Input.Register(toxicKey);
-        _engine.Input.Register(ammoKey);
-        _engine.Input.Register(medKitKey);
-        _engine.Input.Register(bfgKey);
-        _engine.Input.Register(doorKey);
-        _engine.Input.Register(exitKey);
+        _engine.Input.RegisterToScene(this, wallKey);
+        _engine.Input.RegisterToScene(this, toxicKey);
+        _engine.Input.RegisterToScene(this, ammoKey);
+        _engine.Input.RegisterToScene(this, medKitKey);
+        _engine.Input.RegisterToScene(this, bfgKey);
+        _engine.Input.RegisterToScene(this, doorKey);
+        _engine.Input.RegisterToScene(this, exitKey);
 
         _engine.Input.Subscribe(wallKey, () => AddEntity(MapParser.DcmEntity.Wall, MapParser.DcmType.GameItem));
         _engine.Input.Subscribe(toxicKey, () => AddEntity(MapParser.DcmEntity.ToxicWaste, MapParser.DcmType.GameItem));
@@ -216,10 +216,10 @@ public class MapEditorScene : IGameScene
         KeyBinding impKey = KeyBinding.Parse("i");
         KeyBinding playerKey = KeyBinding.Parse("p");
 
-        _engine.Input.Register(zombieKey);
-        _engine.Input.Register(mancubusKey);
-        _engine.Input.Register(impKey);
-        _engine.Input.Register(playerKey);
+        _engine.Input.RegisterToScene(this, zombieKey);
+        _engine.Input.RegisterToScene(this, mancubusKey);
+        _engine.Input.RegisterToScene(this, impKey);
+        _engine.Input.RegisterToScene(this, playerKey);
 
         _engine.Input.Subscribe(zombieKey, () => AddEntity(MapParser.DcmEntity.Zombieman, MapParser.DcmType.Demon));
         _engine.Input.Subscribe(mancubusKey, () => AddEntity(MapParser.DcmEntity.Mancubus, MapParser.DcmType.Demon));
@@ -231,9 +231,9 @@ public class MapEditorScene : IGameScene
         KeyBinding escapeKey = KeyBinding.Commons.Escape;
         KeyBinding backspaceKey = KeyBinding.Parse("backspace");
 
-        _engine.Input.Register(hideKey);
-        _engine.Input.Register(escapeKey);
-        _engine.Input.Register(backspaceKey);
+        _engine.Input.RegisterToScene(this, hideKey);
+        _engine.Input.RegisterToScene(this, escapeKey);
+        _engine.Input.RegisterToScene(this, backspaceKey);
 
         _engine.Input.Subscribe(hideKey, () => { _toolBarPanel.Visible = !_toolBarPanel.Visible; });
         _engine.Input.Subscribe(escapeKey, HandleExit);
@@ -243,8 +243,8 @@ public class MapEditorScene : IGameScene
         KeyBinding optimizeKey = KeyBinding.Parse("shift+o");
         KeyBinding loadLegacyKey = KeyBinding.Parse("shift+l");
 
-        _engine.Input.Register(optimizeKey);
-        _engine.Input.Register(loadLegacyKey);
+        _engine.Input.RegisterToScene(this, optimizeKey);
+        _engine.Input.RegisterToScene(this, loadLegacyKey);
 
         _engine.Input.Subscribe(optimizeKey, OptimizeMap);
         _engine.Input.Subscribe(loadLegacyKey, () =>
@@ -260,9 +260,9 @@ public class MapEditorScene : IGameScene
         KeyBinding openKey = KeyBinding.Parse($"{ctrlModifier}+o");
         KeyBinding openDefaultKey = KeyBinding.Parse($"{ctrlModifier}+x");
 
-        _engine.Input.Register(saveKey);
-        _engine.Input.Register(openKey);
-        _engine.Input.Register(openDefaultKey);
+        _engine.Input.RegisterToScene(this, saveKey);
+        _engine.Input.RegisterToScene(this, openKey);
+        _engine.Input.RegisterToScene(this, openDefaultKey);
 
         _engine.Input.Subscribe(saveKey, () =>
         {

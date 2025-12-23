@@ -272,14 +272,14 @@ public class DoomGameScene : IGameScene
         KeyBinding attackBfgKeyBinding = KeyBinding.Parse("S");
         KeyBinding interactKeyBinding = KeyBinding.Parse("D");
         
-        _input.Register(escapeKeyBinding);
-        _input.Register(leftArrowKeyBinding);
-        _input.Register(rightArrowKeyBinding);
-        _input.Register(upArrowKeyBinding);
-        _input.Register(downArrowKeyBinding);
-        _input.Register(attackKeyBinding);
-        _input.Register(attackBfgKeyBinding);
-        _input.Register(interactKeyBinding);
+        _input.RegisterToScene(this, escapeKeyBinding);
+        _input.RegisterToScene(this,leftArrowKeyBinding);
+        _input.RegisterToScene(this,rightArrowKeyBinding);
+        _input.RegisterToScene(this,upArrowKeyBinding);
+        _input.RegisterToScene(this,downArrowKeyBinding);
+        _input.RegisterToScene(this,attackKeyBinding);
+        _input.RegisterToScene(this,attackBfgKeyBinding);
+        _input.RegisterToScene(this,interactKeyBinding);
         
         _input.Subscribe(escapeKeyBinding, () =>
         {

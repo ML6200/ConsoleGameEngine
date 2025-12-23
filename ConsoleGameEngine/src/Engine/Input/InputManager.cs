@@ -22,10 +22,7 @@ public class InputManager : IDisposable
         // Set to false by default. It determines whether the input manager should register this
         public readonly bool IsSolo = isSolo;
     }
-    
-    /* Legacy manual key event (NOT RECOMMENDED)*/
-    private event EventHandler<KeyEventArgs> OnKeyPressed;
-    
+
     public InputMode CurrentMode => _inputModeStack.Current;
     
     private readonly Thread _inputThread;
@@ -35,6 +32,8 @@ public class InputManager : IDisposable
     private readonly Dictionary<KeyBinding, KeyRecord> _keyBindings = new();
     private readonly List<Action<KeyEventArgs>> _rawInputChannel = new();
     private readonly InputModeStack _inputModeStack = new();
+    
+    private readonly Dictionary<IGameScene, List<KeyBinding>> _sceneEvents = new();
 
     public InputManager()
     {
@@ -117,6 +116,44 @@ public class InputManager : IDisposable
         {
             if (_keyBindings.TryGetValue(keyBinding, out var binding))
                 binding.Listeners.Remove(listener);
+        }
+    }
+
+    public void RegisterToScene(IGameScene scene, KeyBinding keyBinding)
+    {
+        lock (_lock)
+        {
+            Register(keyBinding);
+            if (!_sceneEvents.ContainsKey(scene))
+                _sceneEvents[scene] = new List<KeyBinding>();
+
+            _sceneEvents[scene].Add(keyBinding);
+        }
+    }
+
+    public void UnregisterToScene(IGameScene scene)
+    {
+        lock (_lock)
+        {
+            _sceneEvents.TryGetValue(scene, out var keyBindings);
+            if (keyBindings != null)
+            {
+                foreach (var keyBinding in keyBindings)
+                {
+                    Unregister(keyBinding);
+                }
+
+                _sceneEvents.Remove(scene);
+            }
+        }
+    }
+
+    public void UnRegisterAll()
+    {
+        lock (_lock)
+        {
+            _keyBindings.Clear();
+            _rawInputChannel.Clear();
         }
     }
 

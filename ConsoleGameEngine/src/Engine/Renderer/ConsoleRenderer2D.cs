@@ -310,7 +310,11 @@ public class ConsoleRenderer2D : IDisposable
             int x = 0;
             while (x < _screenWidth)
             {
-                if (!_dirtyMarks[x, y]) { x++; continue; }
+                if (!_dirtyMarks[x, y])
+                {
+                    x++;
+                    continue;
+                }
                 
                 int startX = x;
                 var runFg = _renderBuffer[startX, y].ForegroundColor;
