@@ -1,4 +1,4 @@
-⚠️ This project is unfinished and currently under active development.
+⚠️ This project is unfinished and currently under development.
 
 # Console Game Engine
 
