@@ -1,3 +1,5 @@
+⚠️ This project is unfinished and currently under active development.
+
 # Console Game Engine
 
 A modern 2D game engine for rendering games directly in the terminal using ANSI escape codes.
